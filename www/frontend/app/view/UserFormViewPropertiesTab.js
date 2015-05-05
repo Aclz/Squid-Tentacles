@@ -31,7 +31,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         xtype: 'displayfield',
 	labelWidth: 150,
         fieldLabel: 'Расход, Мб',
-	bind: {value: '{currentUser.traffic}'}
+	bind: {value: '{currentUser.traffic}'},
+        renderer: Ext.util.Format.numberRenderer('0.00')
 	},	
 	{
         xtype: 'combobox',

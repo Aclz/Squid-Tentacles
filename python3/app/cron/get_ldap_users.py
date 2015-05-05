@@ -3,7 +3,8 @@
 """
 
 def get_ldap_users(KeytabFilePath,LDAPURL,BaseDN,LDAPQuery):
-    import os,ssl
+    import os
+    import ssl
 
     import ldap3
 
@@ -34,7 +35,7 @@ def get_ldap_users(KeytabFilePath,LDAPURL,BaseDN,LDAPQuery):
             usersDict[element['dn']]=(element['attributes']['cn'],element['attributes']['userPrincipalName'])
 
     #Превратим dictionary в list of tuples для удобства дальнейшей вставки в MySQL
-    return [(dn[dn.upper().find(',OU=')+1:dn.upper().find(','+BaseDN.upper())],usersDict[dn][0],usersDict[dn][1])
+    return [(dn[dn.upper().find(',OU=') + 1:dn.upper().find(',' + BaseDN.upper())],usersDict[dn][0],usersDict[dn][1])
         for dn in usersDict]
 
 def main():

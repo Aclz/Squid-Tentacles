@@ -3,12 +3,12 @@
 RESTful Flask backend for Ext JS frontend
 """
 
-import datetime,time
+import datetime
+import time
 
-from flask import Flask, request, jsonify
+from flask import Flask,request,jsonify
 
-from sqlalchemy import create_engine
-from sqlalchemy import func
+from sqlalchemy import create_engine,func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import scoped_session,sessionmaker
 
@@ -90,24 +90,24 @@ def tree():
     #If 'base' includes its own baseSeparator - return only a string after it
     #So if path is 'OU=Group,OU=Dept,OU=Company', the queryResult would be 'Company',
     #and the 'rest' would be 'OU=Group,OU=Dept'
-    def nodeBaseAndRest(path):
+    def node_base_and_rest(path):
         nodeSeparator = ','
         baseSeparator = '='
 
-        nodeBase = path[path.rfind(nodeSeparator)+1:]
+        nodeBase = path[path.rfind(nodeSeparator) + 1:]
 
         if path.find(nodeSeparator) != -1:
-            nodePreceding = path[:len(path)-len(nodeBase)-1]
+            nodePreceding = path[:len(path) - len(nodeBase) - 1]
         else:
             nodePreceding = ''
 
-        return (nodePreceding,nodeBase[nodeBase.find(baseSeparator)+1:])
+        return (nodePreceding,nodeBase[nodeBase.find(baseSeparator) + 1:])
 
     #Places a 'user' object on a 'usertree' object according to user's pathField string key
-    def placeUserOntoTree(user,usertree,pathField):
+    def place_user_onto_tree(user,usertree,pathField):
         currNode = usertree
 
-        preceding,base=nodeBaseAndRest(user[pathField])
+        preceding,base=node_base_and_rest(user[pathField])
 
         while base != '':
             nodeFound = False
@@ -125,43 +125,43 @@ def tree():
             #Creating a new group node
             if nodeFound == False:
                 currNode.append({
-                    'objectId':user[pathField][len(preceding)+(0 if len(preceding)==0 else 1):],
+                    'objectId':user[pathField][len(preceding) + (0 if len(preceding)==0 else 1):],
                     'text':base,
                     'objectType':'UserGroup',
                     'children':[]
                     })
 
-                currNode = currNode[len(currNode)-1]['children']
+                currNode = currNode[len(currNode) - 1]['children']
 
-            preceding,base = nodeBaseAndRest(preceding)
+            preceding,base = node_base_and_rest(preceding)
 
         currNode.append({'objectId':user['id'],'text':user['cn'],'leaf':True,'objectType':'User'})
     
     #Sorts a subtree node by a sortField key of each element
-    def sortTree(subtree,sortField):
+    def sort_tree(subtree,sortField):
         #Sort eval function, first by group property, then by text
-        def sortByFieldHelper(obj):
+        def sort_by_field_helper(obj):
             return (1 if obj.get('children') == None else 0,obj[sortField])
 
-        subtree['children'] = sorted(subtree['children'],key=sortByFieldHelper)
+        subtree['children'] = sorted(subtree['children'],key=sort_by_field_helper)
 
         for treeElem in subtree['children']:
             if treeElem.get('children') != None:
-                sortTree(treeElem,sortField)
+                sort_tree(treeElem,sortField)
     
     #Collapses tree nodes which doesn't contain subgroups, just tree leaves
-    def collapseTerminalNodes(subtree):
+    def collapse_terminal_nodes(subtree):
         subtreeHasGroupNodes=False
 
         for treeElem in subtree['children']:
             if treeElem.get('children') != None:
                 subtreeHasGroupNodes = True
-                collapseTerminalNodes(treeElem)
+                collapse_terminal_nodes(treeElem)
 
         subtree['expanded'] = subtreeHasGroupNodes
 
     #Build user tree
-    def getUserTree():
+    def get_user_tree():
         session = Session()
 
         #Get all users from DB
@@ -185,7 +185,7 @@ def tree():
 
         #Building a hierarchial tree based on the path given in distinguishedName
         for user in userArray:
-            placeUserOntoTree(user,userTree,'distinguishedName')
+            place_user_onto_tree(user,userTree,'distinguishedName')
 
         userTree = {
             'objectType':'userTree',
@@ -194,14 +194,14 @@ def tree():
             }
 
         #Sorting tree elements
-        sortTree(userTree,'text')
+        sort_tree(userTree,'text')
 
         #Collapsing tree nodes
-        collapseTerminalNodes(userTree)
+        collapse_terminal_nodes(userTree)
 
         return userTree
 
-    def getUrlLists():
+    def get_url_lists():
         urlLists = {
             'objectType':'urlLists',
             'text':'Списки URL',
@@ -210,7 +210,7 @@ def tree():
 
         return urlLists
 
-    def getAccessTemplates():
+    def get_access_templates():
         accessTemplates = {
             'objectType':'accessTemplates',
             'text':'Шаблоны доступа',
@@ -220,9 +220,9 @@ def tree():
         return accessTemplates
 
     if request.method == 'GET':
-        urlLists = getUrlLists()
-        accessTemplates = getAccessTemplates()
-        userTree = getUserTree()
+        urlLists = get_url_lists()
+        accessTemplates = get_access_templates()
+        userTree = get_user_tree()
 
         result = {
             'success':True,
@@ -237,13 +237,13 @@ def tree():
 
 
 @app.route('/rest/reports/user-traffic-by-hosts', methods=['GET'])
-def reportUserTrafficByHosts():
+def report_user_traffic_by_hosts():
     if request.method == 'GET':
         mandatoryParams = ['userId','dateBeg','dateEnd','limit']
 
         for paramName in mandatoryParams:
             if request.args.get(paramName) == None:
-                return jsonify({'success':False,'message':'Absent '+paramName+' parameter!'})
+                return jsonify({'success':False,'message':'Absent ' + paramName + ' parameter!'})
 
         session = Session()
 
@@ -273,7 +273,7 @@ def reportUserTrafficByHosts():
         #Making an array
         for resultRow in queryResult:
             rowObject = {
-                'position':len(resultArray)+1,
+                'position':len(resultArray) + 1,
                 'host':resultRow.host,
                 'traffic':float(round(resultRow.traffic/1024/1024,2))
                 }
@@ -289,13 +289,13 @@ def reportUserTrafficByHosts():
 
 
 @app.route('/rest/reports/user-traffic-by-dates', methods=['GET'])
-def reportUserTrafficByDates():
+def report_user_traffic_by_dates():
     if request.method == 'GET':
         mandatoryParams = ['userId','dateBeg','dateEnd']
 
         for paramName in mandatoryParams:
             if request.args.get(paramName) == None:
-                return jsonify({'success':False,'message':'Absent '+paramName+' parameter!'})
+                return jsonify({'success':False,'message':'Absent ' + paramName + ' parameter!'})
 
         session = Session()
 
@@ -316,7 +316,7 @@ def reportUserTrafficByDates():
         #Making an array
         for resultRow in queryResult:
             rowObject = {
-                'position':len(resultArray)+1,
+                'position':len(resultArray) + 1,
                 'date':resultRow.date.isoformat(),
                 'traffic':float(round(resultRow.traffic/1024/1024,2))
                 }
@@ -332,13 +332,13 @@ def reportUserTrafficByDates():
 
 
 @app.route('/rest/reports/user-day-traffic', methods=['GET'])
-def reportUserDayTraffic():
+def report_user_day_traffic():
     if request.method == 'GET':
         mandatoryParams = ['userId','date','start','limit']
 
         for paramName in mandatoryParams:
             if request.args.get(paramName) == None:
-                return jsonify({'success':False,'message':'Absent '+paramName+' parameter!'})
+                return jsonify({'success':False,'message':'Absent ' + paramName + ' parameter!'})
 
         session = Session()
 
@@ -347,7 +347,7 @@ def reportUserDayTraffic():
             AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
                 request.args.get('date'),"%Y-%m-%dT%H:%M:%S").date().timetuple()),
             AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
-                request.args.get('date'),"%Y-%m-%dT%H:%M:%S").date().timetuple())+60*60*24,
+                request.args.get('date'),"%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
             AccessLog.http_reply_size > 0.05*1024,
             AccessLog.http_status_code.like('2%')).order_by(
             AccessLog.time_since_epoch)
@@ -366,7 +366,7 @@ def reportUserDayTraffic():
         #Making an array
         for resultRow in queryResult:
             rowObject = {
-                'id':len(resultArray)+1+int(request.args.get('start')),
+                'id':len(resultArray) + 1 + int(request.args.get('start')),
                 'time':datetime.datetime.fromtimestamp(resultRow.time_since_epoch).isoformat(),
                 'url':resultRow.http_url,
                 'traffic':float(round(resultRow.http_reply_size/1024,1))

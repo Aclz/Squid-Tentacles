@@ -26,5 +26,5 @@ Session = scoped_session(sessionmaker(bind=engine))
 while True:
     ipaddr = sys.stdin.readline().strip()
     result = check_ip_mysql(ipaddr)
-    sys.stdout.write(result+'\n')
+    sys.stdout.write(result + '\n')
     sys.stdout.flush()

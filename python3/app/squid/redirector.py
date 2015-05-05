@@ -37,7 +37,7 @@ def modify_url(line):
     new_url = '\n'
 
     if not user_status_ok(username,ip):
-        new_url = 'http://' + WebInterfaceIpAddress+'/redir/banned.html' + new_url
+        new_url = 'http://' + WebInterfaceIpAddress + '/redir/banned.html' + new_url
     
     return new_url
 

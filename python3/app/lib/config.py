@@ -13,8 +13,8 @@ MandatorySections = [
 
 for Section in MandatorySections:
     if not Section[0] in config:
-        sys.exit('Wrong /etc/tentacles.conf format: missing ['+Section[0]+'] section!')
+        sys.exit('Wrong /etc/tentacles.conf format: missing [' + Section[0] + '] section!')
 
     for param in Section[1]:
         if not param in config[Section[0]]:
-            sys.exit('Wrong /etc/tentacles.conf format: missing ['+Section[0]+']:'+param+' parameter!')
+            sys.exit('Wrong /etc/tentacles.conf format: missing [' + Section[0] + ']:' + param + ' parameter!')

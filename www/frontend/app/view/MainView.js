@@ -9,7 +9,7 @@ Ext.define('tentacles.view.MainView', {
 		
     viewModel: {
 	data: {
-            projectname: 'Squid Tentacles v0.2'
+            projectname: 'Squid Tentacles v0.2.1.0'
 	    },
 	
 	stores: {
@@ -20,9 +20,9 @@ Ext.define('tentacles.view.MainView', {
 	        rootVisible: true,
 				
     	        root: {
-	            text: 'Пользователи',
+	            text: 'Tentacles',
 		    expanded: true,
-                    objectType: 'UserContainer'
+                    objectType: 'RootContainer'
 		    }
 	        }
 	    },

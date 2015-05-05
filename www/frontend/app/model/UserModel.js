@@ -22,13 +22,12 @@ Ext.define('tentacles.model.UserModel', {
 	},		
 	{
 	name: 'traffic',
-	type: 'int'
-	},		
+	type: 'float'		
+        },
 	{
 	name: 'status',
 	type: 'int'
-	}
-        ,
+	},
         {
         name: 'authMethod',
         type: 'int'
@@ -36,8 +35,7 @@ Ext.define('tentacles.model.UserModel', {
         {
         name: 'ip',
         type: 'string'
-        }
-	],
+        }],
 	
     proxy: {
 	type: 'rest',
