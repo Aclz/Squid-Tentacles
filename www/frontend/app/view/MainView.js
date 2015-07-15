@@ -1,15 +1,17 @@
 Ext.define('tentacles.view.MainView', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
 
     requires: [
 	'tentacles.view.MainViewController',
 	'tentacles.view.UserFormView',
-	'tentacles.view.UserGroupFormView'
+	'tentacles.view.UserGroupFormView',
+	'tentacles.view.UrlListsFormView',
+	'tentacles.view.UrlMasksFormView'
 	],
 		
     viewModel: {
 	data: {
-            projectname: 'Squid Tentacles v0.2.1.0'
+            projectname: 'Squid Tentacles v0.4.0.0'
 	    },
 	
 	stores: {
@@ -25,24 +27,23 @@ Ext.define('tentacles.view.MainView', {
                     objectType: 'RootContainer'
 		    }
 	        }
-	    },
-			
-	links: {
-	    currentUser: {
-	        reference: 'UserModel',
-		create: true
-		}
 	    }
 	},
 		
     controller: 'mainviewcontroller',
 	
-    layout: {type: 'border'},
+    layout: 'border',
 
     items: [
         {
-	xtype: 'panel',	
-	bind: {title: '{projectname}'},			
+	xtype: 'panel',
+	
+	bind: {
+	    title: '{projectname}'
+	    },
+	    
+	title: 'Tentacles',
+	
 	region: 'north'
 	},		
 	{
@@ -52,14 +53,21 @@ Ext.define('tentacles.view.MainView', {
 	bind: '{maintreestore}',		
 	reference: 'mainTreeViewRef',
 	width: 360,	
-	useArrows: true,	
-	listeners: {selectionchange: 'onTreeSelectionChange'}
+	useArrows: true,
+	title: 'Navigation tree',
+	header: false,	
+	
+	listeners: {
+	    selectionchange: 'onTreeSelectionChange'
+	    }
 	},		
 	{
 	xtype: 'panel',
 	region: 'center',
 	reference: 'detailsPanelRef',
 	autoDestroy: true,
-        layout : 'fit'
+        layout : 'fit',
+        title: 'Details',
+        header: false
 	}]
     });

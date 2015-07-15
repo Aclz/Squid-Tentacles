@@ -1,7 +1,35 @@
 Ext.define('tentacles.view.UserFormViewPropertiesTab', {
-    extend: 'Ext.panel.Panel',
-	
+    extend: 'Ext.form.Panel',
+    
     alias: 'widget.userformviewproperties',
+    
+    viewModel: {
+        formulas: {
+            isIpAuth: function(get) {
+                return get('currentUser.authMethod') != 1;
+                },
+            
+            recordStatus: {
+                bind: {
+                    bindTo: '{currentUser}',
+                    deep: true
+                    },
+
+                get: function(user) {
+                    var result = {
+                        dirty: user ? user.dirty : false,
+                        valid: user ? this.getView().isValid() : false
+                        };
+
+                    result.dirtyAndValid = result.dirty && result.valid;
+
+                    return result;
+                    }
+                }
+            }
+        },
+        
+    modelValidation: true,
 
     title: 'Свойства',
 
@@ -70,15 +98,32 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         maxLength: 15,
         enforceMaxLength: true,
         hidden: true,
+        
         bind: {
             value: '{currentUser.ip}',
             hidden: '{isIpAuth}'
+            },
+            
+        maskRe: /[\d\.]/},
+	{
+	xtype: 'button',
+        text: 'Сохранить',
+        handler: 'onSaveUserClick',
+        disabled: true,
+        
+        bind: {
+            disabled: '{!recordStatus.dirtyAndValid}'
             }
         },
-	{
+        {
         xtype: 'button',
-    	width: 100,
-        text: 'Сохранить',
-        handler: 'onSaveUserClick'
+        text: 'Отменить',
+        handler: 'onRevertUserClick',
+        disabled: true,
+        margin: '0 0 0 5',
+
+        bind: {
+            disabled: '{!recordStatus.dirty}'
+            }
         }]
     })

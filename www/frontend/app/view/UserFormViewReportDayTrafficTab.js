@@ -46,8 +46,7 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
         {
         layout: 'auto',
 
-        items: [
-            {
+        items: [{
             xtype: 'datefield',
             reference: 'userReportDayTrafficDateRef',
             fieldLabel: 'Дата',
@@ -60,8 +59,7 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
             width: 100,
             text: 'Вывести',
             handler: 'onShowUserReportDayTrafficClick'
-            }
-            ]
+            }]
         },
         {
         xtype: 'grid',
@@ -95,7 +93,7 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
             text: '№',
             dataIndex: 'id',
             align: 'right',
-            width: 40
+            width: 50
             },
             {
             xtype: 'datecolumn',
@@ -114,7 +112,8 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
             text: 'Трафик, кб',
             dataIndex: 'traffic',
             align: 'right',
-            format: '0.0'
+            format: '0.0',
+            width: 120
             }]
         }]
     })

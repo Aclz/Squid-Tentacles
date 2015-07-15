@@ -7,16 +7,20 @@ Ext.define('tentacles.view.UserFormView', {
         'tentacles.view.UserFormViewPropertiesTab',
         'tentacles.view.UserFormViewReportTrafficByHostsTab',
         'tentacles.view.UserFormViewReportTrafficByDatesTab',
-        'tentacles.view.UserFormViewReportDayTrafficTab'
+        'tentacles.view.UserFormViewReportDayTrafficTab',
+        'tentacles.view.UserFormViewController'
         ],
-
+        
     viewModel: {
-        formulas: {
-            isIpAuth: function (get) {
-                return get('currentUser.authMethod') != 1;
+        links: {
+            currentUser: {
+                reference: 'UserModel',
+                create: true
                 }
             }
         },
+        
+    controller: 'userformviewcontroller',
 	
     bodyPadding: 10,
 
