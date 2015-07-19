@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
     extend: 'Ext.panel.Panel',
-	
+    
     alias: 'widget.userformviewreportdaytraffictab',
 
     title: 'Трафик за сутки',

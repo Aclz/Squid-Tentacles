@@ -4,9 +4,37 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
     
     listen: {
         controller: {
-            '*': {
-                onUrlListSelect: 'onUrlListSelect'
+            'mainviewcontroller': {
+                onUrlListSelect: 'onUrlListSelect',
+                beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
+            }
+        },
+        
+    beforeTreeSelectionChange: function(args) {
+        if (!args.selected) {
+            return;
+            }
+
+        if (this.getViewModel().get('storeIsDirty')) {
+            Ext.MessageBox.show({
+                title: 'Есть несохраненные данные',
+                message: 'Несохраненные данные будут потеряны! Сохранить?',
+                buttons: Ext.Msg.OKCANCEL,
+                icon: Ext.MessageBox.WARNING,
+                scope: this,
+
+                fn: function(btn) {
+                    if (btn == 'ok') {
+                        this.onSaveUrlMaskClick();
+                        }
+
+                    this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+                    }
+                });
+            }
+        else {
+            this.fireEvent('onTreeSelectionChange',{selected:args.selected});
             }
         },
         
@@ -16,7 +44,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         
     onUrlListSelect: function(selectedId) {
         this.getViewModel().data.currentUrlListId = selectedId
-        this.getViewModel().getStore('urlMaskStore').load();
+        this.getStore('urlMaskStore').load();
         },
     
     beforeLoadUrlMaskStore: function(store,operation) {
@@ -32,7 +60,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
         
     onAddUrlMaskClick: function() {
-        var urlMaskStore = this.getViewModel().getStore('urlMaskStore');
+        var urlMaskStore = this.getStore('urlMaskStore');
         
         Ext.MessageBox.prompt('Введите значение','Введите выражение маски URL:',
             function(btn,text) {
@@ -49,11 +77,11 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         
     onRemoveUrlMaskClick: function() {
         var selection = this.lookupReference('urlMaskGridRef').getSelection();
-        this.getViewModel().getStore('urlMaskStore').remove(selection); 
+        this.getStore('urlMaskStore').remove(selection); 
         },
 
     onSaveUrlMaskClick: function() {
-        var store = this.getViewModel().getStore('urlMaskStore');
+        var store = this.getStore('urlMaskStore');
         
         store.sync({
             failure: function(batch,options) {
@@ -61,7 +89,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
                     title: 'Ошибка синхронизации с сервером',
                     message: 'При синхронизации с сервером возникла непредвиденная ошибка. Перезагрузить список с сервера?',
                     buttons: Ext.Msg.YESNO,
-                    icon: Ext.window.MessageBox.ERROR,
+                    icon: Ext.MessageBox.ERROR,
 
                     fn: function(btn) {
                         if (btn == 'yes') {
@@ -74,6 +102,6 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
         
     onRevertUrlMaskClick: function() {
-        this.getViewModel().getStore('urlMaskStore').rejectChanges();
+        this.getStore('urlMaskStore').rejectChanges();
         }
     })

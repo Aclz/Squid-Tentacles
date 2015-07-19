@@ -6,12 +6,13 @@ Ext.define('tentacles.view.MainView', {
 	'tentacles.view.UserFormView',
 	'tentacles.view.UserGroupFormView',
 	'tentacles.view.UrlListsFormView',
-	'tentacles.view.UrlMasksFormView'
+	'tentacles.view.UrlMasksFormView',
+	'tentacles.view.AccessTemplatesFormView'
 	],
 		
     viewModel: {
 	data: {
-            projectname: 'Squid Tentacles v0.4.0.0'
+            projectname: 'Squid Tentacles v0.4.3.0'
 	    },
 	
 	stores: {
@@ -58,7 +59,7 @@ Ext.define('tentacles.view.MainView', {
 	header: false,	
 	
 	listeners: {
-	    selectionchange: 'onTreeSelectionChange'
+	    beforeselect: 'beforeTreeSelect'
 	    }
 	},		
 	{

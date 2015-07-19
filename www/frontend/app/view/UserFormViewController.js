@@ -2,13 +2,41 @@ Ext.define('tentacles.view.UserFormViewController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.userformviewcontroller',
     
-    config: {
-        listen: {
-            controller: {
-                '*': {
-                    onUserSelect: 'onUserSelect'
-                    }
+    listen: {
+        controller: {
+            'mainviewcontroller': {
+                onUserSelect: 'onUserSelect',
+                beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
+            }
+        },
+        
+    beforeTreeSelectionChange: function(args) {
+        if (!args.selected) {
+            return;
+            }
+            
+        var currentUser = this.getViewModel().data.currentUser;
+            
+        if (currentUser.dirty && currentUser.isValid()) {
+            Ext.MessageBox.show({
+                title: 'Есть несохраненные данные',
+                message: 'Несохраненные данные будут потеряны! Сохранить?',
+                buttons: Ext.Msg.OKCANCEL,
+                icon: Ext.MessageBox.WARNING,
+                scope: this,
+
+                fn: function(btn) {
+                    if (btn == 'ok') {
+                        this.onSaveUserClick();
+                        }
+
+                    this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+                    }
+                });
+            }
+        else {
+            this.fireEvent('onTreeSelectionChange',{selected:args.selected});
             }
         },
 

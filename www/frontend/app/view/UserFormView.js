@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.UserFormView', {
     extend: 'Ext.tab.Panel',
-	
+    
     alias: 'widget.userformview',
 
     requires: [

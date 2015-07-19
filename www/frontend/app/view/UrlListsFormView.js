@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.UrlListsFormView', {
     extend: 'Ext.form.Panel',
-	
+    
     alias: 'widget.urllistsformview',
     
     requires: [
@@ -11,8 +11,6 @@ Ext.define('tentacles.view.UrlListsFormView', {
 
     viewModel: {
         data: {
-            //currentUrlListId: 0,
-            //storeIsDirty: false,
             gridSelectionEmpty: true
             },
             
@@ -24,8 +22,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
 
                 autoLoad: false,
 
-                listeners: {
-                    //beforeLoad: 'beforeLoadUrlMaskStore',                    
+                listeners: {                   
                     datachanged: 'onUrlListStoreDataChanged'
                     }
                 }

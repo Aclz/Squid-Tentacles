@@ -1,12 +1,41 @@
 Ext.define('tentacles.view.UrlListsFormViewController', {
     extend: 'Ext.app.ViewController',
+    
     alias: 'controller.urllistsformviewcontroller',
     
     listen: {
         controller: {
-            '*': {
-                onUrlListsSelect: 'onUrlListsSelect'
+            'mainviewcontroller': {
+                onUrlListsSelect: 'onUrlListsSelect',
+                beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
+            }
+        },
+        
+    beforeTreeSelectionChange: function(args) {
+        if (!args.selected) {
+            return;
+            }
+    
+        if (this.getViewModel().get('storeIsDirty')) {
+            Ext.MessageBox.show({
+                title: 'Есть несохраненные данные',
+                message: 'Несохраненные данные будут потеряны! Сохранить?',
+                buttons: Ext.Msg.OKCANCEL,
+                icon: Ext.MessageBox.WARNING,
+                scope: this,
+
+                fn: function(btn) {
+                    if (btn == 'ok') {
+                        this.onSaveUrlListClick();
+                        }
+                        
+                    this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+                    }
+                });
+            }
+        else {
+            this.fireEvent('onTreeSelectionChange',{selected:args.selected});
             }
         },
         
@@ -15,7 +44,7 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
         },
         
     onUrlListsSelect: function(selectedId) {
-        this.getViewModel().getStore('urlListStore').load();
+        this.getStore('urlListStore').load();
         },
         
     onUrlListGridSelectionChange: function() {
@@ -23,7 +52,7 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
         },
         
     onAddUrlListClick: function() {
-        var urlListStore = this.getViewModel().getStore('urlListStore');
+        var urlListStore = this.getStore('urlListStore');
         
         Ext.MessageBox.prompt('Введите значение','Введите название списка URL:',
             function(btn,text) {
@@ -41,12 +70,12 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
         
     onRemoveUrlListClick: function() {
         var selection = this.lookupReference('urlListGridRef').getSelection();
-        this.getViewModel().getStore('urlListStore').remove(selection); 
+        this.getStore('urlListStore').remove(selection); 
         },
 
-    onSaveUrlListClick: function() {
-        var store = this.getViewModel().getStore('urlListStore');
-        var thisViewController = this;
+    onSaveUrlListClick: function() { 
+        var store = this.getStore('urlListStore');
+        var thisController = this;
         
         store.sync({
             failure: function(batch,options) {
@@ -54,7 +83,7 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
                     title: 'Ошибка синхронизации с сервером',
                     message: 'При синхронизации с сервером возникла непредвиденная ошибка. Перезагрузить список с сервера?',
                     buttons: Ext.Msg.YESNO,
-                    icon: Ext.window.MessageBox.ERROR,
+                    icon: Ext.MessageBox.ERROR,
                     
                     fn: function(btn) {
                         if (btn == 'yes') {
@@ -65,12 +94,12 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
                 },
                 
             callback: function() {
-                thisViewController.fireEvent('onUrlListReloadRequest');
+                thisController.fireEvent('onUrlListReloadRequest');
                 }
             });
         },
         
     onRevertUrlListClick: function() {
-        this.getViewModel().getStore('urlListStore').rejectChanges();
+        this.getStore('urlListStore').rejectChanges();
         }
     })

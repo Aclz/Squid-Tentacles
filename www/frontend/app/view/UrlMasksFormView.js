@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.UrlMasksFormView', {
     extend: 'Ext.form.Panel',
-	
+    
     alias: 'widget.urlmasksformview',
     
     requires: [

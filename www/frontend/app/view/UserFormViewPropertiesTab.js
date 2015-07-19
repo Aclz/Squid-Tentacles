@@ -18,7 +18,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 get: function(user) {
                     var result = {
                         dirty: user ? user.dirty : false,
-                        valid: user ? this.getView().isValid() : false
+                        valid: user ? user.isValid() : false
                         };
 
                     result.dirtyAndValid = result.dirty && result.valid;
