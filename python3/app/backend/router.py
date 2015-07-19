@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session,sessionmaker
 
 from config import config
 
-import maintree,urllists,urlmasks,accesstemplates,users,accesslogreports
+import maintree,urllists,urlmasks,accesstemplates,users,accesslogreports,settings
 
 
 app = Flask(__name__)
@@ -96,6 +96,17 @@ def report_user_traffic_by_dates():
 @app.route('/rest/reports/user-day-traffic',methods=['GET'])
 def report_user_day_traffic():
     return accesslogreports.report_user_day_traffic(Session)
+    
+
+@app.route('/rest/settings',methods=['GET'])
+def select_settings():
+    return settings.select_settings(Session)
+    
+    
+@app.route('/rest/settings',methods=['PUT'])
+def update_settings():
+    return settings.update_settings(Session)
+
 
 
 if __name__ == '__main__':

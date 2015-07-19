@@ -42,6 +42,7 @@ class User(Base):
     authMethod = Column(SmallInteger)
     ip = Column(String(15))
     traffic = Column(BigInteger)
+    accessTemplate = Column(Integer,ForeignKey('accessTemplates.id'))
 
 
 class AccessLogArchive(Base):
@@ -62,4 +63,10 @@ class AccessLog(Base):
     http_reply_size = Column(Integer)
     http_url = Column(Text)
     userId = Column(Integer,ForeignKey('users.id'))
+
+
+class Settings(Base):
+    __tablename__ = 'settings'
+    id = Column(Integer,primary_key=True)
+    defaultAccessTemplate = Column(Integer,ForeignKey('accessTemplates.id'))
     

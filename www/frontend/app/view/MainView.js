@@ -7,12 +7,13 @@ Ext.define('tentacles.view.MainView', {
 	'tentacles.view.UserGroupFormView',
 	'tentacles.view.UrlListsFormView',
 	'tentacles.view.UrlMasksFormView',
-	'tentacles.view.AccessTemplatesFormView'
+	'tentacles.view.AccessTemplatesFormView',
+	'tentacles.view.SettingsFormView'
 	],
 		
     viewModel: {
 	data: {
-            projectname: 'Squid Tentacles v0.4.3.0'
+            projectname: 'Squid Tentacles v0.4.4.0'
 	    },
 	
 	stores: {

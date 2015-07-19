@@ -41,7 +41,7 @@ Ext.define('tentacles.view.UserFormViewController', {
         },
 
     onUserSelect: function(selectedId) {
-        this.getViewModel().linkTo('currentUser',{reference:'UserModel',id:selectedId});
+        this.getViewModel().linkTo('currentUser',{reference: 'UserModel',id: selectedId});
         this.getView().setActiveTab(0);
 
         //setting the default field values and clean up stores

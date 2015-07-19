@@ -1,38 +1,35 @@
 from flask import request,jsonify
 
-from sql_classes import User
+from sql_classes import Settings
 
-def select_user(user_id,Session):
+def select_settings(Session):
     session = Session()
 
-    query_result = session.query(User).filter_by(id=user_id,hidden=0).first()
+    query_result = session.query(Settings).filter_by(id=1).first()
+
+    session.close()
 
     if query_result == None:
-        return jsonify(success = False)
+        return jsonify({
+            'success':True,
+            'settings':{'id':1}
+            })
 
-    user_object = {
+    settings_object = {
         'id':query_result.id,
-        'cn':query_result.cn,
-        'userPrincipalName':query_result.userPrincipalName,
-        'status':query_result.status,
-        'quota':query_result.quota,
-        'authMethod':query_result.authMethod,
-        'ip':query_result.ip,
-        'traffic':round(query_result.traffic/1024/1024,2),
-        'accessTemplate':query_result.accessTemplate
+        'defaultAccessTemplate':query_result.defaultAccessTemplate
         }
 
     session.close()
 
     response = {
         'success':True,
-        'user':user_object
+        'settings':settings_object
         }
 
     return jsonify(response)
-    
 
-def update_user(user_id,Session):
+def update_settings(Session):
     json_data = request.get_json()
 
     if not json_data:
@@ -40,14 +37,16 @@ def update_user(user_id,Session):
 
     session = Session()
 
-    query_result = session.query(User).get(user_id)
+    query_result = session.query(Settings).get(1)
 
     if query_result == None:
-        return jsonify(success = False)
+        new_settings = Settings(id=1)
+        session.add(new_settings)
+        query_result = session.query(Settings).get(1)
 
     do_commit = False
 
-    allowed_to_update_fields = ['status','quota','authMethod','ip','traffic','accessTemplate']
+    allowed_to_update_fields = ['defaultAccessTemplate']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

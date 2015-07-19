@@ -20,9 +20,7 @@ Ext.define('tentacles.view.MainViewController', {
         },
  
     onTreeSelectionChange: function(args) {
-        if (!args || !args.selected || !args.selected.data || !args.selected.data.objectType) {
-            //this.lookupReference('detailsPanelRef').removeAll();
-            
+        if (!args || !args.selected || !args.selected.data || !args.selected.data.objectType) {            
             return;
             }
         
@@ -80,6 +78,17 @@ Ext.define('tentacles.view.MainViewController', {
                     }
 
                 this.fireEvent('onAccessTemplatesSelect');
+
+                break;
+            case 'Settings':
+                if (!this.lookupReference('detailsPanelRef').items.items[0] ||
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'settingsformview') {
+
+                    this.lookupReference('detailsPanelRef').removeAll();
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.SettingsFormView());
+                    }
+
+                this.fireEvent('onSettingsSelect');
 
                 break;
 	    default:

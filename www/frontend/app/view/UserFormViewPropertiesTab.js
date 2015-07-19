@@ -44,16 +44,22 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         xtype: 'displayfield',
 	labelWidth: 150,
         fieldLabel: 'Логин',
-	bind: {value: '{currentUser.userPrincipalName}'}
+        
+	bind: {
+	    value: '{currentUser.userPrincipalName}'
+	    }
 	},		
 	{
         xtype: 'numberfield',
-        width: 240,
+        width: 280,
 	labelWidth: 150,
         fieldLabel: 'Квота, Мб',
 	minValue: 0,
         maxValue: 1000000000, //~1 Pb seems to be enough
-	bind: {value: '{currentUser.quota}'}
+        
+	bind: {
+	    value: '{currentUser.quota}'
+	    }
 	},	
 	{
         xtype: 'displayfield',
@@ -68,12 +74,16 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 	labelWidth: 150,
         fieldLabel: 'Состояние',
         editable: false,
+        
 	store:[
 	    [0,'Заблокирован'],
 	    [1,'Активен'],
             [2,'Отключен за превышение квоты']
 	    ],
-	bind: {value: '{currentUser.status}'}
+	    
+	bind: {
+	    value: '{currentUser.status}'
+	    }
 	},
         {
         xtype: 'combobox',
@@ -93,6 +103,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'textfield',
+        width: 280,
         labelWidth: 150,
         fieldLabel: 'IP-адрес',
         maxLength: 15,
@@ -104,7 +115,28 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             hidden: '{isIpAuth}'
             },
             
-        maskRe: /[\d\.]/},
+        maskRe: /[\d\.]/
+        },
+        {
+        xtype: 'combobox',
+        width: 390,
+        labelWidth: 150,
+        fieldLabel: 'Шаблон доступа',
+        editable: false,
+
+        store: {
+            model: 'tentacles.model.AccessTemplateModel',
+            autoload: false
+            },
+
+        displayField: 'name',
+        valueField: 'id',
+        autoLoadOnValue: true,
+
+        bind: {
+            value: '{currentUser.accessTemplate}'
+            }
+        },
 	{
 	xtype: 'button',
         text: 'Сохранить',
