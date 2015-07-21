@@ -29,7 +29,6 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 autoLoad: false,
 
                 listeners: {
-                    beforeload: 'beforeLoadAccessTemplateContentsStore',
                     write: 'writeAccessTemplateContentsStore',
                     datachanged: 'onAccessTemplateContentsStoreDataChanged'
                     }

@@ -36,10 +36,6 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         else {
             this.fireEvent('onTreeSelectionChange',{selected:args.selected});
             }
-        },        
-    
-    beforeLoadUrlMaskStore: function(store,operation) {
-        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentUrlList.id);
         },
         
     onUrlStoreDataChanged: function(store) {
@@ -47,7 +43,8 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
         
     onUrlListSelect: function(selectedId) {		
-		this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
+	this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
+	this.getStore('urlMaskStore').getProxy().setExtraParam('parentId',selectedId);
         this.getStore('urlMaskStore').load();
         },
         

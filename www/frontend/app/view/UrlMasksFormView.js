@@ -28,8 +28,7 @@ Ext.define('tentacles.view.UrlMasksFormView', {
 
                 autoLoad: false,
 
-                listeners: {
-                    beforeload: 'beforeLoadUrlMaskStore', 
+                listeners: { 
                     write: 'writeUrlMaskStore',                   
                     datachanged: 'onUrlStoreDataChanged'
                     }

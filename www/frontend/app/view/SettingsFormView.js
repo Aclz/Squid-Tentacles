@@ -65,6 +65,7 @@ Ext.define('tentacles.view.SettingsFormView', {
         text: 'Сохранить',
         handler: 'onSaveSettingsClick',
         disabled: true,
+        width: 100,
 
         bind: {
             disabled: '{!recordStatus.dirtyAndValid}'
@@ -76,6 +77,7 @@ Ext.define('tentacles.view.SettingsFormView', {
         handler: 'onRevertSettingsClick',
         disabled: true,
         margin: '0 0 0 5',
+        width: 100,
 
         bind: {
             disabled: '{!recordStatus.dirty}'

@@ -39,16 +39,13 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             }
         },
         
-    beforeLoadAccessTemplateContentsStore: function(store,operation) {
-        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentAccessTemplate.id);
-        },
-        
     onAccessTemplateContentsStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
     onAccessTemplateContentsSelect: function(selectedId) {
         this.getViewModel().linkTo('currentAccessTemplate',{reference: 'AccessTemplateModel',id: selectedId});
+        this.getStore('accessTemplateContentsStore').getProxy().setExtraParam('parentId',selectedId);
         this.getStore('accessTemplateContentsStore').load();
         },
         
