@@ -26,6 +26,11 @@ Session = scoped_session(sessionmaker(bind=engine))
 @app.route('/rest/urllists',methods=['GET'])
 def select_urllists():
     return urllists.select_urllists(Session)
+    
+    
+@app.route('/rest/urllists/<int:urllist_id>',methods=['GET'])
+def select_urllist(urllist_id):
+    return urllists.select_urllist(urllist_id,Session)
         
 
 @app.route('/rest/urllists',methods=['POST'])
@@ -33,22 +38,27 @@ def insert_urllist():
     return urllists.insert_urllist(Session)
     
     
+@app.route('/rest/urllists/<int:urllist_id>',methods=['PUT'])
+def update_urllist(urllist_id):
+    return urllists.update_urllist(urllist_id,Session)
+    
+    
 @app.route('/rest/urllists/<int:urllist_id>',methods=['DELETE'])
 def delete_urllist(urllist_id):
     return urllists.delete_urllist(urllist_id,Session)
     
 
-@app.route('/rest/urllists/<int:urllist_id>',methods=['GET'])
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['GET'])
 def select_urlmasks(urllist_id):
     return urlmasks.select_urlmasks(urllist_id,Session)
 
 
-@app.route('/rest/urllists/<int:urllist_id>',methods=['POST'])
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['POST'])
 def insert_urlmask(urllist_id):
     return urlmasks.insert_urlmask(urllist_id,Session)
 
 
-@app.route('/rest/urllists/<int:urllist_id>/<int:urlmask_id>',methods=['DELETE'])
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks/<int:urlmask_id>',methods=['DELETE'])
 def delete_urlmask(urllist_id,urlmask_id):
     return urlmasks.delete_urlmask(urllist_id,urlmask_id,Session)
     
@@ -58,14 +68,39 @@ def select_accesstemplates():
     return accesstemplates.select_accesstemplates(Session)
     
     
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>',methods=['GET'])
+def select_accesstemplate(accesstemplate_id):
+    return accesstemplates.select_accesstemplate(accesstemplate_id,Session)
+    
+    
 @app.route('/rest/accesstemplates',methods=['POST'])
 def insert_accesstemplate():
     return accesstemplates.insert_accesstemplate(Session)
+    
+    
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>',methods=['PUT'])
+def update_accesstemplate(accesstemplate_id):
+    return accesstemplates.update_accesstemplate(accesstemplate_id,Session)
 
 
 @app.route('/rest/accesstemplates/<int:accesstemplate_id>',methods=['DELETE'])
 def delete_accesstemplate(accesstemplate_id):
     return accesstemplates.delete_accesstemplate(accesstemplate_id,Session)
+    
+    
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['GET'])
+def select_accesstemplatecontents(accesstemplate_id):
+    return accesstemplatecontents.select_accesstemplatecontents(accesstemplate_id,Session)
+
+
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['POST'])
+def insert_accesstemplatecontents(accesstemplate_id):
+    return accesstemplatecontents.insert_accesstemplatecontents(accesstemplate_id,Session)
+
+
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks/<int:urlmask_id>',methods=['DELETE'])
+def delete_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id):
+    return accesstemplatecontents.delete_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id,Session)
 
 
 @app.route('/rest/users/<int:user_id>',methods=['GET'])

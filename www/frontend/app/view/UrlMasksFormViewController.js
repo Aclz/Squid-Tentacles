@@ -16,7 +16,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
             return;
             }
 
-        if (this.getViewModel().get('storeIsDirty')) {
+        if (this.getViewModel().get('urlListRecordAndStoreStatus').dirty) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -36,23 +36,23 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         else {
             this.fireEvent('onTreeSelectionChange',{selected:args.selected});
             }
+        },        
+    
+    beforeLoadUrlMaskStore: function(store,operation) {
+        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentUrlList.id);
         },
         
     onUrlStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
-    onUrlListSelect: function(selectedId) {
-        this.getViewModel().data.currentUrlListId = selectedId
+    onUrlListSelect: function(selectedId) {		
+		this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
         this.getStore('urlMaskStore').load();
-        },
-    
-    beforeLoadUrlMaskStore: function(store,operation) {
-        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentUrlListId);
         },
         
     writeUrlMaskStore: function(store,operation) {
-        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentUrlListId);
+        store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentUrlList.id);
         },
         
     onUrlMaskGridSelectionChange: function() {
@@ -81,6 +81,20 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
 
     onSaveUrlMaskClick: function() {
+        var thisController = this;
+        
+        if (this.getViewModel().data.currentUrlList.dirty) {
+            var isNameModified = this.getViewModel().data.currentUrlList.isModified('name');
+            
+            this.getViewModel().data.currentUrlList.save({
+                callback: function() {
+                    if (isNameModified) {
+                        thisController.fireEvent('onUrlListReloadRequest');
+                        }
+                    }
+                })
+            }
+        
         var store = this.getStore('urlMaskStore');
         
         store.sync({
@@ -102,6 +116,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
         
     onRevertUrlMaskClick: function() {
+        this.getViewModel().data.currentUrlList.reject();
         this.getStore('urlMaskStore').rejectChanges();
         }
     })

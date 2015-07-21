@@ -28,7 +28,33 @@ def select_urllists(Session):
 
     response = {
         'success':True,
-        'urlLists':url_lists_array
+        'data':url_lists_array
+        }
+
+    return jsonify(response)
+    
+    
+def select_urllist(urllist_id,Session):
+    session = Session()
+
+    query_result = session.query(UrlList).get(urllist_id)
+
+    session.close()
+
+    if query_result == None:
+        return jsonify({
+            'success':True,
+            'data':[]
+            })
+
+    url_lists_object = {
+        'id':query_result.id,
+        'name':query_result.name
+        }
+
+    response = {
+        'success':True,
+        'data':url_lists_object
         }
 
     return jsonify(response)
@@ -38,7 +64,10 @@ def insert_urllist(Session):
     json_data = request.get_json()
 
     if not json_data or json_data.get('name') == None:
-        return jsonify({'success':False,'message':'Bad JSON request'})
+        return jsonify({
+            'success':False,
+            'message':'Bad JSON request'
+            })
 
     session = Session()
 
@@ -50,7 +79,49 @@ def insert_urllist(Session):
 
         response = {
             'success':True,
-            'urlLists':[{'id':new_url_list.id}]
+            'data':[{'id':new_url_list.id}]
+            }
+    except Exception as e:
+        response = {
+            'success':False
+            }
+
+    session.close()
+
+    return jsonify(response)
+    
+
+def update_urllist(urllist_id,Session):
+    json_data = request.get_json()
+
+    if not json_data:
+        return jsonify({
+            'success':False,
+            'message':'Bad JSON request'
+            })
+
+    session = Session()
+
+    query_result = session.query(UrlList).get(urllist_id)
+
+    if query_result == None:
+        return jsonify(success = False)
+
+    do_commit = False
+
+    allowed_to_update_fields = ['name']
+
+    for field_name in allowed_to_update_fields:
+        if json_data.get(field_name) != None:
+            setattr(query_result,field_name,json_data.get(field_name))
+            do_commit = True
+
+    try:
+        if do_commit:
+            session.commit()
+
+        response = {
+            'success':True
             }
     except Exception as e:
         response = {

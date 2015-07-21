@@ -3,8 +3,14 @@ Ext.define('tentacles.model.UrlListModel', {
 
     fields: [
         {name: 'id',type: 'int'},
-        {name: 'name',type: 'string'}
-        ],
+        {
+        name: 'name',
+        type: 'string',
+        
+        validators: [{ 
+            type: 'presence'
+            }]
+        }],
         
     proxy: {
         type: 'rest',
@@ -18,7 +24,7 @@ Ext.define('tentacles.model.UrlListModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'urlLists'
+            rootProperty: 'data'
             }
         }
     })

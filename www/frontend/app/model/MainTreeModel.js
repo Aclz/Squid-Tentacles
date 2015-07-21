@@ -13,8 +13,8 @@ Ext.define('tentacles.model.MainTreeModel', {
         noCache: false,
 		
 	reader: {
-    	    type: 'json',
-            rootProperty: 'children'
+    	type: 'json',
+        rootProperty: 'children'
 	    }
 	}
     })

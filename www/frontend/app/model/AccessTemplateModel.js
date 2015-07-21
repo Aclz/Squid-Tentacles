@@ -3,7 +3,15 @@ Ext.define('tentacles.model.AccessTemplateModel', {
 
     fields: [
         {name: 'id',type: 'int'},
-        {name: 'name',type: 'string'}
+        {
+        name: 'name',
+        type: 'string',
+        
+        validators: [{ 
+            type: 'presence'
+            }]
+        },
+        {name: 'whitelist',type: 'bool'}
         ],
         
     proxy: {
@@ -18,7 +26,7 @@ Ext.define('tentacles.model.AccessTemplateModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'accessTemplates'
+            rootProperty: 'data'
             }
         }
     })

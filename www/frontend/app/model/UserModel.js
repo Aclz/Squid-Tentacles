@@ -2,17 +2,17 @@ Ext.define('tentacles.model.UserModel', {
     extend: 'tentacles.model.BaseModel',
     		
     fields: [
-	{name: 'id',type: 'int'},		
-	{name: 'cn',type: 'string'},		
-	{name: 'userPrincipalName',type: 'string'},		
-	{name: 'quota',type: 'int'},		
-	{name: 'traffic',type: 'float'},
-	{name: 'status',type: 'int'},
-        {name: 'authMethod',type: 'int'},
-        
+        {name: 'id',type: 'int'},		
+        {name: 'cn',type: 'string'},		
+        {name: 'userPrincipalName',type: 'string'},		
+        {name: 'quota',type: 'int'},		
+        {name: 'traffic',type: 'float'},
+        {name: 'status',type: 'int'},
+        {name: 'authMethod',type: 'int'},      
         {
         name: 'ip',
         type: 'string',
+        
         validators: [
             { 
             type: 'format', 
@@ -20,20 +20,19 @@ Ext.define('tentacles.model.UserModel', {
             message: 'Допустимый диапазон IP-адресов: 0.0.0.0 – 255.255.255.255'
             }]
         },
-        
         {name: 'accessTemplate',type: 'int'}
         ],
 	
     proxy: {
-	type: 'rest',
-	url: '/rest/users',
+        type: 'rest',
+        url: '/rest/users',
 
-	appendId: true,
+        appendId: true,
         noCache: false,
 
         reader: {
             type: 'json',
-            rootProperty: 'user'
+            rootProperty: 'data'
             }
-	}
+        }
     })

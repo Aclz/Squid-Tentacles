@@ -1,11 +1,11 @@
 from flask import request,jsonify
 
-from sql_classes import UrlMask
+from sql_classes import AccessTemplateContents
 
-def select_urlmasks(urllist_id,Session):
+def select_accesstemplatecontents(accesstemplate_id,Session):
     session = Session()
 
-    query_result = session.query(UrlMask).filter_by(urlListId=urllist_id).all()
+    query_result = session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id).all()
 
     session.close()
 
@@ -15,29 +15,29 @@ def select_urlmasks(urllist_id,Session):
             'data':[]
             })
 
-    url_mask_array = []
+    access_template_contents_array = []
 
     #Making an array of them
     for query_result_row in query_result:
-        url_list_mask_object = {
+        access_template_contents_object = {
             'id':query_result_row.id,
-            'name':query_result_row.name
+            'urlListId':query_result_row.urlListId
             }
 
-        url_mask_array.append(url_list_mask_object)
+        access_template_contents_array.append(url_list_mask_object)
 
     response = {
         'success':True,
-        'data':url_mask_array
+        'data':access_template_contents_array
         }
 
     return jsonify(response)
     
     
-def insert_urlmask(urllist_id,Session):
+def insert_accesstemplatecontents(accesstemplate_id,Session):
     json_data = request.get_json()
 
-    if not json_data or json_data.get('name') == None:
+    if not json_data or json_data.get('urlListId') == None:
         return jsonify({
             'success':False,
             'message':'Bad JSON request'
@@ -45,15 +45,15 @@ def insert_urlmask(urllist_id,Session):
 
     session = Session()
 
-    new_url_mask = UrlMask(urlListId=urllist_id,name=json_data.get('name'))
+    new_access_template_content = AccessTemplateContents(accessTemplateId=accesstemplate_id,urlListId=json_data.get('urlListId'))
 
     try:
-        session.add(new_url_mask)
+        session.add(new_access_template_content)
         session.commit()
 
         response = {
             'success':True,
-            'data':[{'id':new_url_mask.id}]
+            'data':[{'id':new_access_template_content.id}]
             }
     except Exception as e:
         response = {
@@ -65,11 +65,13 @@ def insert_urlmask(urllist_id,Session):
     return jsonify(response)
 
 
-def delete_urlmask(urllist_id,urlmask_id,Session):
+def delete_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id,Session):
     session = Session()
 
     try:
-        session.delete(session.query(UrlMask).filter_by(urlListId=urllist_id,id=urlmask_id).first())
+        session.delete(session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id,
+            id=accesstemplatecontent_id).first())
+            
         session.commit()
 
         response = {

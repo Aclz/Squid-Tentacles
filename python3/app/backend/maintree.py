@@ -172,7 +172,7 @@ def select_tree(node_name,Session):
                 'id':'accesstemplate_' + str(query_result_row.id),
                 'text':query_result_row.name,
                 'leaf':True,
-                'objectType':'AccessTemplate'
+                'objectType':'AccessTemplateContents'
                 }
 
             access_templates_array.append(access_template_object)

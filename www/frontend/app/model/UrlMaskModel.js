@@ -3,12 +3,18 @@ Ext.define('tentacles.model.UrlMaskModel', {
 
     fields: [
         {name: 'id',type: 'int'},
-        {name: 'name',type: 'string'}
-        ],
+        {
+        name: 'name',
+        type: 'string',
+        
+        validators: [{ 
+            type: 'presence'
+            }]
+        }],
         
     proxy: {
         type: 'rest',
-        url: '/rest/urllists/{parentId}',
+        url: '/rest/urllists/{parentId}/urlmasks',
 
         appendId: true,
         noCache: false,
@@ -18,7 +24,7 @@ Ext.define('tentacles.model.UrlMaskModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'urlMasks'
+            rootProperty: 'data'
             }
         }
     })

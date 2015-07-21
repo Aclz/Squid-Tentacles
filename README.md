@@ -1,5 +1,5 @@
 # Tentacles
-Squid Tentacles v0.x (alpha)
+Squid Tentacles v0.x (pre-alpha)
 
 User management subsystem for Squid, which consists of:
 

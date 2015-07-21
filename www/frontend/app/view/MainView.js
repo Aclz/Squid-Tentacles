@@ -8,29 +8,30 @@ Ext.define('tentacles.view.MainView', {
 	'tentacles.view.UrlListsFormView',
 	'tentacles.view.UrlMasksFormView',
 	'tentacles.view.AccessTemplatesFormView',
+    'tentacles.view.AccessTemplateContentsFormView',
 	'tentacles.view.SettingsFormView'
 	],
 		
     viewModel: {
-	data: {
-            projectname: 'Squid Tentacles v0.4.4.0'
-	    },
-	
-	stores: {
-	    maintreestore: {
-	        type: 'tree',
-	        model: 'MainTreeModel',
-				
-	        rootVisible: true,
-				
-    	        root: {
-	            text: 'Tentacles',
-		    expanded: true,
+        data: {
+            projectname: 'Squid Tentacles v0.4.6.0 pre-alpha'
+            },
+        
+        stores: {
+            maintreestore: {
+                type: 'tree',
+                model: 'MainTreeModel',
+                    
+                rootVisible: true,
+                    
+                root: {
+                    text: 'Tentacles',
+                    expanded: true,
                     objectType: 'RootContainer'
-		    }
-	        }
-	    }
-	},
+                    }
+                }
+            }
+        },
 		
     controller: 'mainviewcontroller',
 	
@@ -38,38 +39,38 @@ Ext.define('tentacles.view.MainView', {
 
     items: [
         {
-	xtype: 'panel',
-	
-	bind: {
-	    title: '{projectname}'
-	    },
-	    
-	title: 'Tentacles',
-	
-	region: 'north'
-	},		
-	{
-	xtype: 'treepanel',
-	region: 'west',
-	split: true,
-	bind: '{maintreestore}',		
-	reference: 'mainTreeViewRef',
-	width: 360,	
-	useArrows: true,
-	title: 'Navigation tree',
-	header: false,	
-	
-	listeners: {
-	    beforeselect: 'beforeTreeSelect'
-	    }
-	},		
-	{
-	xtype: 'panel',
-	region: 'center',
-	reference: 'detailsPanelRef',
-	autoDestroy: true,
-        layout : 'fit',
-        title: 'Details',
-        header: false
-	}]
+        xtype: 'panel',
+        
+        bind: {
+            title: '{projectname}'
+            },
+            
+        title: 'Tentacles',
+        
+        region: 'north'
+        },		
+        {
+        xtype: 'treepanel',
+        region: 'west',
+        split: true,
+        bind: '{maintreestore}',		
+        reference: 'mainTreeViewRef',
+        width: 360,	
+        useArrows: true,
+        title: 'Navigation tree',
+        header: false,	
+        
+        listeners: {
+            beforeselect: 'beforeTreeSelect'
+            }
+        },		
+        {
+        xtype: 'panel',
+        region: 'center',
+        reference: 'detailsPanelRef',
+        autoDestroy: true,
+            layout : 'fit',
+            title: 'Details',
+            header: false
+        }]
     });

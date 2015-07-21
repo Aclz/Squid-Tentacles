@@ -9,7 +9,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 return get('currentUser.authMethod') != 1;
                 },
             
-            recordStatus: {
+            userRecordStatus: {
                 bind: {
                     bindTo: '{currentUser}',
                     deep: true
@@ -33,58 +33,58 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
     title: 'Свойства',
 
-    items: [		
+    items: [        
         {
         xtype: 'displayfield',
-    	labelWidth: 150,
+        labelWidth: 150,
         fieldLabel: 'ФИО',
-	bind: {value: '{currentUser.cn}'}
-	},		
-	{
+        bind: {value: '{currentUser.cn}'}
+        },        
+        {
         xtype: 'displayfield',
-	labelWidth: 150,
+        labelWidth: 150,
         fieldLabel: 'Логин',
         
-	bind: {
-	    value: '{currentUser.userPrincipalName}'
-	    }
-	},		
-	{
+        bind: {
+            value: '{currentUser.userPrincipalName}'
+            }
+        },        
+        {
         xtype: 'numberfield',
         width: 280,
-	labelWidth: 150,
+        labelWidth: 150,
         fieldLabel: 'Квота, Мб',
-	minValue: 0,
-        maxValue: 1000000000, //~1 Pb seems to be enough
+        minValue: 0,
+        maxValue: 999999999999, //~1 Pb seems to be enough
         
-	bind: {
-	    value: '{currentUser.quota}'
-	    }
-	},	
-	{
+        bind: {
+            value: '{currentUser.quota}'
+            }
+        },    
+        {
         xtype: 'displayfield',
-	labelWidth: 150,
+        labelWidth: 150,
         fieldLabel: 'Расход, Мб',
-	bind: {value: '{currentUser.traffic}'},
+        bind: {value: '{currentUser.traffic}'},
         renderer: Ext.util.Format.numberRenderer('0.00')
-	},	
-	{
+        },    
+        {
         xtype: 'combobox',
         width: 390,
-	labelWidth: 150,
+        labelWidth: 150,
         fieldLabel: 'Состояние',
         editable: false,
         
-	store:[
-	    [0,'Заблокирован'],
-	    [1,'Активен'],
+        store:[
+            [0,'Заблокирован'],
+            [1,'Активен'],
             [2,'Отключен за превышение квоты']
-	    ],
-	    
-	bind: {
-	    value: '{currentUser.status}'
-	    }
-	},
+            ],
+        
+        bind: {
+            value: '{currentUser.status}'
+            }
+        },
         {
         xtype: 'combobox',
         width: 390,
@@ -137,25 +137,27 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{currentUser.accessTemplate}'
             }
         },
-	{
-	xtype: 'button',
+        {
+        xtype: 'button',
         text: 'Сохранить',
+        width: 100,
         handler: 'onSaveUserClick',
         disabled: true,
         
         bind: {
-            disabled: '{!recordStatus.dirtyAndValid}'
+            disabled: '{!userRecordStatus.dirtyAndValid}'
             }
         },
         {
         xtype: 'button',
+        width: 100,
         text: 'Отменить',
         handler: 'onRevertUserClick',
         disabled: true,
         margin: '0 0 0 5',
 
         bind: {
-            disabled: '{!recordStatus.dirty}'
+            disabled: '{!userRecordStatus.dirty}'
             }
         }]
     })

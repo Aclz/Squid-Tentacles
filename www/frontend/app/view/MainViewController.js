@@ -13,7 +13,15 @@ Ext.define('tentacles.view.MainViewController', {
                 onUrlListReloadRequest: 'onUrlListReloadRequest'
                 },
                 
+            'urlmasksformviewcontroller': {
+                onUrlListReloadRequest: 'onUrlListReloadRequest'
+                },
+                
             'accesstemplatesformviewcontroller': {
+                onAccessTemplateReloadRequest: 'onAccessTemplateReloadRequest'
+                },
+                
+            'accesstemplatecontentsformviewcontroller': {
                 onAccessTemplateReloadRequest: 'onAccessTemplateReloadRequest'
                 }
             }
@@ -25,29 +33,29 @@ Ext.define('tentacles.view.MainViewController', {
             }
         
         switch (args.selected.data.objectType) {
-	    case 'User':	
-		if (!this.lookupReference('detailsPanelRef').items.items[0] ||
-		    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'userformview') {
-				
-		    this.lookupReference('detailsPanelRef').removeAll();
-		    this.lookupReference('detailsPanelRef').add(new tentacles.view.UserFormView());
-		    }
-		    
+            case 'User':	
+                if (!this.lookupReference('detailsPanelRef').items.items[0] ||
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'userformview') {
+                        
+                    this.lookupReference('detailsPanelRef').removeAll();
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.UserFormView());
+                    }
+                    
                 this.fireEvent('onUserSelect',args.selected.data.id.replace('user_',''));
 
-		break;	
+                break;	
             case 'UserGroup':
-		if (!this.lookupReference('detailsPanelRef').items.items[0] ||
-		    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'usergroupformview') {
-					
-		    this.lookupReference('detailsPanelRef').removeAll();
-		    this.lookupReference('detailsPanelRef').add(new tentacles.view.UserGroupFormView());
-		    }
-		    
-		//this.fireEvent('onUserGroupSelect');
-				
-		break;
-	    case 'UrlLists':
+                if (!this.lookupReference('detailsPanelRef').items.items[0] ||
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'usergroupformview') {
+                            
+                    this.lookupReference('detailsPanelRef').removeAll();
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.UserGroupFormView());
+                    }
+                    
+                //this.fireEvent('onUserGroupSelect');
+                        
+                break;
+            case 'UrlLists':
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
                     this.lookupReference('detailsPanelRef').items.items[0].xtype != 'urllistsformview') {
                     
@@ -80,6 +88,17 @@ Ext.define('tentacles.view.MainViewController', {
                 this.fireEvent('onAccessTemplatesSelect');
 
                 break;
+            case 'AccessTemplateContents':
+                if (!this.lookupReference('detailsPanelRef').items.items[0] ||
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'accesstemplatecontentsformview') {
+
+                    this.lookupReference('detailsPanelRef').removeAll();
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.AccessTemplateContentsFormView());
+                    }
+
+                this.fireEvent('onAccessTemplateContentsSelect',args.selected.data.id.replace('accesstemplate_',''));
+
+                break;
             case 'Settings':
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
                     this.lookupReference('detailsPanelRef').items.items[0].xtype != 'settingsformview') {
@@ -91,12 +110,12 @@ Ext.define('tentacles.view.MainViewController', {
                 this.fireEvent('onSettingsSelect');
 
                 break;
-	    default:
-	        this.lookupReference('detailsPanelRef').removeAll();
+            default:
+                this.lookupReference('detailsPanelRef').removeAll();
 				
-		break;
-	    }		
-	},
+                break;
+            }		
+        },
 	
     beforeTreeSelect: function(model,selected) {        
         //If there is a child form in the right frame, first signal it about the selection change intention

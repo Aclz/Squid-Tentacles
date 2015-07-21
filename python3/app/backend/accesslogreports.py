@@ -54,7 +54,7 @@ def report_user_traffic_by_hosts(Session):
 
         response = {
             'success':True,
-            'items':result_array
+            'data':result_array
             }
 
         return jsonify(response)
@@ -96,7 +96,7 @@ def report_user_traffic_by_dates(Session):
 
         response = {
             'success':True,
-            'items':result_array
+            'data':result_array
             }
 
         return jsonify(response)
@@ -147,7 +147,7 @@ def report_user_day_traffic(Session):
         response = {
             'success':True,
             'total':row_count,
-            'items':result_array
+            'data':result_array
             }
 
         return jsonify(response)

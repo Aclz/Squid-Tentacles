@@ -22,6 +22,14 @@ class AccessTemplate(Base):
     __tablename__ = 'accessTemplates'
     id = Column(Integer,primary_key=True)
     name = Column(String(100))
+    whitelist = Column(Boolean)
+    
+    
+class AccessTemplateContents(Base):
+    __tablename__ = 'accessTemplatesContents'
+    id = Column(Integer,primary_key=True)
+    accessTemplateId = Column(Integer,ForeignKey('accessTemplates.id'))
+    urlListId = Column(Integer,ForeignKey('urlLists.id'))
 
 
 class UserGroup(Base):

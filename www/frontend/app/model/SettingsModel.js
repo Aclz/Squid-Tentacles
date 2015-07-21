@@ -3,19 +3,19 @@ Ext.define('tentacles.model.SettingsModel', {
     		
     fields: [
         {name: 'id',type: 'int'},
-	{name: 'defaultAccessTemplate',type: 'int'}
-	],
+        {name: 'defaultAccessTemplate',type: 'int'}
+        ],
 	
     proxy: {
-	type: 'rest',
-	url: '/rest/settings',
+        type: 'rest',
+        url: '/rest/settings',
 
-	appendId: false,
-        noCache: false,
+        appendId: false,
+            noCache: false,
 
-        reader: {
-            type: 'json',
-            rootProperty: 'settings'
-            }
-	}
+            reader: {
+                type: 'json',
+                rootProperty: 'data'
+                }
+        }
     })

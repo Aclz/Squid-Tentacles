@@ -12,26 +12,28 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session,sessionmaker
 
 from config import config
+from sql_classes import Settings
 
 def main():
     from get_ldap_users import get_ldap_users
 
-    KeytabFilePath = config['Authentication']['KeytabFilePath']
-    LdapUrl = config['LDAP']['Url']
-    BaseDn = config['LDAP']['BaseDn']
-    LdapQuery = config['LDAP']['Query']
+    keytab_file_path = config['Authentication']['KeytabFilePath']
+    ldap_url = config['LDAP']['Url']
+    base_dn = config['LDAP']['BaseDn']
+    ldap_query = config['LDAP']['Query']
 
-    LdapUsers = get_ldap_users(KeytabFilePath,LdapUrl,BaseDn,LdapQuery)
+    ldap_users = get_ldap_users(keytab_file_path,ldap_url,base_dn,ldap_query)
 
     Temp = declarative_base()
 
     class TempUser(Temp):
         __tablename__ = 'tempUsers'
-        __table_args__ = {'prefixes': ['TEMPORARY']}
+        __table_args__ = {'prefixes':['TEMPORARY']}
         id = Column(Integer,primary_key=True)
-        distinguishedName = Column(String(250),nullable = False)
-        cn = Column(String(250), nullable = False)
-        userPrincipalName = Column(String(250),nullable = False,unique = True)
+        distinguishedName = Column(String(250),nullable=False)
+        cn = Column(String(250),nullable=False)
+        userPrincipalName = Column(String(250),nullable=False,unique=True)
+        accessTemplate = Column(Integer)
 
     engine = create_engine(config['SQLAlchemy']['DBConnectionString'],
         pool_recycle=int(config['SQLAlchemy']['DBConnectionPoolRecycleTimeout']))
@@ -39,11 +41,19 @@ def main():
     Session = scoped_session(sessionmaker(bind=engine))
 
     session = Session()
-
+    
     Temp.metadata.create_all(bind=engine)
+    
+    query_result = session.query(Settings).filter_by(id=1).first()
 
-    for LdapUser in LdapUsers:
-        temp_user = TempUser(distinguishedName=LdapUser[0],cn=LdapUser[1],userPrincipalName=LdapUser[2])
+    if query_result == None:
+        default_access_template = sqlalchemy.sql.null()
+    else:
+        default_access_template = query_result.defaultAccessTemplate
+        
+    for ldap_user in ldap_users:
+        temp_user = TempUser(distinguishedName=ldap_user[0],cn=ldap_user[1],userPrincipalName=ldap_user[2],
+            accessTemplate=default_access_template)
 
         session.add(temp_user)
 
@@ -56,6 +66,7 @@ def main():
     session.commit()
 
     session.close()
+
 
 if __name__ == '__main__':
     main()

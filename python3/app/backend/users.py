@@ -26,7 +26,7 @@ def select_user(user_id,Session):
 
     response = {
         'success':True,
-        'user':user_object
+        'data':user_object
         }
 
     return jsonify(response)
@@ -36,7 +36,10 @@ def update_user(user_id,Session):
     json_data = request.get_json()
 
     if not json_data:
-        return jsonify({'success':False,'message':'Bad JSON request'})
+        return jsonify({
+            'success':False,
+            'message':'Bad JSON request'
+            })
 
     session = Session()
 

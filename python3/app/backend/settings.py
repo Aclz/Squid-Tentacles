@@ -12,7 +12,7 @@ def select_settings(Session):
     if query_result == None:
         return jsonify({
             'success':True,
-            'settings':{'id':1}
+            'data':{'id':1}
             })
 
     settings_object = {
@@ -24,7 +24,7 @@ def select_settings(Session):
 
     response = {
         'success':True,
-        'settings':settings_object
+        'data':settings_object
         }
 
     return jsonify(response)
@@ -33,7 +33,10 @@ def update_settings(Session):
     json_data = request.get_json()
 
     if not json_data:
-        return jsonify({'success':False,'message':'Bad JSON request'})
+        return jsonify({
+            'success':False,
+            'data':'Bad JSON request'
+            })
 
     session = Session()
 
