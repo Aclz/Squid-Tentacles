@@ -95,6 +95,16 @@ Ext.define('tentacles.view.UrlMasksFormView', {
 				value: '{currentUrlList.name}'
 				}
 			},
+            {
+            xtype: 'checkboxfield',
+            fieldLabel: 'Белый список',
+            boxLabel: '(запрещено всё, что явно не разрешено)',
+            labelWidth: 120,
+
+			bind: {
+				value: '{currentUrlList.whitelist}'
+				}
+            },
 			{
             xtype: 'button',
 			width: 100,

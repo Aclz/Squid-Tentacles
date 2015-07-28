@@ -10,9 +10,7 @@ Ext.define('tentacles.model.AccessTemplateModel', {
         validators: [{ 
             type: 'presence'
             }]
-        },
-        {name: 'whitelist',type: 'bool'}
-        ],
+        }],
         
     proxy: {
         type: 'rest',

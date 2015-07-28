@@ -21,10 +21,11 @@ def select_accesstemplatecontents(accesstemplate_id,Session):
     for query_result_row in query_result:
         access_template_contents_object = {
             'id':query_result_row.id,
-            'urlListId':query_result_row.urlListId
+            'urlListId':query_result_row.urlListId,
+            'orderNumber':query_result_row.orderNumber
             }
 
-        access_template_contents_array.append(url_list_mask_object)
+        access_template_contents_array.append(access_template_contents_object)
 
     response = {
         'success':True,
@@ -45,7 +46,10 @@ def insert_accesstemplatecontents(accesstemplate_id,Session):
 
     session = Session()
 
-    new_access_template_content = AccessTemplateContents(accessTemplateId=accesstemplate_id,urlListId=json_data.get('urlListId'))
+    new_access_template_content = AccessTemplateContents(
+        accessTemplateId=accesstemplate_id,
+        urlListId=json_data.get('urlListId'),
+        orderNumber=json_data.get('orderNumber'))
 
     try:
         session.add(new_access_template_content)
@@ -54,6 +58,48 @@ def insert_accesstemplatecontents(accesstemplate_id,Session):
         response = {
             'success':True,
             'data':[{'id':new_access_template_content.id}]
+            }
+    except Exception as e:
+        response = {
+            'success':False
+            }
+
+    session.close()
+
+    return jsonify(response)
+    
+    
+def update_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id,Session):
+    json_data = request.get_json()
+
+    if not json_data:
+        return jsonify({
+            'success':False,
+            'message':'Bad JSON request'
+            })
+
+    session = Session()
+
+    query_result = session.query(AccessTemplateContents).get(accesstemplatecontent_id)
+
+    if query_result == None:
+        return jsonify(success = False)
+
+    do_commit = False
+
+    allowed_to_update_fields = ['orderNumber']
+
+    for field_name in allowed_to_update_fields:
+        if json_data.get(field_name) != None:
+            setattr(query_result,field_name,json_data.get(field_name))
+            do_commit = True
+
+    try:
+        if do_commit:
+            session.commit()
+
+        response = {
+            'success':True
             }
     except Exception as e:
         response = {

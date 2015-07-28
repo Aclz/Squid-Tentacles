@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session,sessionmaker
 
 from config import config
 
-import maintree,urllists,urlmasks,accesstemplates,users,accesslogreports,settings
+import maintree,urllists,urlmasks,accesstemplates,accesstemplatecontents,users,accesslogreports,settings
 
 
 app = Flask(__name__)
@@ -88,17 +88,22 @@ def delete_accesstemplate(accesstemplate_id):
     return accesstemplates.delete_accesstemplate(accesstemplate_id,Session)
     
     
-@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['GET'])
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents',methods=['GET'])
 def select_accesstemplatecontents(accesstemplate_id):
     return accesstemplatecontents.select_accesstemplatecontents(accesstemplate_id,Session)
 
 
-@app.route('/rest/urllists/<int:urllist_id>/urlmasks',methods=['POST'])
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents',methods=['POST'])
 def insert_accesstemplatecontents(accesstemplate_id):
     return accesstemplatecontents.insert_accesstemplatecontents(accesstemplate_id,Session)
+    
+    
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents/<int:accesstemplatecontent_id>',methods=['PUT'])
+def update_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id):
+    return accesstemplatecontents.update_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id,Session)
 
 
-@app.route('/rest/urllists/<int:urllist_id>/urlmasks/<int:urlmask_id>',methods=['DELETE'])
+@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents/<int:accesstemplatecontent_id>',methods=['DELETE'])
 def delete_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id):
     return accesstemplatecontents.delete_accesstemplatecontents(accesstemplate_id,accesstemplatecontent_id,Session)
 

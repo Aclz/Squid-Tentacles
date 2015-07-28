@@ -12,7 +12,7 @@ def select_urllists(Session):
     if query_result == None:
         return jsonify({
             'success':True,
-            'urlLists':[]
+            'data':[]
             })
 
     url_lists_array = []
@@ -21,7 +21,8 @@ def select_urllists(Session):
     for query_result_row in query_result:
         url_list_object = {
             'id':query_result_row.id,
-            'name':query_result_row.name
+            'name':query_result_row.name,
+	    'whitelist':True if query_result_row.whitelist == 1 else False
             }
 
         url_lists_array.append(url_list_object)
@@ -49,7 +50,8 @@ def select_urllist(urllist_id,Session):
 
     url_lists_object = {
         'id':query_result.id,
-        'name':query_result.name
+        'name':query_result.name,
+        'whitelist':True if query_result.whitelist == 1 else False
         }
 
     response = {
@@ -71,7 +73,7 @@ def insert_urllist(Session):
 
     session = Session()
 
-    new_url_list = UrlList(name=json_data.get('name'))
+    new_url_list = UrlList(name=json_data.get('name'),whitelist=0)
 
     try:
         session.add(new_url_list)
@@ -109,7 +111,7 @@ def update_urllist(urllist_id,Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['name']
+    allowed_to_update_fields = ['name','whitelist']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

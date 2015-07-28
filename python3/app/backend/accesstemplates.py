@@ -21,13 +21,10 @@ def select_accesstemplates(Session):
     for query_result_row in query_result:
         access_template_object = {
             'id':query_result_row.id,
-            'name':query_result_row.name,
-            'whitelist':True if query_result_row.whitelist == 1  else False
+            'name':query_result_row.name
             }
 
         access_templates_array.append(access_template_object)
-        
-        print(query_result_row.whitelist)
 
     response = {
         'success':True,
@@ -52,8 +49,7 @@ def select_accesstemplate(accesstemplate_id,Session):
 
     access_template_object = {
         'id':query_result.id,
-        'name':query_result.name,
-        'whitelist':True if query_result.whitelist == 1  else False
+        'name':query_result.name
         }
 
     response = {
@@ -113,7 +109,7 @@ def update_accesstemplate(accesstemplate_id,Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['name','whitelist']
+    allowed_to_update_fields = ['name']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

@@ -10,7 +10,9 @@ Ext.define('tentacles.model.UrlListModel', {
         validators: [{ 
             type: 'presence'
             }]
-        }],
+        },
+        {name: 'whitelist',type: 'bool'}
+		],
         
     proxy: {
         type: 'rest',

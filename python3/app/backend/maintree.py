@@ -62,10 +62,8 @@ def select_tree(node_name,Session):
     #Sorts a subtree node by a sortField key of each element
     def sort_tree(subtree,sort_field):
         #Sort eval function, first by group property, then by text
-        def sort_by_field_helper(obj):
-            return (1 if obj.get('children') == None else 0,obj[sort_field])
-
-        subtree['children'] = sorted(subtree['children'],key=sort_by_field_helper)
+        subtree['children'] = sorted(subtree['children'],
+            key=lambda obj:(1 if obj.get('children') == None else 0,obj[sort_field]))
 
         for tree_elem in subtree['children']:
             if tree_elem.get('children') != None:
@@ -152,6 +150,9 @@ def select_tree(node_name,Session):
             'text':'Списки URL',
             'children':url_list_array
             }
+            
+        #Sorting tree elements
+        sort_tree(url_lists,'text')
 
         return url_lists
         
@@ -183,6 +184,9 @@ def select_tree(node_name,Session):
             'text':'Шаблоны доступа',
             'children':access_templates_array
             }
+            
+        #Sorting tree elements
+        sort_tree(access_templates,'text')
 
         return access_templates
         

@@ -109,15 +109,6 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             text: 'Шаблон доступа',
             dataIndex: 'name',
             width: 200
-            },
-            {
-            xtype: 'booleancolumn',
-            text: 'Белый список',
-            dataIndex: 'whitelist',
-            width: 120,
-            trueText: '✓',
-            falseText: '',
-            align: 'center'
             }]
         }]
     })

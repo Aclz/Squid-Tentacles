@@ -10,7 +10,10 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
     viewModel: {
         data: {
             storeIsDirty: false,
-            gridSelectionEmpty: true
+            fromGridSelectionEmpty: true,
+			toGridSelectionEmpty: true,
+            canMoveUp: false,
+            canMoveDown: false
             },
             
         links: {
@@ -21,12 +24,21 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             },
 
         stores: {
-            accessTemplateContentsStore: {
+            urlListStore: {
                 model: 'UrlListModel',
-
                 pageSize: 1000,
-
+                autoLoad: true,
+				
+				listeners: {
+					load: 'onUrlListStoreLoad'
+					}
+                },
+			
+            accessTemplateContentsStore: {
+                model: 'AccessTemplateContentsModel',
+                pageSize: 1000,
                 autoLoad: false,
+                sorters: 'orderNumber',
 
                 listeners: {
                     write: 'writeAccessTemplateContentsStore',
@@ -75,58 +87,29 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
     
     layout: {
         type: 'vbox',
-        align: 'stretch',
+        align: 'left',
         pack: 'start'
         },
         
-     items: [
+    items: [
+        {
+        xtype: 'textfield',
+        fieldLabel: 'Шаблон доступа',
+        labelWidth: 120,
+
+        bind: {
+            value: '{currentAccessTemplate.name}'
+            }
+		},
 		{
 		xtype: 'container',
 		layout: 'auto',
-		margin: '0 5 5 0',
+		margin: '0 5 10 0',
 
-        items: [{
-			xtype: 'textfield',
-			fieldLabel: 'Шаблон доступа',
-			width: 415,
-            labelWidth: 120,
-
-			bind: {
-				value: '{currentAccessTemplate.name}'
-				}
-			},
-            {
-            xtype: 'checkboxfield',
-            fieldLabel: 'Белый список',
-            boxLabel: '(запрещено всё, что явно не разрешено)',
-            labelWidth: 120,
-
-			bind: {
-				value: '{currentAccessTemplate.whitelist}'
-				}
-            },
-            {
-            xtype: 'button',
-			width: 100,
-            text: 'Добавить',
-            handler: 'onAddAccessTemplateContentClick'
-            },
-            {
-            xtype: 'button',
-			width: 100,
-			margin: '0 0 0 5',
-            text: 'Удалить',
-            handler: 'onRemoveAccessTemplateContentClick',
-            disabled: true,
-
-            bind: {
-                disabled: '{gridSelectionEmpty}'
-                }
-            },
+        items: [
 			{
 			xtype: 'button',
 			width: 100,
-			margin: '0 0 0 5',
 			text: 'Сохранить',
 			handler: 'onSaveAccessTemplateContentsClick',
 			disabled: true,
@@ -147,5 +130,132 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
 				disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
 				}
 			}]
-        }]
+        },
+		{
+		xtype: 'container',
+		layout: 'hbox',
+		width: 750,		
+		
+		items: [
+			{
+			xtype: 'grid',
+			reference: 'fromGridRef',
+			title: 'Доступные поля',
+			flex: 0.5,
+			
+			bind: {
+				store: '{urlListStore}'
+				},
+				
+			listeners: {
+				selectionChange: 'onFromGridSelectionChange'
+				},
+			
+			columns: [
+				{
+				dataIndex: 'id',
+				hidden: true,
+				hideable: false
+				},
+				{
+				text: 'Список URL',
+				dataIndex: 'name',
+				flex: 1
+				},
+				{
+				xtype: 'booleancolumn',
+				text: 'Белый список',
+				dataIndex: 'whitelist',
+				width: 120,
+				trueText: '✓',
+				falseText: '',
+				align: 'center'
+				}]
+			},
+			{
+			xtype: 'container',
+			
+			margin: '80 10 0 10',
+			
+			layout: {
+				type: 'vbox',
+				align: 'stretch',
+				pack: 'start'
+				},
+			
+			items: [
+				{
+				xtype: 'button',
+				text: 'Вверх',
+                handler: 'onUpClick',
+				
+				bind: {
+					disabled: '{!canMoveUp}'
+					}
+				},
+				{
+				xtype: 'button',
+				margin: '5 0 0 0',
+				text: '>',
+                handler: 'onAddClick',
+				
+				bind: {
+					disabled: '{fromGridSelectionEmpty}'
+					}
+				},
+				{
+				xtype: 'button',
+				margin: '5 0 0 0',
+				text: '<',
+                handler: 'onRemoveClick',
+				
+				bind: {
+					disabled: '{toGridSelectionEmpty}'
+					}
+				},
+				{
+				xtype: 'button',
+				margin: '5 0 0 0',
+				text: 'Вниз',
+                handler: 'onDownClick',
+				
+				bind: {
+					disabled: '{!canMoveDown}'
+					}
+				}]
+			},
+			{
+			xtype: 'grid',
+			reference: 'toGridRef',
+			title: 'Выбранные поля',
+			flex: 0.5,
+            sortableColumns: false,
+			
+			bind: {
+				store: '{accessTemplateContentsStore}'
+				},
+				
+			listeners: {
+				selectionChange: 'onToGridSelectionChange'
+				},
+									
+			columns: [
+				{
+				dataIndex: 'id',
+				hidden: true,
+				hideable: false
+				},
+				{
+				text: 'Список URL',
+				flex: 1,				
+				renderer: 'renderUrlListName'
+				},
+				{
+				text: 'Белый список',
+				width: 120,
+				align: 'center',				
+				renderer: 'renderUrlListWhitelist'
+				}]
+			}]
+		}]
     })
