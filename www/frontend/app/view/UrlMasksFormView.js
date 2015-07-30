@@ -30,7 +30,8 @@ Ext.define('tentacles.view.UrlMasksFormView', {
 
                 listeners: { 
                     write: 'writeUrlMaskStore',                   
-                    datachanged: 'onUrlStoreDataChanged'
+                    datachanged: 'onUrlMaskStoreDataChanged',
+                    load: 'onUrlMaskStoreLoad'
                     }
                 }
             },

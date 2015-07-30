@@ -140,7 +140,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
 			{
 			xtype: 'grid',
 			reference: 'fromGridRef',
-			title: 'Доступные поля',
+			title: 'Доступные списки URL',
 			flex: 0.5,
 			
 			bind: {
@@ -175,7 +175,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
 			{
 			xtype: 'container',
 			
-			margin: '80 10 0 10',
+			margin: '0 10 0 10',
 			
 			layout: {
 				type: 'vbox',
@@ -227,7 +227,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
 			{
 			xtype: 'grid',
 			reference: 'toGridRef',
-			title: 'Выбранные поля',
+			title: 'Выбранные списки URL',
 			flex: 0.5,
             sortableColumns: false,
 			

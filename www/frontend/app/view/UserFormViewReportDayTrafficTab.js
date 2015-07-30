@@ -20,7 +20,7 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
 
                     reader: {
                         type: 'json',
-                        rootProperty: 'items',
+                        rootProperty: 'data',
                         idProperty: 'position'
                         }
                     },

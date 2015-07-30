@@ -38,13 +38,17 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
             }
         },
         
-    onUrlStoreDataChanged: function(store) {
+    onUrlMaskStoreLoad: function(store) {
+        store.sort('name','ASC');
+        },
+        
+    onUrlMaskStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
     onUrlListSelect: function(selectedId) {		
-	this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
-	this.getStore('urlMaskStore').getProxy().setExtraParam('parentId',selectedId);
+        this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
+        this.getStore('urlMaskStore').getProxy().setExtraParam('parentId',selectedId);
         this.getStore('urlMaskStore').load();
         },
         

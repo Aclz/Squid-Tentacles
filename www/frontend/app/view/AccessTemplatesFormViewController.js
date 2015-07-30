@@ -39,6 +39,10 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
             }
         },
         
+    onAccessTemplateStoreLoad: function(store) {
+        store.sort('name','ASC');
+        },
+        
     onAccessTemplateStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },

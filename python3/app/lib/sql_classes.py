@@ -8,57 +8,58 @@ Base = declarative_base()
 class UrlList(Base):
     __tablename__ = 'urlLists'
     id = Column(Integer,primary_key=True)
-    name = Column(String(100))
+    name = Column(String(100),nullable=False,unique=True)
+    whitelist = Column(Boolean,nullable=False)
     
 
 class UrlMask(Base):
     __tablename__ = 'urlMasks'
     id = Column(Integer,primary_key=True)
-    urlListId = Column(Integer,ForeignKey('urlLists.id'))
-    name = Column(String(250))
+    urlListId = Column(Integer,ForeignKey('urlLists.id'),nullable=False)
+    name = Column(String(250),nullable=False)
     
     
 class AccessTemplate(Base):
     __tablename__ = 'accessTemplates'
     id = Column(Integer,primary_key=True)
-    name = Column(String(100))
-    whitelist = Column(Boolean)
+    name = Column(String(100),nullable=False,unique=True)
     
     
 class AccessTemplateContents(Base):
     __tablename__ = 'accessTemplatesContents'
     id = Column(Integer,primary_key=True)
-    accessTemplateId = Column(Integer,ForeignKey('accessTemplates.id'))
-    urlListId = Column(Integer,ForeignKey('urlLists.id'))
+    accessTemplateId = Column(Integer,ForeignKey('accessTemplates.id'),nullable=False)
+    urlListId = Column(Integer,ForeignKey('urlLists.id'),nullable=False)
+    orderNumber = Column(SmallInteger,nullable=False)
 
 
 class UserGroup(Base):
     __tablename__ = 'userGroups'
     id = Column(Integer,primary_key=True)
-    distinguishedName = Column(String(250))
+    distinguishedName = Column(String(250),nullable=False,unique=True)
 
 
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer,primary_key=True)
-    groupId = Column(Integer,ForeignKey('userGroups.id'))
-    hidden = Column(Boolean)
-    userPrincipalName = Column(String(250))
-    cn = Column(String(250))
-    status = Column(SmallInteger)
-    quota = Column(Integer)
-    authMethod = Column(SmallInteger)
-    ip = Column(String(15))
-    traffic = Column(BigInteger)
+    groupId = Column(Integer,ForeignKey('userGroups.id'),nullable=False)
+    hidden = Column(Boolean,nullable=False,default=False)
+    userPrincipalName = Column(String(250),nullable=False,unique=True)
+    cn = Column(String(250),nullable=False)
+    status = Column(SmallInteger,nullable=False,default=0)
+    quota = Column(Integer,nullable=False,default=0)
+    authMethod = Column(SmallInteger,nullable=False,default=0)
+    ip = Column(String(15),nullable=False,default='0.0.0.0')
+    traffic = Column(BigInteger,nullable=False,default=0)
     accessTemplate = Column(Integer,ForeignKey('accessTemplates.id'))
 
 
 class AccessLogArchive(Base):
     __tablename__ = 'accessLogArchive'
     id = Column(Integer,primary_key=True)
-    date = Column(Date)
-    userId = Column(Integer,ForeignKey('users.id'))
-    groupId = Column(Integer,ForeignKey('userGroups.id'))
+    date = Column(Date,nullable=False)
+    userId = Column(Integer,ForeignKey('users.id'),nullable=False)
+    groupId = Column(Integer,ForeignKey('userGroups.id'),nullable=False)
     host = Column(String(250))
     traffic = Column(Numeric(15,2))
 

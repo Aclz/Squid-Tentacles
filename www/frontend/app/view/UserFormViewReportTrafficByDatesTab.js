@@ -22,7 +22,7 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
 
                     reader: {
                         type: 'json',
-                        rootProperty: 'items',
+                        rootProperty: 'data',
                         idProperty: 'position'
                         }
                     },
@@ -83,7 +83,9 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
             enableTextSelection: true
             },
 
-        bind: {store: '{userReportTrafficByDatesGridStore}'},
+        bind: {
+            store: '{userReportTrafficByDatesGridStore}'
+            },
             
         columns: [
             {

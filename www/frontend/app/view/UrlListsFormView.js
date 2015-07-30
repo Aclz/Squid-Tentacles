@@ -22,7 +22,8 @@ Ext.define('tentacles.view.UrlListsFormView', {
 
                 autoLoad: false,
 
-                listeners: {                   
+                listeners: {
+                    load: 'onUrlListStoreLoad',
                     datachanged: 'onUrlListStoreDataChanged'
                     }
                 }

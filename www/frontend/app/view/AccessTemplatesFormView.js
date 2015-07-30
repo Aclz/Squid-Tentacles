@@ -23,7 +23,8 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
                 autoLoad: false,
 
                 listeners: {                    
-                    datachanged: 'onAccessTemplateStoreDataChanged'
+                    datachanged: 'onAccessTemplateStoreDataChanged',
+                    load: 'onAccessTemplateStoreLoad'
                     }
                 }
             }
