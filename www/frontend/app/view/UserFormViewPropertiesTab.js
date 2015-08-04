@@ -134,7 +134,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         autoLoadOnValue: true,
 
         bind: {
-            value: '{currentUser.accessTemplate}'
+            value: '{currentUser.accessTemplateId}'
             }
         },
         {

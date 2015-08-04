@@ -51,7 +51,7 @@ class User(Base):
     authMethod = Column(SmallInteger,nullable=False,default=0)
     ip = Column(String(15),nullable=False,default='0.0.0.0')
     traffic = Column(BigInteger,nullable=False,default=0)
-    accessTemplate = Column(Integer,ForeignKey('accessTemplates.id'))
+    accessTemplateId = Column(Integer,ForeignKey('accessTemplates.id'))
 
 
 class AccessLogArchive(Base):
@@ -77,5 +77,5 @@ class AccessLog(Base):
 class Settings(Base):
     __tablename__ = 'settings'
     id = Column(Integer,primary_key=True)
-    defaultAccessTemplate = Column(Integer,ForeignKey('accessTemplates.id'))
+    defaultAccessTemplateId = Column(Integer,ForeignKey('accessTemplates.id'))
     

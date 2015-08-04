@@ -19,7 +19,7 @@ def select_user(user_id,Session):
         'authMethod':query_result.authMethod,
         'ip':query_result.ip,
         'traffic':round(query_result.traffic/1024/1024,2),
-        'accessTemplate':query_result.accessTemplate
+        'accessTemplateId':query_result.accessTemplateId
         }
 
     session.close()
@@ -50,7 +50,7 @@ def update_user(user_id,Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['status','quota','authMethod','ip','traffic','accessTemplate']
+    allowed_to_update_fields = ['status','quota','authMethod','ip','traffic','accessTemplateId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

@@ -33,7 +33,7 @@ Ext.define('tentacles.view.MainViewController', {
             }
         
         switch (args.selected.data.objectType) {
-            case 'User':	
+            case 'User':    
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
                     this.lookupReference('detailsPanelRef').items.items[0].xtype != 'userformview') {
                         
@@ -43,7 +43,7 @@ Ext.define('tentacles.view.MainViewController', {
                     
                 this.fireEvent('onUserSelect',args.selected.data.id.replace('user_',''));
 
-                break;	
+                break;    
             case 'UserGroup':
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
                     this.lookupReference('detailsPanelRef').items.items[0].xtype != 'usergroupformview') {
@@ -52,7 +52,7 @@ Ext.define('tentacles.view.MainViewController', {
                     this.lookupReference('detailsPanelRef').add(new tentacles.view.UserGroupFormView());
                     }
                     
-                //this.fireEvent('onUserGroupSelect');
+                this.fireEvent('onUserGroupSelect',args.selected.data.id.replace('usergroup_',''));
                         
                 break;
             case 'UrlLists':
@@ -112,11 +112,11 @@ Ext.define('tentacles.view.MainViewController', {
                 break;
             default:
                 this.lookupReference('detailsPanelRef').removeAll();
-				
+                
                 break;
-            }		
+            }        
         },
-	
+    
     beforeTreeSelect: function(model,selected) {        
         //If there is a child form in the right frame, first signal it about the selection change intention
         //and exit (do not change selection for now)
@@ -127,7 +127,7 @@ Ext.define('tentacles.view.MainViewController', {
             this.onTreeSelectionChange({selected: selected});
             }
         },
-	
+    
     onUrlListReloadRequest: function () {
         var urlListsRootNode = this.getStore('maintreestore').getRootNode().findChildBy(
             function(child) {

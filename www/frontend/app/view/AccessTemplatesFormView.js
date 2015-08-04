@@ -6,7 +6,7 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
     requires: [
         'tentacles.view.AccessTemplatesFormViewController'
         ],
-	
+    
     bodyPadding: 10,
 
     viewModel: {
@@ -18,7 +18,7 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             accessTemplateStore: {
                 model: 'AccessTemplateModel',
 
-                pageSize: 1000,
+                pageSize: 0,
 
                 autoLoad: false,
 

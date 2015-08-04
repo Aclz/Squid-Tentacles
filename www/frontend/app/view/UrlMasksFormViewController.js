@@ -46,7 +46,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
-    onUrlListSelect: function(selectedId) {		
+    onUrlListSelect: function(selectedId) {        
         this.getViewModel().linkTo('currentUrlList',{reference: 'UrlListModel',id: selectedId});
         this.getStore('urlMaskStore').getProxy().setExtraParam('parentId',selectedId);
         this.getStore('urlMaskStore').load();

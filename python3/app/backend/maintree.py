@@ -21,10 +21,10 @@ def select_tree(node_name,Session):
         return (node_preceding,node_base[node_base.find(base_separator) + 1:])
 
     #Places a 'user' object on a 'usertree' object according to user's pathField string key
-    def place_user_onto_tree(user,usertree,path_field):
+    def place_user_onto_tree(user,usertree,user_group_id):
         curr_node = usertree
 
-        preceding,base=node_base_and_rest(user[path_field])
+        preceding,base = node_base_and_rest(user['distinguishedName'])
 
         while base != '':
             node_found = False
@@ -42,7 +42,7 @@ def select_tree(node_name,Session):
             #Creating a new group node
             if node_found == False:
                 curr_node.append({
-                    'id':'usergroup_' + user[path_field][len(preceding) + (0 if len(preceding) == 0 else 1):],
+                    'id':'usergroup_' + str(user_group_id),
                     'text':base,
                     'objectType':'UserGroup',
                     'children':[]
@@ -85,31 +85,26 @@ def select_tree(node_name,Session):
         session = Session()
 
         #Get all users from DB
-        query_result = session.query(User.id,User.cn,UserGroup.distinguishedName).join(UserGroup).filter(User.hidden==0).all()
+        query_result = session.query(User.id.label('user_id'),User.cn,UserGroup.id.label('usergroup_id'),\
+            UserGroup.distinguishedName).join(UserGroup).filter(User.hidden==0).all()
 
         session.close()
 
-        user_array = []
-
-        #Making an array of them
+        user_tree = []
+        
+        #Place each on the tree
         for query_result_row in query_result:
             user_object = {
-                'id':query_result_row.id,
+                'id':query_result_row.user_id,
                 'distinguishedName':query_result_row.distinguishedName,
                 'cn':query_result_row.cn
                 }
-
-            user_array.append(user_object)
-
-        user_tree = []
-
-        #Building a hierarchial tree based on the path given in distinguishedName
-        for user in user_array:
-            place_user_onto_tree(user,user_tree,'distinguishedName')
+                
+            place_user_onto_tree(user_object,user_tree,query_result_row.usergroup_id)
 
         user_tree = {
-            'id':'usertree',
-            'objectType':'UserTree',
+            'id':'usergroup_0',
+            'objectType':'UserGroup',
             'text':'Пользователи',
             'children':user_tree
             }

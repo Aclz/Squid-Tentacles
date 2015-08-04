@@ -33,7 +33,7 @@ def main():
         distinguishedName = Column(String(250),nullable=False)
         cn = Column(String(250),nullable=False)
         userPrincipalName = Column(String(250),nullable=False,unique=True)
-        accessTemplate = Column(Integer)
+        accessTemplateId = Column(Integer)
 
     engine = create_engine(config['SQLAlchemy']['DBConnectionString'],
         pool_recycle=int(config['SQLAlchemy']['DBConnectionPoolRecycleTimeout']))
@@ -47,13 +47,13 @@ def main():
     query_result = session.query(Settings).filter_by(id=1).first()
 
     if query_result == None:
-        default_access_template = sqlalchemy.sql.null()
+        default_access_template_id = sqlalchemy.sql.null()
     else:
-        default_access_template = query_result.defaultAccessTemplate
+        default_access_template_id = query_result.defaultAccessTemplateId
         
     for ldap_user in ldap_users:
         temp_user = TempUser(distinguishedName=ldap_user[0],cn=ldap_user[1],userPrincipalName=ldap_user[2],
-            accessTemplate=default_access_template)
+            accessTemplateId=default_access_template_id)
 
         session.add(temp_user)
 

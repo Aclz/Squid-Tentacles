@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session,sessionmaker
 
 from config import config
 
-import maintree,urllists,urlmasks,accesstemplates,accesstemplatecontents,users,accesslogreports,settings
+import maintree,urllists,urlmasks,accesstemplates,accesstemplatecontents,users,usergroups,accesslogreports,settings
 
 
 app = Flask(__name__)
@@ -116,7 +116,7 @@ def select_user(user_id):
 @app.route('/rest/users/<int:user_id>',methods=['PUT'])
 def update_user(user_id):
     return users.update_user(user_id,Session)
-
+    
 
 @app.route('/rest/tree/<node_name>',methods=['GET'])
 def select_tree(node_name):
@@ -136,6 +136,11 @@ def report_user_traffic_by_dates():
 @app.route('/rest/reports/user-day-traffic',methods=['GET'])
 def report_user_day_traffic():
     return accesslogreports.report_user_day_traffic(Session)
+    
+    
+@app.route('/rest/reports/group-users',methods=['GET'])
+def report_select_group_users():
+    return usergroups.report_select_group_users(Session)
     
 
 @app.route('/rest/settings',methods=['GET'])

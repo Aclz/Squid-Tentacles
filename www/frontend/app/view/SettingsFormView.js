@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.SettingsFormView', {
     extend: 'Ext.form.Panel',
-	
+    
     alias: 'widget.settingsformview',
     
     requires: [
@@ -37,9 +37,9 @@ Ext.define('tentacles.view.SettingsFormView', {
         },
     
     controller: 'settingsformviewcontroller',
-	
+    
     bodyPadding: 10,
-	
+    
     items: [{
         xtype: 'combobox',
         width: 390,
@@ -57,7 +57,7 @@ Ext.define('tentacles.view.SettingsFormView', {
         autoLoadOnValue: true,
 
         bind: {
-            value: '{settings.defaultAccessTemplate}'
+            value: '{settings.defaultAccessTemplateId}'
             }
         },
         {

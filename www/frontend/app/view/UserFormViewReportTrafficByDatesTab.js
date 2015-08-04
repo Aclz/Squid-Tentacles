@@ -105,7 +105,7 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
             text: 'Трафик, Мб',
             dataIndex: 'traffic',
             align: 'right',
-            format: '0.00',
+            format: '0.0000',
             width: 120
             }]
         }]

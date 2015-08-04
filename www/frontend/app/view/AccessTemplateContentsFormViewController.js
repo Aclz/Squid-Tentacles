@@ -43,29 +43,29 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         
         var storeToIdArray = this.getStore('accessTemplateContentsStore').getData().getValues('urlListId','data');
-		
+        
         this.getStore('urlListStore').clearFilter();
         
-		if (storeToIdArray.length != 0) {
-			this.getStore('urlListStore').filterBy(function(record) {
+        if (storeToIdArray.length != 0) {
+            this.getStore('urlListStore').filterBy(function(record) {
                 return storeToIdArray.indexOf(record.get('id')) == -1;
                 });
-			}
+            }
         },
         
     onAccessTemplateContentsSelect: function(selectedId) {
-		this.getViewModel().linkTo('currentAccessTemplate',{reference: 'AccessTemplateModel',id: selectedId});
-		
-		if (this.getStore('urlListStore').isLoaded()) {
-			this.loadAccessTemplateContentsStoreAndSyncPanels(selectedId);
-			}
+        this.getViewModel().linkTo('currentAccessTemplate',{reference: 'AccessTemplateModel',id: selectedId});
+        
+        if (this.getStore('urlListStore').isLoaded()) {
+            this.loadAccessTemplateContentsStoreAndSyncPanels(selectedId);
+            }
         },
-		
-	onFromGridSelectionChange: function(model,selected) {
+        
+    onFromGridSelectionChange: function(model,selected) {
         this.getViewModel().set('fromGridSelectionEmpty',selected.length == 0);
         },
-		
-	onToGridSelectionChange: function(model,selected) {
+        
+    onToGridSelectionChange: function(model,selected) {
         this.getViewModel().set('toGridSelectionEmpty',selected.length == 0);
         
         this.getViewModel().set('canMoveUp',selected.length != 0 &&
@@ -78,19 +78,28 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
     writeAccessTemplateContentsStore: function(store,operation) {
         store.getProxy().setExtraParam('parentId',this.getViewModel().data.currentAccessTemplate.id);
         },
-		
-	loadAccessTemplateContentsStoreAndSyncPanels: function(selectedId) {
-		this.lookupReference('fromGridRef').setSelection();
-		this.lookupReference('toGridRef').setSelection();
-		
-		this.getStore('accessTemplateContentsStore').getProxy().setExtraParam('parentId',selectedId);
-        this.getStore('accessTemplateContentsStore').load();
-		},
-		
-	onUrlListStoreLoad: function(store) {
-		this.loadAccessTemplateContentsStoreAndSyncPanels(this.getViewModel().data.currentAccessTemplate.id);        
+        
+    loadAccessTemplateContentsStoreAndSyncPanels: function(selectedId) {
+        var fromGridRef = this.lookupReference('fromGridRef');
+        var toGridRef = this.lookupReference('toGridRef');
+        
+        fromGridRef.setSelection();
+        toGridRef.setSelection();
+        
+        this.getStore('accessTemplateContentsStore').getProxy().setExtraParam('parentId',selectedId);
+        this.getStore('accessTemplateContentsStore').load({
+            callback: function() {
+                fromGridRef.setBind({
+                    store: '{urlListStore}'
+                    });
+                }
+            });
+        },
+        
+    onUrlListStoreLoad: function(store) {
+        this.loadAccessTemplateContentsStoreAndSyncPanels(this.getViewModel().data.currentAccessTemplate.id);        
         store.sort('name','ASC');
-		},
+        },
 
     onSaveAccessTemplateContentsClick: function() {
         var thisController = this;
@@ -214,20 +223,20 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
         
         this.getStore('accessTemplateContentsStore').remove(selection);
         },
-		
-	renderUrlListName: function(value,metaData,record) {
-		var recordFound = this.getStore('urlListStore').getById(record.get('urlListId'));
+        
+    renderUrlListName: function(value,metaData,record) {
+        var recordFound = this.getStore('urlListStore').getById(record.get('urlListId'));
         
         if (recordFound) {
             return recordFound.get('name');
             }
-		},
-		
-	renderUrlListWhitelist: function(value,metaData,record) {
+        },
+        
+    renderUrlListWhitelist: function(value,metaData,record) {
         var recordFound = this.getStore('urlListStore').getById(record.get('urlListId'));
         
         if (recordFound) {
             return recordFound.get('whitelist') ? '✓' : '';
             }
-		}
+        }
     })

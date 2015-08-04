@@ -2,19 +2,19 @@ Ext.define('tentacles.view.MainView', {
     extend: 'Ext.panel.Panel',
 
     requires: [
-	'tentacles.view.MainViewController',
-	'tentacles.view.UserFormView',
-	'tentacles.view.UserGroupFormView',
-	'tentacles.view.UrlListsFormView',
-	'tentacles.view.UrlMasksFormView',
-	'tentacles.view.AccessTemplatesFormView',
+    'tentacles.view.MainViewController',
+    'tentacles.view.UserFormView',
+    'tentacles.view.UserGroupFormView',
+    'tentacles.view.UrlListsFormView',
+    'tentacles.view.UrlMasksFormView',
+    'tentacles.view.AccessTemplatesFormView',
     'tentacles.view.AccessTemplateContentsFormView',
-	'tentacles.view.SettingsFormView'
-	],
-		
+    'tentacles.view.SettingsFormView'
+    ],
+        
     viewModel: {
         data: {
-            projectname: 'Squid Tentacles v0.5.0.0 alpha'
+            projectname: 'Squid Tentacles v0.5.1.0 alpha'
             },
         
         stores: {
@@ -32,9 +32,9 @@ Ext.define('tentacles.view.MainView', {
                 }
             }
         },
-		
+        
     controller: 'mainviewcontroller',
-	
+    
     layout: 'border',
 
     items: [
@@ -48,22 +48,22 @@ Ext.define('tentacles.view.MainView', {
         title: 'Tentacles',
         
         region: 'north'
-        },		
+        },        
         {
         xtype: 'treepanel',
         region: 'west',
         split: true,
-        bind: '{maintreestore}',		
+        bind: '{maintreestore}',        
         reference: 'mainTreeViewRef',
-        width: 360,	
+        width: 360,    
         useArrows: true,
         title: 'Navigation tree',
-        header: false,	
+        header: false,    
         
         listeners: {
             beforeselect: 'beforeTreeSelect'
             }
-        },		
+        },        
         {
         xtype: 'panel',
         region: 'center',

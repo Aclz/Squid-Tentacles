@@ -1,6 +1,6 @@
 Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
     extend: 'Ext.panel.Panel',
-	
+    
     alias: 'widget.userformviewreporttrafficbyhoststab',
 
     title: 'Трафик по сайтам',
@@ -93,7 +93,9 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
             enableTextSelection: true
             },
 
-        bind: {store: '{userReportTrafficByHostsGridStore}'},
+        bind: {
+            store: '{userReportTrafficByHostsGridStore}'
+            },
             
         columns: [
             {
@@ -112,7 +114,7 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
             text: 'Трафик, Мб',
             dataIndex: 'traffic',
             align: 'right',
-            format: '0.00',
+            format: '0.0000',
             width: 120
             }]
         }]

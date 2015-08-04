@@ -21,7 +21,7 @@ Ext.define('tentacles.view.UserFormView', {
         },
         
     controller: 'userformviewcontroller',
-	
+    
     bodyPadding: 10,
 
     reference: 'userFormViewRef',

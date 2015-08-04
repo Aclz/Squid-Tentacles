@@ -11,7 +11,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         data: {
             storeIsDirty: false,
             fromGridSelectionEmpty: true,
-			toGridSelectionEmpty: true,
+            toGridSelectionEmpty: true,
             canMoveUp: false,
             canMoveDown: false
             },
@@ -26,17 +26,17 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         stores: {
             urlListStore: {
                 model: 'UrlListModel',
-                pageSize: 1000,
+                pageSize: 0,
                 autoLoad: true,
-				
-				listeners: {
-					load: 'onUrlListStoreLoad'
-					}
+                
+                listeners: {
+                    load: 'onUrlListStoreLoad'
+                    }
                 },
-			
+            
             accessTemplateContentsStore: {
                 model: 'AccessTemplateContentsModel',
-                pageSize: 1000,
+                pageSize: 0,
                 autoLoad: false,
                 sorters: 'orderNumber',
 
@@ -82,7 +82,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
     controller: 'accesstemplatecontentsformviewcontroller',
     
     modelValidation: true,
-    	
+        
     bodyPadding: 10,
     
     layout: {
@@ -100,162 +100,158 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         bind: {
             value: '{currentAccessTemplate.name}'
             }
-		},
-		{
-		xtype: 'container',
-		layout: 'auto',
-		margin: '0 5 10 0',
+        },
+        {
+        xtype: 'container',
+        layout: 'auto',
+        margin: '0 5 10 0',
 
         items: [
-			{
-			xtype: 'button',
-			width: 100,
-			text: 'Сохранить',
-			handler: 'onSaveAccessTemplateContentsClick',
-			disabled: true,
+        {
+        xtype: 'button',
+        width: 100,
+        text: 'Сохранить',
+        handler: 'onSaveAccessTemplateContentsClick',
+        disabled: true,
 
-			bind: {
-				disabled: '{!accessTemplateRecordAndStoreStatus.dirtyAndValid}'
-				}
-			},
-			{
-			xtype: 'button',
-			width: 100,
-			margin: '0 0 0 5',
-			text: 'Отменить',
-			handler: 'onRevertAccessTemplateContentsClick',
-			disabled: true,
-
-			bind: {
-				disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
-				}
-			}]
+        bind: {
+                disabled: '{!accessTemplateRecordAndStoreStatus.dirtyAndValid}'
+            }
         },
-		{
-		xtype: 'container',
-		layout: 'hbox',
-		width: 750,		
-		
-		items: [
-			{
-			xtype: 'grid',
-			reference: 'fromGridRef',
-			title: 'Доступные списки URL',
-			flex: 0.5,
-			
-			bind: {
-				store: '{urlListStore}'
-				},
-				
-			listeners: {
-				selectionChange: 'onFromGridSelectionChange'
-				},
-			
-			columns: [
-				{
-				dataIndex: 'id',
-				hidden: true,
-				hideable: false
-				},
-				{
-				text: 'Список URL',
-				dataIndex: 'name',
-				flex: 1
-				},
-				{
-				xtype: 'booleancolumn',
-				text: 'Белый список',
-				dataIndex: 'whitelist',
-				width: 120,
-				trueText: '✓',
-				falseText: '',
-				align: 'center'
-				}]
-			},
-			{
-			xtype: 'container',
-			
-			margin: '0 10 0 10',
-			
-			layout: {
-				type: 'vbox',
-				align: 'stretch',
-				pack: 'start'
-				},
-			
-			items: [
-				{
-				xtype: 'button',
-				text: 'Вверх',
+            {
+            xtype: 'button',
+            width: 100,
+            margin: '0 0 0 5',
+            text: 'Отменить',
+            handler: 'onRevertAccessTemplateContentsClick',
+            disabled: true,
+
+            bind: {
+                disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
+                }
+            }]
+        },
+        {
+        xtype: 'container',
+        layout: 'hbox',
+        width: 750,        
+        
+        items: [
+            {
+            xtype: 'grid',
+            reference: 'fromGridRef',
+            title: 'Доступные списки URL',
+            flex: 0.5,
+                
+            listeners: {
+                selectionChange: 'onFromGridSelectionChange'
+                },
+            
+            columns: [
+                {
+                dataIndex: 'id',
+                hidden: true,
+                hideable: false
+                },
+                {
+                text: 'Список URL',
+                dataIndex: 'name',
+                flex: 1
+                },
+                {
+                xtype: 'booleancolumn',
+                text: 'Белый список',
+                dataIndex: 'whitelist',
+                width: 120,
+                trueText: '✓',
+                falseText: '',
+                align: 'center'
+                }]
+            },
+            {
+            xtype: 'container',
+            
+            margin: '0 10 0 10',
+            
+            layout: {
+                type: 'vbox',
+                align: 'stretch',
+                pack: 'start'
+                },
+            
+            items: [
+                {
+                xtype: 'button',
+                text: 'Вверх',
                 handler: 'onUpClick',
-				
-				bind: {
-					disabled: '{!canMoveUp}'
-					}
-				},
-				{
-				xtype: 'button',
-				margin: '5 0 0 0',
-				text: '>',
+                
+                bind: {
+                    disabled: '{!canMoveUp}'
+                    }
+                },
+                {
+                xtype: 'button',
+                margin: '5 0 0 0',
+                text: '>',
                 handler: 'onAddClick',
-				
-				bind: {
-					disabled: '{fromGridSelectionEmpty}'
-					}
-				},
-				{
-				xtype: 'button',
-				margin: '5 0 0 0',
-				text: '<',
+                
+                bind: {
+                    disabled: '{fromGridSelectionEmpty}'
+                    }
+                },
+                {
+                xtype: 'button',
+                margin: '5 0 0 0',
+                text: '<',
                 handler: 'onRemoveClick',
-				
-				bind: {
-					disabled: '{toGridSelectionEmpty}'
-					}
-				},
-				{
-				xtype: 'button',
-				margin: '5 0 0 0',
-				text: 'Вниз',
+                
+                bind: {
+                    disabled: '{toGridSelectionEmpty}'
+                    }
+                },
+                {
+                xtype: 'button',
+                margin: '5 0 0 0',
+                text: 'Вниз',
                 handler: 'onDownClick',
-				
-				bind: {
-					disabled: '{!canMoveDown}'
-					}
-				}]
-			},
-			{
-			xtype: 'grid',
-			reference: 'toGridRef',
-			title: 'Выбранные списки URL',
-			flex: 0.5,
+                
+                bind: {
+                    disabled: '{!canMoveDown}'
+                    }
+                }]
+            },
+            {
+            xtype: 'grid',
+            reference: 'toGridRef',
+            title: 'Выбранные списки URL',
+            flex: 0.5,
             sortableColumns: false,
-			
-			bind: {
-				store: '{accessTemplateContentsStore}'
-				},
-				
-			listeners: {
-				selectionChange: 'onToGridSelectionChange'
-				},
-									
-			columns: [
-				{
-				dataIndex: 'id',
-				hidden: true,
-				hideable: false
-				},
-				{
-				text: 'Список URL',
-				flex: 1,				
-				renderer: 'renderUrlListName'
-				},
-				{
-				text: 'Белый список',
-				width: 120,
-				align: 'center',				
-				renderer: 'renderUrlListWhitelist'
-				}]
-			}]
-		}]
+            
+            bind: {
+                store: '{accessTemplateContentsStore}'
+                },
+                
+            listeners: {
+                selectionChange: 'onToGridSelectionChange'
+                },
+                                    
+            columns: [
+                {
+                dataIndex: 'id',
+                hidden: true,
+                hideable: false
+                },
+                {
+                text: 'Список URL',
+                flex: 1,                
+                renderer: 'renderUrlListName'
+                },
+                {
+                text: 'Белый список',
+                width: 120,
+                align: 'center',                
+                renderer: 'renderUrlListWhitelist'
+                }]
+            }]
+        }]
     })

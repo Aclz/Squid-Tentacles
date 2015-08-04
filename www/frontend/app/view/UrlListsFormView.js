@@ -6,9 +6,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
     requires: [
         'tentacles.view.UrlListsFormViewController'
         ],
-	
-    bodyPadding: 10,
-
+    
     viewModel: {
         data: {
             gridSelectionEmpty: true
@@ -18,7 +16,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
             urlListStore: {
                 model: 'UrlListModel',
 
-                pageSize: 1000,
+                pageSize: 0,
 
                 autoLoad: false,
 
@@ -31,6 +29,8 @@ Ext.define('tentacles.view.UrlListsFormView', {
         },
         
     controller: 'urllistsformviewcontroller',
+    
+    bodyPadding: 10,
         
     layout: {
         type: 'vbox',
@@ -41,7 +41,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
     items: [
         {
         layout: 'auto',
-		margin: '0 5 5 0',
+        margin: '0 5 5 0',
 
         items: [
             {
@@ -65,7 +65,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
             {
             xtype: 'button',
             width: 100,
-			margin: '0 0 0 5',
+            margin: '0 0 0 5',
             text: 'Сохранить',
             handler: 'onSaveUrlListClick',
             disabled: true,

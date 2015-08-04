@@ -22,7 +22,7 @@ def select_urllists(Session):
         url_list_object = {
             'id':query_result_row.id,
             'name':query_result_row.name,
-	    'whitelist':True if query_result_row.whitelist == 1 else False
+            'whitelist':True if query_result_row.whitelist == 1 else False
             }
 
         url_lists_array.append(url_list_object)

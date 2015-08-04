@@ -40,8 +40,8 @@ Ext.define('tentacles.view.UrlListsFormViewController', {
         },
         
     onUrlListStoreLoad: function(store) {
-		store.sort('name','ASC');
-		},
+        store.sort('name','ASC');
+        },
         
     onUrlListStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty',(store.getModifiedRecords().length + store.getRemovedRecords().length > 0));

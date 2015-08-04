@@ -12,8 +12,8 @@ Ext.define('tentacles.view.UrlMasksFormView', {
             storeIsDirty: false,
             gridSelectionEmpty: true
             },
-			
-		links: {
+            
+        links: {
             currentUrlList: {
                 reference: 'UrlListModel',
                 create: true
@@ -24,7 +24,7 @@ Ext.define('tentacles.view.UrlMasksFormView', {
             urlMaskStore: {
                 model: 'UrlMaskModel',
 
-                pageSize: 1000,
+                pageSize: 0,
 
                 autoLoad: false,
 
@@ -71,8 +71,8 @@ Ext.define('tentacles.view.UrlMasksFormView', {
     controller: 'urlmasksformviewcontroller',
     
     modelValidation: true,
-	
-	bodyPadding: 10,	
+    
+    bodyPadding: 10,    
         
     layout: {
         type: 'vbox',
@@ -81,41 +81,41 @@ Ext.define('tentacles.view.UrlMasksFormView', {
         },
     
     items: [
-		{
-		xtype: 'container',
-		layout: 'auto',
-		margin: '0 5 5 0',
+        {
+        xtype: 'container',
+        layout: 'auto',
+        margin: '0 5 5 0',
 
         items: [{
-			xtype: 'textfield',
-			fieldLabel: 'Список URL',
-			width: 415,
+            xtype: 'textfield',
+            fieldLabel: 'Список URL',
+            width: 415,
             labelWidth: 120,
 
-			bind: {
-				value: '{currentUrlList.name}'
-				}
-			},
+            bind: {
+                value: '{currentUrlList.name}'
+                }
+            },
             {
             xtype: 'checkboxfield',
             fieldLabel: 'Белый список',
             boxLabel: '(запрещено всё, что явно не разрешено)',
             labelWidth: 120,
 
-			bind: {
-				value: '{currentUrlList.whitelist}'
-				}
+            bind: {
+                value: '{currentUrlList.whitelist}'
+                }
             },
-			{
+            {
             xtype: 'button',
-			width: 100,
+            width: 100,
             text: 'Добавить',
             handler: 'onAddUrlMaskClick'
             },
             {
             xtype: 'button',
-			width: 100,
-			margin: '0 0 0 5',
+            width: 100,
+            margin: '0 0 0 5',
             text: 'Удалить',
             handler: 'onRemoveUrlMaskClick',
             disabled: true,
@@ -124,31 +124,31 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 disabled: '{gridSelectionEmpty}'
                 }
             },
-			{
-			xtype: 'button',
-			width: 100,
-			margin: '0 0 0 5',
-			text: 'Сохранить',
-			handler: 'onSaveUrlMaskClick',
-			disabled: true,
+            {
+            xtype: 'button',
+            width: 100,
+            margin: '0 0 0 5',
+            text: 'Сохранить',
+            handler: 'onSaveUrlMaskClick',
+            disabled: true,
 
-			bind: {
-				disabled: '{!urlListRecordAndStoreStatus.dirtyAndValid}'
-				}
-			},
-			{
-			xtype: 'button',
-			width: 100,
-			margin: '0 0 0 5',
-			text: 'Отменить',
-			handler: 'onRevertUrlMaskClick',
-			disabled: true,
+            bind: {
+                disabled: '{!urlListRecordAndStoreStatus.dirtyAndValid}'
+                }
+            },
+            {
+            xtype: 'button',
+            width: 100,
+            margin: '0 0 0 5',
+            text: 'Отменить',
+            handler: 'onRevertUrlMaskClick',
+            disabled: true,
 
-			bind: {
-				disabled: '{!urlListRecordAndStoreStatus.dirty}'
-				}
-			}]
-		},
+            bind: {
+                disabled: '{!urlListRecordAndStoreStatus.dirty}'
+                }
+            }]
+        },
         {
         xtype: 'grid',
         reference: 'urlMaskGridRef',      

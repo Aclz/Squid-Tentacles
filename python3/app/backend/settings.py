@@ -17,7 +17,7 @@ def select_settings(Session):
 
     settings_object = {
         'id':query_result.id,
-        'defaultAccessTemplate':query_result.defaultAccessTemplate
+        'defaultAccessTemplateId':query_result.defaultAccessTemplateId
         }
 
     session.close()
@@ -49,7 +49,7 @@ def update_settings(Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['defaultAccessTemplate']
+    allowed_to_update_fields = ['defaultAccessTemplateId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
