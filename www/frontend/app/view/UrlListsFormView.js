@@ -25,6 +25,12 @@ Ext.define('tentacles.view.UrlListsFormView', {
                     datachanged: 'onUrlListStoreDataChanged'
                     }
                 }
+            },
+            
+        formulas: {
+            hideEditableControls: function(get) {
+                return this.get('myPermissionsStore').findExact('permissionName', 'EditSettings') == -1;
+                },
             }
         },
         
@@ -40,8 +46,14 @@ Ext.define('tentacles.view.UrlListsFormView', {
     
     items: [
         {
+        xtype: 'container',
         layout: 'auto',
         margin: '0 5 5 0',
+        hidden: true,
+        
+        bind: {
+            hidden: '{hideEditableControls}'
+            },
 
         items: [
             {
@@ -89,13 +101,12 @@ Ext.define('tentacles.view.UrlListsFormView', {
         },
         {
         xtype: 'grid',
-        reference: 'urlListGridRef',      
+        reference: 'urlListGridRef',
+        flex: 1,    
 
         bind: {
             store: '{urlListStore}'
             },
-            
-        margin: '10 0 0 0',
         
         listeners: {
             selectionChange: 'onUrlListGridSelectionChange'

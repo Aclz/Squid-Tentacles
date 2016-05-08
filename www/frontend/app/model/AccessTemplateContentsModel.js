@@ -1,22 +1,19 @@
-Ext.define('tentacles.model.UrlListModel', {
+Ext.define('tentacles.model.AccessTemplateContentsModel', {
     extend: 'tentacles.model.BaseModel',
 
     fields: [
         {name: 'id', type: 'int'},
         {
-        name: 'name',
-        type: 'string',
-        
-        validators: [{ 
-            type: 'presence'
-            }]
-        },
-        {name: 'whitelist', type: 'bool'}
-        ],
+	name: 'urlListId',
+	reference: 'UrlListModel',
+	unique: true
+	},
+        {name: 'orderNumber', type: 'int'}
+	],
         
     proxy: {
         type: 'rest',
-        url: '/rest/urllists',
+        url: '/rest/accesstemplates/{parentId}/contents',
 
         appendId: true,
         noCache: false,

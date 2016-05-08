@@ -1,27 +1,56 @@
 Ext.define('tentacles.view.MainView', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.container.Viewport',
 
     requires: [
-    'tentacles.view.MainViewController',
-    'tentacles.view.UserFormView',
-    'tentacles.view.UserGroupFormView',
-    'tentacles.view.UrlListsFormView',
-    'tentacles.view.UrlMasksFormView',
-    'tentacles.view.AccessTemplatesFormView',
-    'tentacles.view.AccessTemplateContentsFormView',
-    'tentacles.view.SettingsFormView'
+        'tentacles.view.MainViewController',
+        'tentacles.view.UserFormView',
+        'tentacles.view.UserGroupFormView',
+        'tentacles.view.RolesFormView',
+        'tentacles.view.RolePermissionsFormView',
+        'tentacles.view.UrlListsFormView',
+        'tentacles.view.UrlMasksFormView',
+        'tentacles.view.AccessTemplatesFormView',
+        'tentacles.view.AccessTemplateContentsFormView'
     ],
         
     viewModel: {
         data: {
-            projectname: 'Squid Tentacles v0.5.1.0 alpha'
+            projectName: 'Squid Tentacles v0.7.0.0 beta'
+            },
+            
+        links: {
+            loggedInUser: {
+                reference: 'LoggedInUserModel',
+                create: true
+                }
             },
         
         stores: {
-            maintreestore: {
-                type: 'tree',
-                model: 'MainTreeModel',
+            myPermissionsStore: {
+                fields: [
+                    {name: 'permissionId', type: 'int'},
+                    {name: 'permissionName', type: 'string'}
+                    ],
                     
+                autoLoad: true,
+
+                proxy: {
+                    type: 'rest',
+                    url: '/rest/mypermissions',
+
+                    appendId: false,
+                    noCache: false,
+
+                    reader: {
+                        type: 'json',
+                        rootProperty: 'data'
+                        }
+                    }
+                },
+                
+            mainTreeStore: {
+                type: 'tree',
+                model: 'MainTreeModel',  
                 rootVisible: true,
                     
                 root: {
@@ -35,25 +64,55 @@ Ext.define('tentacles.view.MainView', {
         
     controller: 'mainviewcontroller',
     
+    listeners: {
+        render: 'onRender'
+        },
+    
     layout: 'border',
 
     items: [
         {
-        xtype: 'panel',
+        xtype: 'container',        
+        region: 'north',
         
-        bind: {
-            title: '{projectname}'
+        layout: {
+            type: 'hbox',
+            pack: 'start',
+            align: 'stretch'
             },
-            
-        title: 'Tentacles',
         
-        region: 'north'
-        },        
+        items: [
+            {
+            xtype: 'panel',
+            flex: 1,
+                 
+            bind: {
+                title: '{projectName}'
+                },
+            
+            title: 'Tentacles'
+            },
+            {
+            xtype: 'panel',
+            flex: 2,
+            titleAlign: 'right',
+
+            bind: {
+                title: '{loggedInUser.cn}'
+                },
+
+            title: 'Нет связи с сервером!'
+            }]
+        },       
         {
         xtype: 'treepanel',
         region: 'west',
         split: true,
-        bind: '{maintreestore}',        
+        
+        bind: {
+            store: '{mainTreeStore}'
+            },
+            
         reference: 'mainTreeViewRef',
         width: 360,    
         useArrows: true,
@@ -69,8 +128,8 @@ Ext.define('tentacles.view.MainView', {
         region: 'center',
         reference: 'detailsPanelRef',
         autoDestroy: true,
-            layout : 'fit',
-            title: 'Details',
-            header: false
+        layout : 'fit',
+        title: 'Details',
+        header: false
         }]
     });

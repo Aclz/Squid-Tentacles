@@ -1,11 +1,11 @@
 from flask import request, jsonify
 
-from sql_classes import UrlMask
+from sql_classes import RolePermission
 
-def select_urlmasks(urllist_id, Session):
+def select_role_permissions(role_id, Session):
     session = Session()
 
-    query_result = session.query(UrlMask).filter_by(urlListId=urllist_id).all()
+    query_result = session.query(RolePermission).filter_by(roleId=role_id).all()
 
     session.close()
 
@@ -15,28 +15,28 @@ def select_urlmasks(urllist_id, Session):
             'data': []
             })
 
-    url_mask_list = []
+    role_permissions_list = []
 
     for query_result_row in query_result:
-        url_list_mask_object = {
+        role_permission_object = {
             'id': query_result_row.id,
-            'name': query_result_row.name
+            'permissionId': query_result_row.permissionId
             }
 
-        url_mask_list.append(url_list_mask_object)
+        role_permissions_list.append(role_permission_object)
 
     response = {
         'success': True,
-        'data': url_mask_list
+        'data': role_permissions_list
         }
 
     return jsonify(response)
     
     
-def insert_urlmask(urllist_id, Session):
+def insert_role_permissions(role_id, Session):
     json_data = request.get_json()
 
-    if not json_data or json_data.get('name') == None:
+    if not json_data or json_data.get('permissionId') == None:
         return jsonify({
             'success': False,
             'message': 'Bad JSON request'
@@ -44,15 +44,15 @@ def insert_urlmask(urllist_id, Session):
 
     session = Session()
 
-    new_url_mask = UrlMask(urlListId=urllist_id, name=json_data.get('name'))
+    new_role_permission = RolePermission(roleId=role_id, permissionId=json_data.get('permissionId'))
 
     try:
-        session.add(new_url_mask)
+        session.add(new_role_permission)
         session.commit()
 
         response = {
             'success': True,
-            'data': [{'id': new_url_mask.id}]
+            'data': [{'id': new_role_permission.id}]
             }
     except Exception as e:
         response = {
@@ -64,11 +64,12 @@ def insert_urlmask(urllist_id, Session):
     return jsonify(response)
 
 
-def delete_urlmask(urllist_id, urlmask_id, Session):
+def delete_role_permission(role_id, permission_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(UrlMask).filter_by(urlListId=urllist_id, id=urlmask_id).first())
+        session.delete(session.query(RolePermission).filter_by(roleId=role_id, id=permission_id).first())
+            
         session.commit()
 
         response = {

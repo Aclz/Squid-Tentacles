@@ -2,7 +2,7 @@ Ext.define('tentacles.model.UrlMaskModel', {
     extend: 'tentacles.model.BaseModel',
 
     fields: [
-        {name: 'id',type: 'int'},
+        {name: 'id', type: 'int'},
         {
         name: 'name',
         type: 'string',

@@ -1,4 +1,4 @@
-from flask import request,jsonify
+from flask import request, jsonify
 
 from sql_classes import AccessTemplate
 
@@ -11,30 +11,29 @@ def select_accesstemplates(Session):
 
     if query_result == None:
         return jsonify({
-            'success':True,
-            'data':[]
+            'success': True,
+            'data': []
             })
 
-    access_templates_array = []
+    access_templates_list = []
 
-    #Making an array of them
     for query_result_row in query_result:
         access_template_object = {
-            'id':query_result_row.id,
-            'name':query_result_row.name
+            'id': query_result_row.id,
+            'name': query_result_row.name
             }
 
-        access_templates_array.append(access_template_object)
+        access_templates_list.append(access_template_object)
 
     response = {
-        'success':True,
-        'data':access_templates_array
+        'success': True,
+        'data': access_templates_list
         }
 
     return jsonify(response)
     
     
-def select_accesstemplate(accesstemplate_id,Session):
+def select_accesstemplate(accesstemplate_id, Session):
     session = Session()
 
     query_result = session.query(AccessTemplate).get(accesstemplate_id)
@@ -43,18 +42,18 @@ def select_accesstemplate(accesstemplate_id,Session):
 
     if query_result == None:
         return jsonify({
-            'success':True,
-            'data':[]
+            'success': True,
+            'data': []
             })
 
     access_template_object = {
-        'id':query_result.id,
-        'name':query_result.name
+        'id': query_result.id,
+        'name': query_result.name
         }
 
     response = {
-        'success':True,
-        'data':access_template_object
+        'success': True,
+        'data': access_template_object
         }
 
     return jsonify(response)
@@ -65,8 +64,8 @@ def insert_accesstemplate(Session):
 
     if not json_data or json_data.get('name') == None:
         return jsonify({
-            'success':False,
-            'message':'Bad JSON request'
+            'success': False,
+            'message': 'Bad JSON request'
             })
 
     session = Session()
@@ -78,12 +77,12 @@ def insert_accesstemplate(Session):
         session.commit()
 
         response = {
-            'success':True,
-            'data':[{'id':new_access_template.id}]
+            'success': True,
+            'data': [{'id': new_access_template.id}]
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()
@@ -91,13 +90,13 @@ def insert_accesstemplate(Session):
     return jsonify(response)
     
     
-def update_accesstemplate(accesstemplate_id,Session):
+def update_accesstemplate(accesstemplate_id, Session):
     json_data = request.get_json()
 
     if not json_data:
         return jsonify({
-            'success':False,
-            'message':'Bad JSON request'
+            'success': False,
+            'message': 'Bad JSON request'
             })
 
     session = Session()
@@ -113,7 +112,7 @@ def update_accesstemplate(accesstemplate_id,Session):
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
-            setattr(query_result,field_name,json_data.get(field_name))
+            setattr(query_result, field_name, json_data.get(field_name))
             do_commit = True
 
     try:
@@ -121,11 +120,11 @@ def update_accesstemplate(accesstemplate_id,Session):
             session.commit()
 
         response = {
-            'success':True
+            'success': True
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()
@@ -133,7 +132,7 @@ def update_accesstemplate(accesstemplate_id,Session):
     return jsonify(response)
 
 
-def delete_accesstemplate(accesstemplate_id,Session):
+def delete_accesstemplate(accesstemplate_id, Session):
     session = Session()
 
     try:
@@ -141,11 +140,11 @@ def delete_accesstemplate(accesstemplate_id,Session):
         session.commit()
 
         response = {
-            'success':True
+            'success': True
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()

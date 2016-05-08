@@ -1,12 +1,12 @@
-Ext.define('tentacles.view.AccessTemplatesFormViewController', {
+Ext.define('tentacles.view.RolesFormViewController', {
     extend: 'Ext.app.ViewController',
     
-    alias: 'controller.accesstemplatesformviewcontroller',
+    alias: 'controller.rolesformviewcontroller',
     
     listen: {
         controller: {
             'mainviewcontroller': {
-                onAccessTemplatesSelect: 'onAccessTemplatesSelect',
+                onRolesSelect: 'onRolesSelect',
                 beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
             }
@@ -29,7 +29,7 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
 
                 fn: function(btn) {
                     if (btn == 'ok') {
-                        thisController.onSaveAccessTemplateClick();
+                        thisController.onSaveRoleClick();
                         }
 
                     this.fireEvent('onTreeSelectionChange', {selected: args.selected});
@@ -41,54 +41,54 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
             }
         },
         
-    onAccessTemplateStoreLoad: function(store) {
+    onRoleStoreLoad: function(store) {
         store.sort('name', 'ASC');
         },
         
-    onAccessTemplateStoreDataChanged: function(store) {
+    onRoleStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty', (store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
-    onAccessTemplatesSelect: function(selectedId) {
+    onRolesSelect: function(selectedId) {
         this.getViewModel().linkTo('settings', {reference: 'SettingsModel', id: 1});
-        this.getStore('accessTemplateStore').load();
+        this.getStore('roleStore').load();
         },
         
-    onAccessTemplateGridSelectionChange: function() {
-        this.getViewModel().set('gridSelectionEmpty', this.lookupReference('accessTemplateGridRef').getSelection().length == 0);
+    onRoleGridSelectionChange: function() {
+        this.getViewModel().set('gridSelectionEmpty', this.lookupReference('roleGridRef').getSelection().length == 0);
         },
         
-    onAddAccessTemplateClick: function() {
-        var accessTemplateStore = this.getStore('accessTemplateStore');
+    onAddRoleClick: function() {
+        var roleStore = this.getStore('roleStore');
         
-        Ext.MessageBox.prompt('Введите значение', 'Введите название шаблона доступа:',
+        Ext.MessageBox.prompt('Введите значение', 'Введите название роли:',
             function(btn, text) {
                 trimmedText = text.trim();
                 
                 if (btn == 'ok' && trimmedText != '') {
-                    if (accessTemplateStore.find('name', trimmedText) == -1) {                   
-                        accessTemplateStore.add({name: trimmedText});
-                        accessTemplateStore.sort('name', 'ASC');
+                    if (roleStore.find('name', trimmedText) == -1) {                   
+                        roleStore.add({name: trimmedText});
+                        roleStore.sort('name', 'ASC');
                         }
                     }
                 }
             );
         },
         
-    onRemoveAccessTemplateClick: function() {
-        var selection = this.lookupReference('accessTemplateGridRef').getSelection();
-        this.getStore('accessTemplateStore').remove(selection); 
+    onRemoveRoleClick: function() {
+        var selection = this.lookupReference('roleGridRef').getSelection();
+        this.getStore('roleStore').remove(selection); 
         },
 
-    onSaveAccessTemplateClick: function() {
+    onSaveRoleClick: function() {
         var thisController = this;
-        var store = this.getStore('accessTemplateStore');
+        var store = this.getStore('roleStore');
         
         if (this.getViewModel().data.settings.dirty) {
             this.getViewModel().data.settings.save({
                 failure: function(record, operation) {
                     thisController.getViewModel().data.settings.reject();
-
+                    
                     Ext.MessageBox.show({
                         title: 'Ошибка',
                         message: (operation.error && operation.error.status == 403) ?
@@ -99,11 +99,11 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
                     }
                 })
             }
-        
+
         store.sync({
             failure: function(batch, options) {
                 store.rejectChanges();
-                    
+                
                 Ext.MessageBox.show({
                     title: 'Ошибка',
                     message: (batch.exceptions[0].error && batch.exceptions[0].error.status == 403) ?
@@ -115,16 +115,16 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
                 },
                 
             callback: function() {
-                thisController.fireEvent('onAccessTemplateReloadRequest');
+                thisController.fireEvent('onRoleReloadRequest');
                 }
             });
         },
         
-    onRevertAccessTemplateClick: function() {
-        var accessTemplateStore = this.getStore('accessTemplateStore');
+    onRevertRoleClick: function() {
+        var roleStore = this.getStore('roleStore');
 
         this.getViewModel().data.settings.reject();
-        accessTemplateStore.rejectChanges();
-        this.onAccessTemplateStoreLoad(accessTemplateStore);
+        roleStore.rejectChanges();
+        this.onRoleStoreLoad(roleStore);
         }
     })

@@ -9,9 +9,9 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
         stores: {
             userReportDayTrafficGridStore: {
                 fields: [
-                    {name:'time',type:'date'},
-                    {name:'url'},
-                    {name:'traffic',type:'float'}
+                    {name: 'time', type: 'date'},
+                    {name: 'url'},
+                    {name: 'traffic', type: 'float'}
                     ],
 
                 proxy: {
@@ -44,7 +44,9 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
 
     items: [
         {
+        xtype: 'container',
         layout: 'auto',
+        margin: '0 5 5 0',
 
         items: [{
             xtype: 'datefield',
@@ -64,7 +66,6 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
         {
         xtype: 'grid',
         reference: 'userReportDayTrafficGridRef',
-        margin: '10 0 0 0',
         columnLines: true,
         flex: 1,
         bufferedRenderer: false,

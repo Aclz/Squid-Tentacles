@@ -1,15 +1,15 @@
-Ext.define('tentacles.model.SettingsModel', {
+Ext.define('tentacles.model.LoggedInUserModel', {
     extend: 'tentacles.model.BaseModel',
     		
     fields: [
         {name: 'id', type: 'int'},
-        {name: 'defaultAccessTemplateId'},
-        {name: 'defaultRoleId'}
+        {name: 'status', type: 'int'},
+        {name: 'cn', type: 'string'}
         ],
 	
     proxy: {
         type: 'rest',
-        url: '/rest/settings',
+        url: '/rest/whoami',
 
         appendId: false,
         noCache: false,

@@ -13,7 +13,7 @@ Ext.define('tentacles.view.UserFormView', {
         
     viewModel: {
         links: {
-            currentUser: {
+            selectedUser: {
                 reference: 'UserModel',
                 create: true
                 }
@@ -27,9 +27,20 @@ Ext.define('tentacles.view.UserFormView', {
     reference: 'userFormViewRef',
 
     items: [
-        {xtype: 'userformviewproperties'},
-        {xtype: 'userformviewreporttrafficbyhoststab'},
-        {xtype: 'userformviewreporttrafficbydatestab'},
-        {xtype: 'userformviewreportdaytraffictab'}
+        {
+        xtype: 'userformviewproperties'
+        },
+        {
+        xtype: 'userformviewreporttrafficbyhoststab',
+        hidden: true
+        },
+        {
+        xtype: 'userformviewreporttrafficbydatestab',
+        hidden: true
+        },
+        {
+        xtype: 'userformviewreportdaytraffictab',
+        hidden: true
+        }
         ]
     })

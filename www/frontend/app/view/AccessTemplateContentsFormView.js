@@ -17,7 +17,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             },
             
         links: {
-            currentAccessTemplate: {
+            selectedAccessTemplate: {
                 reference: 'AccessTemplateModel',
                 create: true
                 }
@@ -41,7 +41,6 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 sorters: 'orderNumber',
 
                 listeners: {
-                    write: 'writeAccessTemplateContentsStore',
                     datachanged: 'onAccessTemplateContentsStoreDataChanged'
                     }
                 }
@@ -50,7 +49,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         formulas: {
             accessTemplateRecordStatus: {
                 bind: {
-                    bindTo: '{currentAccessTemplate}',
+                    bindTo: '{selectedAccessTemplate}',
                     deep: true
                     },
 
@@ -75,6 +74,14 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 result.dirtyAndValid = result.dirty && result.valid;
 
                 return result;
+                },
+                
+            hideEditableControls: function(get) {
+                return this.get('myPermissionsStore').findExact('permissionName', 'EditSettings') == -1;
+                },
+                
+            selectTemplatesControlWidth: function(get) {
+                return this.get('hideEditableControls') ? 335 : 750;
                 }
             }
         },
@@ -93,48 +100,78 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         
     items: [
         {
-        xtype: 'textfield',
-        fieldLabel: 'Шаблон доступа',
-        labelWidth: 120,
-
-        bind: {
-            value: '{currentAccessTemplate.name}'
-            }
-        },
-        {
         xtype: 'container',
         layout: 'auto',
-        margin: '0 5 10 0',
+        margin: '0 5 5 0',
 
         items: [
-        {
-        xtype: 'button',
-        width: 100,
-        text: 'Сохранить',
-        handler: 'onSaveAccessTemplateContentsClick',
-        disabled: true,
-
-        bind: {
-                disabled: '{!accessTemplateRecordAndStoreStatus.dirtyAndValid}'
-            }
-        },
             {
-            xtype: 'button',
-            width: 100,
-            margin: '0 0 0 5',
-            text: 'Отменить',
-            handler: 'onRevertAccessTemplateContentsClick',
-            disabled: true,
+            xtype: 'displayfield',
+            width: 415,
+            labelWidth: 120,
+            fieldLabel: 'Шаблон доступа',
+            hidden: false,
 
             bind: {
-                disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
+                value: '{selectedAccessTemplate.name}',
+                hidden: '{!hideEditableControls}'
                 }
+            },
+            {
+            xtype: 'textfield',
+            fieldLabel: 'Шаблон доступа',
+            width: 415,
+            labelWidth: 120,
+            hidden: true,
+
+            bind: {
+                value: '{selectedAccessTemplate.name}',
+                hidden: '{hideEditableControls}'
+                }
+            },
+            {
+            xtype: 'container',
+            layout: 'auto',
+            hidden: true,
+                
+            bind: {
+                hidden: '{hideEditableControls}'
+                },
+
+            items: [
+                {
+                xtype: 'button',
+                width: 100,
+                text: 'Сохранить',
+                handler: 'onSaveAccessTemplateContentsClick',
+                disabled: true,
+
+                bind: {
+                    disabled: '{!accessTemplateRecordAndStoreStatus.dirtyAndValid}'
+                    }
+                },
+                {
+                xtype: 'button',
+                width: 100,
+                margin: '0 0 0 5',
+                text: 'Отменить',
+                handler: 'onRevertAccessTemplateContentsClick',
+                disabled: true,
+
+                bind: {
+                    disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
+                    }
+                }]
             }]
         },
         {
         xtype: 'container',
         layout: 'hbox',
-        width: 750,        
+        width: 750,
+
+        bind: {
+            width: '{selectTemplatesControlWidth}'
+            },
         
         items: [
             {
@@ -142,6 +179,11 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             reference: 'fromGridRef',
             title: 'Доступные списки URL',
             flex: 0.5,
+            hidden: true,
+            
+            bind: {
+                hidden: '{hideEditableControls}'
+                },
                 
             listeners: {
                 selectionChange: 'onFromGridSelectionChange'
@@ -169,14 +211,19 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 }]
             },
             {
-            xtype: 'container',
-            
+            xtype: 'container',            
             margin: '0 10 0 10',
             
             layout: {
                 type: 'vbox',
                 align: 'stretch',
                 pack: 'start'
+                },
+                
+            hidden: true,
+            
+            bind: {
+                hidden: '{hideEditableControls}'
                 },
             
             items: [

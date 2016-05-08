@@ -4,14 +4,95 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
     alias: 'widget.userformviewproperties',
     
     viewModel: {
-        formulas: {
-            isIpAuth: function(get) {
-                return get('currentUser.authMethod') != 1;
+        stores: {
+            statusesStore: {
+                data: [
+                    {id: 0, name: 'Заблокирован'},
+                    {id: 1, name: 'Активен'},
+                    {id: 2, name: 'Отключен за превышение квоты'}
+                    ]
                 },
+                
+            authMethodsStore: {
+                data: [
+                    {id: 0, name: 'Kerberos'},
+                    {id: 1, name: 'IP'}
+                    ]
+                },
+                
+            accessTemplatesStore: {
+                model: 'tentacles.model.AccessTemplateModel',
+                autoLoad: false
+                },
+                
+            rolesStore: {
+                model: 'tentacles.model.RoleModel',
+                autoLoad: false
+                }
+            },
             
+        formulas: {
+            quotaDisplayFieldHidden: function(get) {
+                return get('selectedUser.quota') == undefined || !get('hideEditableControls');
+                },
+                
+            quotaNumberFieldHidden: function(get) {
+                return get('selectedUser.quota') == undefined || get('hideEditableControls');
+                },
+                
+            trafficDisplayFieldHidden: function(get) {
+                return get('selectedUser.traffic') == undefined;
+                },
+                
+            statusDisplayFieldHidden: function(get) {
+                return get('selectedUser.status') == undefined || !get('hideEditableControls');
+                },
+
+            statusComboboxHidden: function(get) {
+                return get('selectedUser.status') == undefined || get('hideEditableControls');
+                },
+                
+            authMethodDisplayFieldHidden: function(get) {
+                return get('selectedUser.authMethod') == undefined || !get('hideEditableControls');
+                },
+
+            authMethodComboboxHidden: function(get) {
+                return get('selectedUser.authMethod') == undefined || get('hideEditableControls');
+                },
+                
+            ipAddressTextFieldHidden: function(get) {
+                return get('selectedUser.authMethod') != 1 || get('hideEditableControls');
+                },
+                
+            ipAddressDisplayFieldHidden: function(get) {
+                return get('selectedUser.authMethod') != 1 || !get('hideEditableControls');
+                },
+                
+            accessTemplateDisplayFieldHidden: function(get) {
+                return get('selectedUser.accessTemplateId') == undefined || !get('hideEditableControls');
+                },
+                
+            accessTemplateComboboxHidden: function(get) {
+                return get('selectedUser.accessTemplateId') == undefined || get('hideEditableControls');
+                },
+                
+            roleDisplayFieldHidden: function(get) {
+                return get('selectedUser.roleId') == undefined || (!get('hideEditableControls') &&
+                    this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') != -1);
+                },
+                
+            roleComboboxHidden: function(get) {
+                return get('selectedUser.roleId') == undefined || get('hideEditableControls') ||
+                    this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') == -1;
+                },
+                
+            hideEditableControls: function(get) {
+                return this.get('myPermissionsStore').findExact('permissionName', 'EditUsers') == -1;
+                },
+                
             userRecordStatus: {
                 bind: {
-                    bindTo: '{currentUser}',
+                    bindTo: '{selectedUser}',
                     deep: true
                     },
 
@@ -38,7 +119,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         xtype: 'displayfield',
         labelWidth: 150,
         fieldLabel: 'ФИО',
-        bind: {value: '{currentUser.cn}'}
+        bind: {value: '{selectedUser.cn}'}
         },        
         {
         xtype: 'displayfield',
@@ -46,59 +127,114 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         fieldLabel: 'Логин',
         
         bind: {
-            value: '{currentUser.userPrincipalName}'
+            value: '{selectedUser.userPrincipalName}'
             }
-        },        
+        },
+        {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Квота, Мб',
+        hidden: true,
+
+        bind: {
+            value: '{selectedUser.quota}',
+            hidden: '{quotaDisplayFieldHidden}'
+            },
+
+        renderer: Ext.util.Format.numberRenderer('0.00')
+        },
         {
         xtype: 'numberfield',
         width: 280,
         labelWidth: 150,
         fieldLabel: 'Квота, Мб',
         minValue: 0,
-        maxValue: 999999999999, //~1 Pb seems to be enough
-        
+        maxValue: 999999999999, //seems to be enough
+        hidden: true,
+
         bind: {
-            value: '{currentUser.quota}'
+            value: '{selectedUser.quota}',
+            hidden: '{quotaNumberFieldHidden}'
             }
-        },    
+        },
         {
         xtype: 'displayfield',
         labelWidth: 150,
         fieldLabel: 'Расход, Мб',
-        bind: {value: '{currentUser.traffic}'},
+        hidden: true,
+        
+        bind: {
+            value: '{selectedUser.traffic}',
+            hidden: '{trafficDisplayFieldHidden}'
+            },
+            
         renderer: Ext.util.Format.numberRenderer('0.00')
-        },    
+        },
+        {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Состояние',
+        hidden: true,
+
+        bind: {
+            value: '{userstatuscombobox.selection.name}',
+            hidden: '{statusDisplayFieldHidden}'
+            }
+        }, 
         {
         xtype: 'combobox',
+        reference: 'userstatuscombobox',
         width: 390,
         labelWidth: 150,
         fieldLabel: 'Состояние',
         editable: false,
-        
-        store:[
-            [0,'Заблокирован'],
-            [1,'Активен'],
-            [2,'Отключен за превышение квоты']
-            ],
+        hidden: true,
+        displayField: 'name',
+        valueField: 'id',
         
         bind: {
-            value: '{currentUser.status}'
+            value: '{selectedUser.status}',
+            hidden: '{statusComboboxHidden}',
+            store: '{statusesStore}'
+            }
+        },
+        {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Аутентификация',
+        hidden: true,
+
+        bind: {
+            value: '{userauthmethodcombobox.selection.name}',
+            hidden: '{authMethodDisplayFieldHidden}'
             }
         },
         {
         xtype: 'combobox',
+        reference: 'userauthmethodcombobox',
         width: 390,
         labelWidth: 150,
         fieldLabel: 'Аутентификация',
         editable: false,
-
-        store:[
-            [0,'Kerberos'],
-            [1,'IP']
-            ],
+        hidden: true,
+        displayField: 'name',
+        valueField: 'id',
 
         bind: {
-            value: '{currentUser.authMethod}'
+            value: '{selectedUser.authMethod}',
+            hidden: '{authMethodComboboxHidden}',
+            store: '{authMethodsStore}'
+            }
+        },
+        {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'IP-адрес',
+        hidden: true,
+
+        bind: {
+            value: '{selectedUser.ip}',
+            hidden: '{ipAddressDisplayFieldHidden}'
             }
         },
         {
@@ -111,53 +247,102 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         hidden: true,
         
         bind: {
-            value: '{currentUser.ip}',
-            hidden: '{isIpAuth}'
+            value: '{selectedUser.ip}',
+            hidden: '{ipAddressTextFieldHidden}'
             },
             
         maskRe: /[\d\.]/
         },
         {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Шаблон доступа',
+        hidden: true,
+
+        bind: {
+            value: '{useraccesstemplatecombobox.selection.name}',
+            hidden: '{accessTemplateDisplayFieldHidden}'
+            }
+        },
+        {
         xtype: 'combobox',
+        reference: 'useraccesstemplatecombobox',
         width: 390,
         labelWidth: 150,
         fieldLabel: 'Шаблон доступа',
         editable: false,
-
-        store: {
-            model: 'tentacles.model.AccessTemplateModel',
-            autoload: false
-            },
-
+        hidden: true,
         displayField: 'name',
         valueField: 'id',
         autoLoadOnValue: true,
 
         bind: {
-            value: '{currentUser.accessTemplateId}'
+            value: '{selectedUser.accessTemplateId}',
+            hidden: '{accessTemplateComboboxHidden}',
+            store: '{accessTemplatesStore}'
             }
         },
         {
-        xtype: 'button',
-        text: 'Сохранить',
-        width: 100,
-        handler: 'onSaveUserClick',
-        disabled: true,
-        
-        bind: {
-            disabled: '{!userRecordStatus.dirtyAndValid}'
-            }
-        },
-        {
-        xtype: 'button',
-        width: 100,
-        text: 'Отменить',
-        handler: 'onRevertUserClick',
-        disabled: true,
-        margin: '0 0 0 5',
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Роль',
+        hidden: true,
 
         bind: {
-            disabled: '{!userRecordStatus.dirty}'
+            value: '{userrolecombobox.selection.name}',
+            hidden: '{roleDisplayFieldHidden}'
             }
+        },
+        {
+        xtype: 'combobox',
+        reference: 'userrolecombobox',
+        width: 390,
+        labelWidth: 150,
+        fieldLabel: 'Роль',
+        editable: false,
+        hidden: true,
+        displayField: 'name',
+        valueField: 'id',
+        autoLoadOnValue: true,
+
+        bind: {
+            value: '{selectedUser.roleId}',
+            hidden: '{roleComboboxHidden}',
+            store: '{rolesStore}'
+            }
+        },
+        {
+        xtype: 'container',
+        layout: 'auto',
+        hidden: true,
+        
+        bind: {
+            hidden: '{hideEditableControls}'
+            },
+            
+        items: [
+            {
+            xtype: 'button',
+            text: 'Сохранить',
+            width: 100,
+            handler: 'onSaveUserClick',
+            disabled: true,
+            
+            bind: {
+                disabled: '{!userRecordStatus.dirtyAndValid}'
+                }
+            },
+            {
+            xtype: 'button',
+            width: 100,
+            text: 'Отменить',
+            handler: 'onRevertUserClick',
+            disabled: true,
+            margin: '0 0 0 5',
+
+            bind: {
+                disabled: '{!userRecordStatus.dirty}'
+                }
+            }]
         }]
     })

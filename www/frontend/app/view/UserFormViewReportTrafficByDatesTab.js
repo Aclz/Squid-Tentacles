@@ -44,7 +44,9 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
 
     items: [
         {
+        xtype: 'container',
         layout: 'auto',
+        margin: '0 5 5 0',
 
         items: [
             {
@@ -73,7 +75,6 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
         {
         xtype: 'grid',
         reference: 'userReportTrafficByDatesGridRef',
-        margin: '10 0 0 0',
         columnLines: true,
         flex: 1,
         bufferedRenderer: false,

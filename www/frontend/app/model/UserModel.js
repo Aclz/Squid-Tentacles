@@ -2,16 +2,17 @@ Ext.define('tentacles.model.UserModel', {
     extend: 'tentacles.model.BaseModel',
     		
     fields: [
-        {name: 'id',type: 'int'},		
-        {name: 'cn',type: 'string'},		
-        {name: 'userPrincipalName',type: 'string'},		
-        {name: 'quota',type: 'int'},		
-        {name: 'traffic',type: 'float'},
-        {name: 'status',type: 'int'},
-        {name: 'authMethod',type: 'int'},      
+        {name: 'id', type: 'int'},		
+        {name: 'cn', type: 'string'},		
+        {name: 'userPrincipalName', type: 'string'},		
+        {name: 'quota'},		
+        {name: 'traffic'},
+        {name: 'status'},
+        {name: 'authMethod'},      
         {
         name: 'ip',
         type: 'string',
+        defaultValue: '0.0.0.0',
         
         validators: [
             { 
@@ -20,7 +21,8 @@ Ext.define('tentacles.model.UserModel', {
             message: 'Допустимый диапазон IP-адресов: 0.0.0.0 – 255.255.255.255'
             }]
         },
-        {name: 'accessTemplate',type: 'int'}
+        {name: 'accessTemplateId'},
+        {name: 'roleId'}
         ],
 	
     proxy: {

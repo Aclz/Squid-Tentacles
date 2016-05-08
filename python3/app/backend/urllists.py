@@ -1,4 +1,4 @@
-from flask import request,jsonify
+from flask import request, jsonify
 
 from sql_classes import UrlList
 
@@ -11,31 +11,30 @@ def select_urllists(Session):
 
     if query_result == None:
         return jsonify({
-            'success':True,
-            'data':[]
+            'success': True,
+            'data': []
             })
 
-    url_lists_array = []
+    urllists_list = []
 
-    #Making an array of them
     for query_result_row in query_result:
         url_list_object = {
-            'id':query_result_row.id,
-            'name':query_result_row.name,
-            'whitelist':True if query_result_row.whitelist == 1 else False
+            'id': query_result_row.id,
+            'name': query_result_row.name,
+            'whitelist': True if query_result_row.whitelist == 1 else False
             }
 
-        url_lists_array.append(url_list_object)
+        urllists_list.append(url_list_object)
 
     response = {
-        'success':True,
-        'data':url_lists_array
+        'success': True,
+        'data': urllists_list
         }
 
     return jsonify(response)
     
     
-def select_urllist(urllist_id,Session):
+def select_urllist(urllist_id, Session):
     session = Session()
 
     query_result = session.query(UrlList).get(urllist_id)
@@ -44,19 +43,19 @@ def select_urllist(urllist_id,Session):
 
     if query_result == None:
         return jsonify({
-            'success':True,
-            'data':[]
+            'success': True,
+            'data': []
             })
 
     url_lists_object = {
-        'id':query_result.id,
-        'name':query_result.name,
-        'whitelist':True if query_result.whitelist == 1 else False
+        'id': query_result.id,
+        'name': query_result.name,
+        'whitelist': True if query_result.whitelist == 1 else False
         }
 
     response = {
-        'success':True,
-        'data':url_lists_object
+        'success': True,
+        'data': url_lists_object
         }
 
     return jsonify(response)
@@ -67,25 +66,25 @@ def insert_urllist(Session):
 
     if not json_data or json_data.get('name') == None:
         return jsonify({
-            'success':False,
-            'message':'Bad JSON request'
+            'success': False,
+            'message': 'Bad JSON request'
             })
 
     session = Session()
 
-    new_url_list = UrlList(name=json_data.get('name'),whitelist=0)
+    new_url_list = UrlList(name=json_data.get('name'), whitelist=0)
 
     try:
         session.add(new_url_list)
         session.commit()
 
         response = {
-            'success':True,
-            'data':[{'id':new_url_list.id}]
+            'success': True,
+            'data': [{'id': new_url_list.id}]
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()
@@ -93,13 +92,13 @@ def insert_urllist(Session):
     return jsonify(response)
     
 
-def update_urllist(urllist_id,Session):
+def update_urllist(urllist_id, Session):
     json_data = request.get_json()
 
     if not json_data:
         return jsonify({
-            'success':False,
-            'message':'Bad JSON request'
+            'success': False,
+            'message': 'Bad JSON request'
             })
 
     session = Session()
@@ -111,11 +110,11 @@ def update_urllist(urllist_id,Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['name','whitelist']
+    allowed_to_update_fields = ['name', 'whitelist']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
-            setattr(query_result,field_name,json_data.get(field_name))
+            setattr(query_result, field_name, json_data.get(field_name))
             do_commit = True
 
     try:
@@ -123,11 +122,11 @@ def update_urllist(urllist_id,Session):
             session.commit()
 
         response = {
-            'success':True
+            'success': True
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()
@@ -135,7 +134,7 @@ def update_urllist(urllist_id,Session):
     return jsonify(response)
 
 
-def delete_urllist(urllist_id,Session):
+def delete_urllist(urllist_id, Session):
     session = Session()
 
     try:
@@ -143,11 +142,11 @@ def delete_urllist(urllist_id,Session):
         session.commit()
 
         response = {
-            'success':True
+            'success': True
             }
     except Exception as e:
         response = {
-            'success':False
+            'success': False
             }
 
     session.close()

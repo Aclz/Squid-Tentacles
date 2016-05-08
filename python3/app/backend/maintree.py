@@ -1,9 +1,9 @@
-from flask import request,jsonify
+from flask import request, jsonify
 
-from sql_classes import UrlList,AccessTemplate,UserGroup,User
+from sql_classes import UrlList, AccessTemplate, UserGroup, User, Role
 
-def select_tree(node_name,Session):
-    #Returns a tuple: (the substring of a path after the last nodeSeparator,the preceding path before it)
+def select_tree(current_user_properties, node_name, Session):
+    #Returns a tuple: (the substring of a path after the last nodeSeparator, the preceding path before it)
     #If 'base' includes its own baseSeparator - return only a string after it
     #So if path is 'OU=Group,OU=Dept,OU=Company', the queryResult would be 'Company',
     #and the 'rest' would be 'OU=Group,OU=Dept'
@@ -18,13 +18,13 @@ def select_tree(node_name,Session):
         else:
             node_preceding = ''
 
-        return (node_preceding,node_base[node_base.find(base_separator) + 1:])
+        return (node_preceding, node_base[node_base.find(base_separator) + 1:])
 
     #Places a 'user' object on a 'usertree' object according to user's pathField string key
-    def place_user_onto_tree(user,usertree,user_group_id):
+    def place_user_onto_tree(user, usertree, user_group_id):
         curr_node = usertree
 
-        preceding,base = node_base_and_rest(user['distinguishedName'])
+        preceding, base = node_base_and_rest(user['distinguishedName'])
 
         while base != '':
             node_found = False
@@ -42,32 +42,32 @@ def select_tree(node_name,Session):
             #Creating a new group node
             if node_found == False:
                 curr_node.append({
-                    'id':'usergroup_' + str(user_group_id),
-                    'text':base,
-                    'objectType':'UserGroup',
-                    'children':[]
+                    'id': 'usergroup_' + str(user_group_id),
+                    'text': base,
+                    'objectType': 'UserGroup',
+                    'children': []
                     })
 
                 curr_node = curr_node[len(curr_node) - 1]['children']
 
-            preceding,base = node_base_and_rest(preceding)
+            preceding, base = node_base_and_rest(preceding)
 
         curr_node.append({
-            'id':'user_' + str(user['id']),
-            'text':user['cn'],
-            'leaf':True,
-            'objectType':'User'
+            'id': 'user_' + str(user['id']),
+            'text': user['cn'],
+            'leaf': True,
+            'objectType': 'User'
             })
 
     #Sorts a subtree node by a sortField key of each element
-    def sort_tree(subtree,sort_field):
+    def sort_tree(subtree, sort_field):
         #Sort eval function, first by group property, then by text
         subtree['children'] = sorted(subtree['children'],
-            key=lambda obj:(1 if obj.get('children') == None else 0,obj[sort_field]))
+            key=lambda obj: (1 if obj.get('children') == None else 0, obj[sort_field]))
 
         for tree_elem in subtree['children']:
             if tree_elem.get('children') != None:
-                sort_tree(tree_elem,sort_field)
+                sort_tree(tree_elem, sort_field)
 
     #Collapses tree nodes which doesn't contain subgroups, just tree leaves
     def collapse_terminal_nodes(subtree):
@@ -79,41 +79,58 @@ def select_tree(node_name,Session):
                 collapse_terminal_nodes(tree_elem)
 
         subtree['expanded'] = subtree_has_group_nodes
+        
+    #Expand all level nodes
+    def expand_all_nodes(subtree):
+        for tree_elem in subtree['children']:
+            if tree_elem.get('children') != None:
+                expand_all_nodes(tree_elem)
+
+        subtree['expanded'] = True
 
     #Build user tree
     def get_user_tree():
         session = Session()
 
         #Get all users from DB
-        query_result = session.query(User.id.label('user_id'),User.cn,UserGroup.id.label('usergroup_id'),\
-            UserGroup.distinguishedName).join(UserGroup).filter(User.hidden==0).all()
+        if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) != None: 
+            query_result = session.query(User.id.label('user_id'), User.cn, UserGroup.id.label('usergroup_id'), \
+                UserGroup.distinguishedName).join(UserGroup).filter(User.hidden==0).all()
+        else:
+            query_result = session.query(User.id.label('user_id'), User.cn, UserGroup.id.label('usergroup_id'), \
+                UserGroup.distinguishedName).join(UserGroup).\
+                filter(User.id==current_user_properties['user_object']['id'], User.hidden==0).all()
 
         session.close()
 
+        #Future tree
         user_tree = []
         
-        #Place each on the tree
+        #Place each user on the tree
         for query_result_row in query_result:
             user_object = {
-                'id':query_result_row.user_id,
-                'distinguishedName':query_result_row.distinguishedName,
-                'cn':query_result_row.cn
+                'id': query_result_row.user_id,
+                'distinguishedName': query_result_row.distinguishedName,
+                'cn': query_result_row.cn
                 }
                 
-            place_user_onto_tree(user_object,user_tree,query_result_row.usergroup_id)
+            place_user_onto_tree(user_object, user_tree, query_result_row.usergroup_id)
 
         user_tree = {
-            'id':'usergroup_0',
-            'objectType':'UserGroup',
-            'text':'Пользователи',
-            'children':user_tree
+            'id': 'usergroup_0',
+            'objectType': 'UserGroup',
+            'text': 'Пользователи',
+            'children': user_tree
             }
 
         #Sorting tree elements
-        sort_tree(user_tree,'text')
+        sort_tree(user_tree, 'text')
 
-        #Collapsing tree nodes
-        collapse_terminal_nodes(user_tree)
+        #Collapsing/expanding tree nodes
+        if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) != None: 
+            collapse_terminal_nodes(user_tree)
+        else:
+            expand_all_nodes(user_tree)
 
         return user_tree
 
@@ -125,29 +142,29 @@ def select_tree(node_name,Session):
         query_result = session.query(UrlList).all()
 
         session.close()
+        
+        urllist_list = []
 
-        url_list_array = []
-
-        #Making an array of them
+        #Making a list of them
         for query_result_row in query_result:
             url_list_object = {
-                'id':'urllist_' + str(query_result_row.id),
-                'text':query_result_row.name,
-                'leaf':True,
-                'objectType':'UrlList'
+                'id': 'urllist_' + str(query_result_row.id),
+                'text': query_result_row.name,
+                'leaf': True,
+                'objectType': 'UrlList'
                 }
 
-            url_list_array.append(url_list_object)
+            urllist_list.append(url_list_object)
 
         url_lists = {
-            'id':'urllists',
-            'objectType':'UrlLists',
-            'text':'Списки URL',
-            'children':url_list_array
+            'id': 'urllists',
+            'objectType': 'UrlLists',
+            'text': 'Списки URL',
+            'children': urllist_list
             }
             
         #Sorting tree elements
-        sort_tree(url_lists,'text')
+        sort_tree(url_lists, 'text')
 
         return url_lists
         
@@ -160,67 +177,128 @@ def select_tree(node_name,Session):
 
         session.close()
 
-        access_templates_array = []
+        access_templates_list = []
 
-        #Making an array of them
+        #Making a list of them
         for query_result_row in query_result:
             access_template_object = {
-                'id':'accesstemplate_' + str(query_result_row.id),
-                'text':query_result_row.name,
-                'leaf':True,
-                'objectType':'AccessTemplateContents'
+                'id': 'accesstemplate_' + str(query_result_row.id),
+                'text': query_result_row.name,
+                'leaf': True,
+                'objectType': 'AccessTemplateContents'
                 }
 
-            access_templates_array.append(access_template_object)
+            access_templates_list.append(access_template_object)
 
         access_templates = {
-            'id':'accesstemplates',
-            'objectType':'AccessTemplates',
-            'text':'Шаблоны доступа',
-            'children':access_templates_array
+            'id': 'accesstemplates',
+            'objectType': 'AccessTemplates',
+            'text': 'Шаблоны доступа',
+            'children': access_templates_list
             }
             
         #Sorting tree elements
-        sort_tree(access_templates,'text')
+        sort_tree(access_templates, 'text')
 
         return access_templates
         
-    #Get settings node
-    def get_settings():
-        settings = {
-            'id':'settings',
-            'objectType':'Settings',
-            'text':'Общие настройки',
-            'leaf':True
+    #Get user roles
+    def get_roles():
+        session = Session()
+
+        #Get all roles from DB
+        query_result = session.query(Role).all()
+
+        session.close()
+
+        roles_list = []
+
+        #Making a list of them
+        for query_result_row in query_result:
+            role_object = {
+                'id': 'role_' + str(query_result_row.id),
+                'text': query_result_row.name,
+                'leaf': True,
+                'objectType': 'Role'
+                }
+
+            roles_list.append(role_object)
+
+        roles = {
+            'id': 'roles',
+            'objectType': 'Roles',
+            'text': 'Роли',
+            'children': roles_list
             }
 
-        return settings
+        #Sorting tree elements
+        sort_tree(roles, 'text')
 
-    if request.method == 'GET':
-        if node_name in ['root','urllists']:
+        return roles
+     
+    url_lists_node = None
+    access_templates_node = None
+    roles_node = None
+    users_node = None
+     
+    current_user_permissions = current_user_properties['user_permissions']
+
+    if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) != None:
+        if node_name in ['root', 'urllists']:
             url_lists_node = get_url_lists()
-            
-        if node_name in ['root','accesstemplates']:
+        
+        if node_name in ['root', 'accesstemplates']:
             access_templates_node = get_access_templates()
+
+    if next((item for item in current_user_permissions if item['permissionName'] == 'ViewPermissions'), None) != None:
+        if node_name in ['root', 'roles']:
+            roles_node = get_roles()
+  
+    if node_name in ['root']:
+        users_node = get_user_tree()
+
+    if node_name == 'root':
+        children_list = []
+        
+        if url_lists_node != None:
+            children_list.append(url_lists_node)
             
-        if node_name in ['root']:
-            settings_node = get_settings()
-            users_node = get_user_tree()
+        if access_templates_node != None:
+            children_list.append(access_templates_node)
+            
+        if roles_node != None:
+            children_list.append(roles_node)
+            
+        if users_node != None:
+            children_list.append(users_node)
+        
+        result = {
+            'success': True,
+            'children': children_list
+            }
+    elif node_name == 'urllists':
+        if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) != None:
+            result = {
+                'success': True,
+                'children': url_lists_node['children']
+                }
+        else:
+            return Response('Forbidden', 403)
+    elif node_name == 'accesstemplates':
+        if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) != None:
+            result = {
+                'success': True,
+                'children': access_templates_node['children']
+                }
+        else:
+            return Response('Forbidden', 403)
+    elif node_name == 'roles':
+        if next((item for item in current_user_permissions if item['permissionName'] == 'ViewPermissions'), None) != None:
+            result = {
+                'success': True,
+                'children': roles_node['children']
+                }
+        else:
+            return Response('Forbidden', 403)
 
-        if node_name == 'root':
-            result = {
-                'success':True,
-                'children':[settings_node,url_lists_node,access_templates_node,users_node]
-                }
-        elif node_name == 'urllists':
-            result = {
-                'success':True,
-                'children':url_lists_node['children']
-                }
-        elif node_name == 'accesstemplates':
-            result = {
-                'success':True,
-                'children':access_templates_node['children']
-                }
-
-        return jsonify(result)
+    return jsonify(result)

@@ -1,52 +1,52 @@
-Ext.define('tentacles.view.UrlMasksFormView', {
+Ext.define('tentacles.view.RolesFormView', {
     extend: 'Ext.form.Panel',
     
-    alias: 'widget.urlmasksformview',
+    alias: 'widget.rolesformview',
     
     requires: [
-        'tentacles.view.UrlMasksFormViewController'
+        'tentacles.view.RolesFormViewController'
         ],
+    
+    bodyPadding: 10,
 
     viewModel: {
         data: {
-            storeIsDirty: false,
             gridSelectionEmpty: true
             },
             
         links: {
-            selectedUrlList: {
-                reference: 'UrlListModel',
+            settings: {
+                reference: 'SettingsModel',
                 create: true
                 }
             },
             
         stores: {
-            urlMaskStore: {
-                model: 'UrlMaskModel',
+            roleStore: {
+                model: 'RoleModel',
 
                 pageSize: 0,
 
                 autoLoad: false,
 
-                listeners: { 
-                    write: 'writeUrlMaskStore',                   
-                    datachanged: 'onUrlMaskStoreDataChanged',
-                    load: 'onUrlMaskStoreLoad'
+                listeners: {                    
+                    datachanged: 'onRoleStoreDataChanged',
+                    load: 'onRoleStoreLoad'
                     }
                 }
             },
             
         formulas: {
-            urlListRecordStatus: {
+            settingsRecordStatus: {
                 bind: {
-                    bindTo: '{selectedUrlList}',
+                    bindTo: '{settings}',
                     deep: true
                     },
 
-                get: function(urlList) {
+                get: function(settings) {
                     var result = {
-                        dirty: urlList ? urlList.dirty : false,
-                        valid: urlList ? urlList.isValid() : false
+                        dirty: settings ? settings.dirty : false,
+                        valid: settings ? settings.isValid() : false
                         };
 
                     result.dirtyAndValid = result.dirty && result.valid;
@@ -54,11 +54,11 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                     return result;
                     }
                 },
-                
-            urlListRecordAndStoreStatus: function (get) {
+
+            settingsRecordAndStoreStatus: function(get) {
                 var result = {
-                    dirty: get('urlListRecordStatus').dirty || get('storeIsDirty'),
-                    valid: get('urlListRecordStatus').valid
+                    dirty: get('settingsRecordStatus').dirty || get('storeIsDirty'),
+                    valid: get('settingsRecordStatus').valid
                     };
 
                 result.dirtyAndValid = result.dirty && result.valid;
@@ -67,21 +67,17 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 },
                 
             hideEditableControls: function(get) {
-                return this.get('myPermissionsStore').findExact('permissionName', 'EditSettings') == -1;
+                return this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') == -1;
                 }
             }
         },
         
-    controller: 'urlmasksformviewcontroller',
-    
-    modelValidation: true,
-    
-    bodyPadding: 10,    
+    controller: 'rolesformviewcontroller',
         
     layout: {
         type: 'vbox',
         align: 'stretch',
-        pack: 'start'
+        pack  : 'start'
         },
     
     items: [
@@ -89,58 +85,40 @@ Ext.define('tentacles.view.UrlMasksFormView', {
         xtype: 'container',
         layout: 'auto',
         margin: '0 5 5 0',
-
+        
         items: [
             {
             xtype: 'displayfield',
             width: 415,
-            labelWidth: 100,
-            fieldLabel: 'Список URL',
+            labelWidth: 220,
+            fieldLabel: 'Роль пользователя по-умолчанию',
             hidden: false,
 
             bind: {
-                value: '{selectedUrlList.name}',
+                value: '{defaultrolecombobox.selection.name}',
                 hidden: '{!hideEditableControls}'
                 }
             },
             {
-            xtype: 'textfield',
-            fieldLabel: 'Список URL',
+            xtype: 'combobox',
+            reference: 'defaultrolecombobox',
             width: 415,
-            labelWidth: 100,
+            labelWidth: 220,
+            fieldLabel: 'Роль пользователя по-умолчанию',
+            editable: false,
             hidden: true,
 
-            bind: {
-                value: '{selectedUrlList.name}',
-                hidden: '{hideEditableControls}'
-                }
-            },
-            {
-            xtype: 'displayfield',
-            width: 500,
-            labelWidth: 100,
-            fieldLabel: 'Белый список',
-            hidden: false,
-
-            bind: {
-                value: '{selectedUrlList.whitelist}',
-                hidden: '{!hideEditableControls}'
+            store: {
+                model: 'tentacles.model.RoleModel',
+                autoload: false
                 },
-                
-            renderer: function (value, field) {
-                return value ? 'Да (запрещено всё, что явно не разрешено)' : 'Нет (разрешено всё, что явно не запрещено)';
-                }
-            },
-            {
-            xtype: 'checkboxfield',
-            fieldLabel: 'Белый список',
-            boxLabel: '(запрещено всё, что явно не разрешено)',
-            width: 500,
-            labelWidth: 100,
-            hidden: true,
+
+            displayField: 'name',
+            valueField: 'id',
+            autoLoadOnValue: true,
 
             bind: {
-                value: '{selectedUrlList.whitelist}',
+                value: '{settings.defaultRoleId}',
                 hidden: '{hideEditableControls}'
                 }
             },
@@ -152,20 +130,20 @@ Ext.define('tentacles.view.UrlMasksFormView', {
             bind: {
                 hidden: '{hideEditableControls}'
                 },
-                
+
             items: [
                 {
                 xtype: 'button',
                 width: 100,
                 text: 'Добавить',
-                handler: 'onAddUrlMaskClick'
+                handler: 'onAddRoleClick'
                 },
                 {
                 xtype: 'button',
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Удалить',
-                handler: 'onRemoveUrlMaskClick',
+                handler: 'onRemoveRoleClick',
                 disabled: true,
 
                 bind: {
@@ -177,11 +155,11 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Сохранить',
-                handler: 'onSaveUrlMaskClick',
+                handler: 'onSaveRoleClick',
                 disabled: true,
-
+                
                 bind: {
-                    disabled: '{!urlListRecordAndStoreStatus.dirtyAndValid}'
+                    disabled: '{!settingsRecordAndStoreStatus.dirtyAndValid}'
                     }
                 },
                 {
@@ -189,26 +167,26 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Отменить',
-                handler: 'onRevertUrlMaskClick',
+                handler: 'onRevertRoleClick',
                 disabled: true,
 
                 bind: {
-                    disabled: '{!urlListRecordAndStoreStatus.dirty}'
+                    disabled: '{!settingsRecordAndStoreStatus.dirty}'
                     }
                 }]
             }]
         },
         {
         xtype: 'grid',
-        reference: 'urlMaskGridRef', 
-        flex: 1,     
+        reference: 'roleGridRef',
+        flex: 1,    
 
         bind: {
-            store: '{urlMaskStore}'
+            store: '{roleStore}'
             },
         
         listeners: {
-            selectionChange: 'onUrlMaskGridSelectionChange'
+            selectionChange: 'onRoleGridSelectionChange'
             },
         
         columns: [
@@ -218,9 +196,9 @@ Ext.define('tentacles.view.UrlMasksFormView', {
             hideable: false
             },
             {
-            text: 'Маска URL',
+            text: 'Роль',
             dataIndex: 'name',
-            flex: 1
+            width: 200
             }]
         }]
     })

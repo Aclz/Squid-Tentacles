@@ -9,9 +9,9 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
         stores: {
             userReportTrafficByHostsGridStore: {
                 fields: [
-                    {name:'position',type:'int'},
-                    {name:'host'},
-                    {name:'traffic',type:'float'}
+                    {name: 'position', type: 'int'},
+                    {name: 'host'},
+                    {name: 'traffic', type: 'float'}
                     ],
 
                 pageSize: 0,
@@ -44,7 +44,9 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
 
     items: [
         {
+        xtype: 'container',
         layout: 'auto',
+        margin: '0 5 5 0',
 
         items: [
             {
@@ -83,7 +85,6 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
         {
         xtype: 'grid',
         reference: 'userReportTrafficByHostsGridRef',
-        margin: '10 0 0 0',
         columnLines: true,
         flex: 1,
         bufferedRenderer: false,

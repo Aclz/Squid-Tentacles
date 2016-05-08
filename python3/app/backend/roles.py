@@ -1,11 +1,42 @@
 from flask import request, jsonify
 
-from sql_classes import AccessTemplateContents
+from sql_classes import Role
 
-def select_accesstemplatecontents(accesstemplate_id, Session):
+def select_roles(Session):
     session = Session()
 
-    query_result = session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id).all()
+    query_result = session.query(Role).all()
+    
+    session.close()
+
+    if query_result == None:
+        return jsonify({
+            'success': True,
+            'data': []
+            })
+
+    roles_list = []
+
+    for query_result_row in query_result:
+        role_object = {
+            'id': query_result_row.id,
+            'name': query_result_row.name
+            }
+
+        roles_list.append(role_object)
+
+    response = {
+        'success': True,
+        'data': roles_list
+        }
+
+    return jsonify(response)
+    
+    
+def select_role(role_id, Session):
+    session = Session()
+
+    query_result = session.query(Role).get(role_id)
 
     session.close()
 
@@ -15,29 +46,23 @@ def select_accesstemplatecontents(accesstemplate_id, Session):
             'data': []
             })
 
-    access_template_contents_list = []
-
-    for query_result_row in query_result:
-        access_template_contents_object = {
-            'id': query_result_row.id,
-            'urlListId': query_result_row.urlListId,
-            'orderNumber': query_result_row.orderNumber
-            }
-
-        access_template_contents_list.append(access_template_contents_object)
+    role_object = {
+        'id': query_result.id,
+        'name': query_result.name
+        }
 
     response = {
         'success': True,
-        'data': access_template_contents_list
+        'data': role_object
         }
 
     return jsonify(response)
     
     
-def insert_accesstemplatecontents(accesstemplate_id, Session):
+def insert_role(Session):
     json_data = request.get_json()
 
-    if not json_data or json_data.get('urlListId') == None:
+    if not json_data or json_data.get('name') == None:
         return jsonify({
             'success': False,
             'message': 'Bad JSON request'
@@ -45,18 +70,15 @@ def insert_accesstemplatecontents(accesstemplate_id, Session):
 
     session = Session()
 
-    new_access_template_content = AccessTemplateContents(
-        accessTemplateId=accesstemplate_id,
-        urlListId=json_data.get('urlListId'),
-        orderNumber=json_data.get('orderNumber'))
+    new_role = Role(name=json_data.get('name'))
 
     try:
-        session.add(new_access_template_content)
+        session.add(new_role)
         session.commit()
 
         response = {
             'success': True,
-            'data': [{'id': new_access_template_content.id}]
+            'data': [{'id': new_role.id}]
             }
     except Exception as e:
         response = {
@@ -68,7 +90,7 @@ def insert_accesstemplatecontents(accesstemplate_id, Session):
     return jsonify(response)
     
     
-def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session):
+def update_role(role_id, Session):
     json_data = request.get_json()
 
     if not json_data:
@@ -79,14 +101,14 @@ def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, S
 
     session = Session()
 
-    query_result = session.query(AccessTemplateContents).get(accesstemplatecontent_id)
+    query_result = session.query(Role).get(role_id)
 
     if query_result == None:
         return jsonify(success = False)
 
     do_commit = False
 
-    allowed_to_update_fields = ['orderNumber']
+    allowed_to_update_fields = ['name']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
@@ -110,13 +132,11 @@ def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, S
     return jsonify(response)
 
 
-def delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session):
+def delete_role(role_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id,
-            id=accesstemplatecontent_id).first())
-            
+        session.delete(session.query(Role).filter_by(id=role_id).first())
         session.commit()
 
         response = {

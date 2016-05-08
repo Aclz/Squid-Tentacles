@@ -10,48 +10,69 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
                 }
             }
         },
-        
+            
     beforeTreeSelectionChange: function(args) {
         if (!args.selected) {
             return;
             }
 
-        this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+        this.fireEvent('onTreeSelectionChange', {selected: args.selected});
         },
         
     onUserGroupSelect: function(selectedId) {
-        this.getStore('groupUsersStore').getProxy().setExtraParam('userGroupId',selectedId);
+        this.getStore('groupUsersStore').getProxy().setExtraParam('userGroupId', selectedId);
         
-        if (this.getStore('accessTemplatesStore').isLoaded()) {
+        if (this.getViewModel().get('myPermissionsStore').findExact('permissionName', 'ViewUsers') != -1) {
+            this.getStore('accessTemplatesStore').load();
+            }
+        else {
             this.getStore('groupUsersStore').load();
             }
         },
         
-    onAccessTemplatesStoreLoad: function(selectedId) {
+    onGroupUserStoreLoad: function() {
+        var thisController = this;
+        
+        this.getStore('groupUsersStore').each(function(item) {
+            if (item.data['accessTemplateName'] == '') {                
+                var recordFound = thisController.getStore('accessTemplatesStore').getById(item.get('accessTemplateId'));
+
+                if (recordFound) {
+                    item.set('accessTemplateName', recordFound.get('name'));
+                    }
+                }
+                
+            if (item.data['statusName'] == '') {
+                var recordFound = thisController.getStore('userStatusesStore').getById(item.get('status'));
+
+                if (recordFound) {
+                    item.set('statusName', recordFound.get('name'));
+                    }
+                }
+
+            if (item.data['authMethodName'] == '') {
+                var recordFound = thisController.getStore('authMethodsStore').getById(item.get('authMethod'));
+
+                if (recordFound) {
+                    item.set('authMethodName', recordFound.get('name'));
+                    }
+                }
+
+            if (item.data['roleName'] == '') {
+                var recordFound = thisController.getStore('rolesStore').getById(item.get('roleId'));
+
+                if (recordFound) {
+                    item.set('roleName', recordFound.get('name'));
+                    }
+                }
+            });
+        },
+        
+    onAccessTemplatesStoreLoad: function() {
+        this.getStore('rolesStore').load();
+        },
+        
+    onRolesStoreLoad: function() {
         this.getStore('groupUsersStore').load();
-        },
-        
-    renderUserStatus: function(value,metaData,record) {
-        var recordFound = this.getStore('userStatusesStore').getById(record.get('status'));
-
-        if (recordFound) {
-            return recordFound.get('name');
-            }
-        },
-        
-    renderUserAuthMethod: function(value,metaData,record) {
-        var recordFound = this.getStore('authMethodsStore').getById(record.get('authMethod'));
-
-        if (recordFound) {
-            return recordFound.get('name');
-            }
-        },
-        
-    renderUserAccessTemplate: function(value,metaData,record) {
-        var recordFound = this.getStore('accessTemplatesStore').getById(record.get('accessTemplateId'));
-
-        if (recordFound) {
-            return recordFound.get('name');
-            }
         }
     })

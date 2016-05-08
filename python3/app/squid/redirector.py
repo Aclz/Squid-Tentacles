@@ -3,48 +3,48 @@
 import sys
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session,sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql.expression import literal
 
 from config import config
-from sql_classes import User,AccessTemplateContents,UrlList,UrlMask
+from sql_classes import User, AccessTemplateContents, UrlList, UrlMask, Settings
 
 
-def get_user_status(givenUsername,givenIp):
+def get_user_status(givenUsername, givenIp):
     session = Session()
-    query_result = session.query(User).filter_by(userPrincipalName=givenUsername,status=1,hidden=0,authMethod=0).first()
+    query_result = session.query(User).filter_by(userPrincipalName=givenUsername, status=1, hidden=0, authMethod=0).first()
     session.close()
 
     if query_result != None:
         return {
-            'status_ok':True,
-            'access_template':query_result.accessTemplate
+            'status_ok': True,
+            'access_template': query_result.accessTemplateId
             }
 
     session = Session()
-    query_result = session.query(User).filter_by(ip=givenIp,status=1,hidden=0,authMethod=1).first()
+    query_result = session.query(User).filter_by(ip=givenIp, status=1, hidden=0, authMethod=1).first()
     session.close()
 
     if query_result != None:
         return {
-            'status_ok':True,
-            'access_template':query_result.accessTemplate
+            'status_ok': True,
+            'access_template': query_result.accessTemplateId
             }
 
     return {
-        'status_ok':False
+        'status_ok': False
         }
     
     
-def url_ok(url,access_template):
+def url_ok(url, access_template):
     session = Session()
     
     query_result = session.query(UrlList.whitelist).\
-        join(AccessTemplateContents,AccessTemplateContents.urlListId==UrlList.id).\
-        join(UrlMask,UrlMask.urlListId==UrlList.id).\
+        join(AccessTemplateContents, AccessTemplateContents.urlListId==UrlList.id).\
+        join(UrlMask, UrlMask.urlListId==UrlList.id).\
         filter(AccessTemplateContents.accessTemplateId==access_template).\
         filter(literal(url).like('%' + UrlMask.name + '%')).\
-        order_by(AccessTemplateContents.accessTemplateId,AccessTemplateContents.orderNumber).first()
+        order_by(AccessTemplateContents.accessTemplateId, AccessTemplateContents.orderNumber).first()
 
     session.close()
     
@@ -57,18 +57,24 @@ def url_ok(url,access_template):
 
 def modify_url(line):
     list = line.split(' ')
+    
+    if len(list) < 3:
+        return 'http://redir_unexpected_line\n'
 
     #Decode string
     url = list[0]
     ip = list[1].split('/')[0]
     username = list[2]
-
-    user_status = get_user_status(username,ip)
+    
+    if username.find('@') == -1 and username.find('\\') == -1:
+        username = username + '@' + config['Authentication']['DefaultDomainName']
+        
+    user_status = get_user_status(username, ip)
 
     if not user_status['status_ok']:
         return 'http://' + config['Network']['WebInterfaceIpAddress'] + '/redir/banned.html\n'
         
-    if not url_ok(url,user_status['access_template']):
+    if not url_ok(url, user_status['access_template']):
         return 'http://' + config['Network']['WebInterfaceIpAddress'] + '/redir/forbidden.html\n'
     
     return '\n'

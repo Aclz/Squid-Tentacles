@@ -2,13 +2,14 @@ import sys
 import configparser
 
 config = configparser.ConfigParser()
-config.read('/etc/tentacles.conf',encoding='utf8')
+config.read('/etc/tentacles.conf', encoding = 'utf8')
 
 mandatory_sections = [
-    ('SQLAlchemy',['DBConnectionString','DBConnectionPoolRecycleTimeout']),
-    ('Network',['WebInterfaceIpAddress']),
-    ('LDAP',['Url','BaseDn','Query']),
-    ('Authentication',['KeytabFilePath'])
+    ('SQLAlchemy', ['DBConnectionString', 'DBConnectionPoolRecycleTimeout']),
+    ('Network', ['WebInterfaceIpAddress']),
+    ('LDAP', ['Url', 'BaseDn', 'Query']),
+    ('Authentication', ['Enabled', 'KeytabFilePath', 'ServerPrincipalName', 'DefaultDomainName']),
+    ('Authorization', ['Enabled'])
     ]
 
 for section in mandatory_sections:

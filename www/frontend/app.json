@@ -42,20 +42,6 @@
      */
     "framework": "ext",
     
-    /**
-     * The toolkit to use. Select either "classic" or "modern".
-     */
-    
-    "toolkit": "classic",
-    
-    
-    /**
-     * The name of the theme for this application.
-     */
-    
-    
-    
-    "theme": "theme-triton",
     
     
     
@@ -71,6 +57,18 @@
     "requires": [
         "font-awesome"
     ],
+
+    /**
+     * Fashion build configuration properties.
+     */
+    "fashion": {
+        "inliner": {
+            /**
+             * Disable resource inliner. Production builds enable this by default.
+             */
+            "enable": false
+        }
+    },
 
     /**
      * Sass configuration properties.
@@ -90,12 +88,10 @@
          * File used to save sass variables edited via Sencha Inspector. This file
          * will automatically be applied to the end of the scss build.
          *
-         *      "save": "sass/save.json"
+         *      "save": "sass/save.scss"
          *
          */
          
-        // "save": "sass/save.json",
-        
         /**
          * Comma-separated list of files or folders containing extra Sass. These
          * files are automatically included in the Sass compilation. By default this
@@ -216,13 +212,14 @@
         }
     ],
 
+    
     /**
      * Settings specific to classic toolkit builds.
      */
     "classic": {
         "js": [
+            // Remove this entry to individually load sources from the framework.
             {
-                // Remove this entry to individually load sources from the framework.
                 "path": "${framework.dir}/build/ext-all-rtl-debug.js"
             }
         ]
@@ -233,8 +230,8 @@
      */
     "modern": {
         "js": [
+            // Remove this entry to individually load sources from the framework.
             {
-                // Remove this entry to individually load sources from the framework.
                 "path": "${framework.dir}/build/ext-modern-all-debug.js"
             }
         ]
@@ -302,18 +299,19 @@
      */
     "production": {
         "output": {
-            
             "appCache": {
                 "enable": true,
                 "path": "cache.appcache"
             }
-            
         },
         "loader": {
             "cache": "${build.timestamp}"
         },
         "cache": {
             "enable": true
+        },
+        "compressor": {
+            "type": "yui"
         }
     },
     
@@ -366,6 +364,8 @@
     "bootstrap": {
         "base": "${app.dir}",
         
+        "manifest": "${build.id}.json",
+        
         "microloader": "bootstrap.js",
         "css": "bootstrap.css"
     },
@@ -413,8 +413,15 @@
     
     "output": {
         "base": "${workspace.build.dir}/${build.environment}/${app.name}",
+        "page": "index.html",
+        "manifest": "${build.id}.json",
+        "js": "${build.id}/app.js",
         "appCache": {
             "enable": false
+        },
+        "resources": {
+            "path": "${build.id}/resources",
+            "shared": "resources"
         }
     },
     
@@ -430,14 +437,16 @@
     *       // If set to a string the value will be used as the path to where deltas will be generated relative to you build.
     *       // If set to a Truthy Value the default path ok "deltas" will be used
     *       // If set to a Falsey value or if this property is not present deltas will be disabled and not generated.
-    *       //
+    *
     *       "deltas": "deltas"
     *   }
     */
+    
     "cache": {
         "enable": false,
-        "deltas": true
+        "deltas": "${build.id}/deltas"
     },
+    
 
     /**
      * Used to automatically generate cache.manifest (HTML 5 application cache manifest)
@@ -466,12 +475,18 @@
      * Extra resources to be copied into the resource folder as specified in the "resources"
      * property of the "output" object. Folders specified in this list will be deeply copied.
      */
-    "resource": {
-        "paths": [
-            "resources",
-            "${toolkit.name}/resources"
-        ]
-    },
+    "resources": [
+        {
+            "path": "resources",
+            "output": "shared"
+        },
+        {
+            "path": "${toolkit.name}/resources"
+        },
+        {
+            "path": "${build.id}/resources"
+        }
+    ],
 
     /**
      * File / directory name patttern to ignore when copying to the builds. Must be a
@@ -486,7 +501,10 @@
      * generated inside this directory must be kept intact for proper generation of
      * deltas between updates.
      */
-    "archivePath": "archive",
+    
+    "archivePath": "archive/${build.id}",
+    
+
 
     /**
      * The space config object is used by the "sencha app publish" command to publish
@@ -531,10 +549,22 @@
      *
      */
     
+    "builds": {
+        "classic": {
+            "toolkit": "classic",
+            
+            "theme": "theme-triton",
+            
+            "sass": {
+                // "save": "classic/sass/save.scss"
+            }
+        }
+    },
+    
 
     /**
      * Uniquely generated id for this application, used as prefix for localStorage keys.
      * Normally you should never change this value.
      */
-    "id": "a8091017-e666-41dc-915b-96139ded6192"
+    "id": "58752d17-d495-4aa8-aa57-47a6d734c026"
 }

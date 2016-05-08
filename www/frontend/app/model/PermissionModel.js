@@ -1,4 +1,4 @@
-Ext.define('tentacles.model.UrlListModel', {
+Ext.define('tentacles.model.PermissionModel', {
     extend: 'tentacles.model.BaseModel',
 
     fields: [
@@ -10,13 +10,11 @@ Ext.define('tentacles.model.UrlListModel', {
         validators: [{ 
             type: 'presence'
             }]
-        },
-        {name: 'whitelist', type: 'bool'}
-        ],
+        }],
         
     proxy: {
         type: 'rest',
-        url: '/rest/urllists',
+        url: '/rest/permissions',
 
         appendId: true,
         noCache: false,

@@ -16,9 +16,9 @@ Ext.define('tentacles.view.UserFormViewController', {
             return;
             }
             
-        var currentUser = this.getViewModel().data.currentUser;
+        var selectedUser = this.getViewModel().data.selectedUser;
             
-        if (currentUser.dirty && currentUser.isValid()) {
+        if (selectedUser.dirty && selectedUser.isValid()) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -31,37 +31,47 @@ Ext.define('tentacles.view.UserFormViewController', {
                         this.onSaveUserClick();
                         }
 
-                    this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+                    this.fireEvent('onTreeSelectionChange', {selected: args.selected});
                     }
                 });
             }
         else {
-            this.fireEvent('onTreeSelectionChange',{selected:args.selected});
+            this.fireEvent('onTreeSelectionChange', {selected: args.selected});
             }
         },
 
     onUserSelect: function(selectedId) {
-        this.getViewModel().linkTo('currentUser',{reference: 'UserModel',id: selectedId});
+        var hideTabs = (selectedId != this.getViewModel().get('loggedInUser.id')) &&
+            (this.getViewModel().get('myPermissionsStore').findExact('permissionName', 'ViewUsers') == -1);
+        
+        this.getViewModel().linkTo('selectedUser', {reference: 'UserModel', id: selectedId});
+        
         this.getView().setActiveTab(0);
+        
+        for (i = 1; i < this.getView().getTabBar().items.getCount(); i++)
+            if (hideTabs)
+                this.getView().getTabBar().items.getAt(i).hide();
+            else
+                this.getView().getTabBar().items.getAt(i).show();
 
         //setting the default field values and clean up stores
         var today = new Date();
 
         //userReportTrafficByHosts
         this.lookupReference('userReportTrafficByHostsDateBegRef').setValue(
-            new Date(today.getFullYear(),today.getMonth(), 1));
+            new Date(today.getFullYear(), today.getMonth(), 1));
 
         this.lookupReference('userReportTrafficByHostsDateEndRef').setValue(
-            new Date(today.getFullYear(),today.getMonth() + 1, 0));
+            new Date(today.getFullYear(), today.getMonth() + 1, 0));
 
         this.lookupReference('userReportTrafficByHostsGridRef').getStore().removeAll();
 
         //userReportTrafficByDates
         this.lookupReference('userReportTrafficByDatesDateBegRef').setValue(
-            new Date(today.getFullYear(),today.getMonth(), 1));
+            new Date(today.getFullYear(), today.getMonth(), 1));
 
         this.lookupReference('userReportTrafficByDatesDateEndRef').setValue(
-            new Date(today.getFullYear(),today.getMonth() + 1, 0));
+            new Date(today.getFullYear(), today.getMonth() + 1, 0));
 
         this.lookupReference('userReportTrafficByDatesGridRef').getStore().removeAll();
 
@@ -69,17 +79,31 @@ Ext.define('tentacles.view.UserFormViewController', {
         this.lookupReference('userReportDayTrafficDateRef').setValue(today);
 
         this.lookupReference('userReportDayTrafficGridRef').getStore().removeAll();
-        this.lookupReference('userReportDayTrafficGridRef').getStore().currentPage = 1;
+        this.lookupReference('userReportDayTrafficGridRef').getStore().selectedPage = 1;
 
         this.lookupReference('userReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar        
         },
 
     onSaveUserClick: function() {
-        this.getViewModel().data.currentUser.save();
+        var thisController = this;
+        
+        this.getViewModel().data.selectedUser.save({
+            failure: function(record, operation) {
+                thisController.getViewModel().data.selectedUser.reject();
+            
+                Ext.MessageBox.show({
+                    title: 'Ошибка',
+                    message: (operation.error && operation.error.status == 403) ?
+                        'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.MessageBox.ERROR
+                    });
+                }
+            })
         },
 
     onRevertUserClick: function() {
-        this.getViewModel().data.currentUser.reject();
+        this.getViewModel().data.selectedUser.reject();
         },
 
     onShowUserReportTrafficByHostsClick: function() {
@@ -88,7 +112,16 @@ Ext.define('tentacles.view.UserFormViewController', {
 
         gridStore.load({
             callback: function(records, operation, success) {
-                grid.getView().setScrollY(0);
+                if (success)
+                    grid.getView().setScrollY(0);
+                else
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: (operation.error && operation.error.status == 403) ?
+                            'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
                 }
             });
         },
@@ -99,7 +132,16 @@ Ext.define('tentacles.view.UserFormViewController', {
 
         gridStore.load({
             callback: function(records, operation, success) {
-                grid.getView().setScrollY(0);
+                if (success)
+                    grid.getView().setScrollY(0);
+                else
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: (operation.error && operation.error.status == 403) ?
+                            'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
                 }
             });
         },
@@ -108,36 +150,45 @@ Ext.define('tentacles.view.UserFormViewController', {
         var grid = this.lookupReference('userReportDayTrafficGridRef');
         var gridStore = grid.getStore();
 
-        gridStore.currentPage = 1;
+        gridStore.selectedPage = 1;
 
         gridStore.load({
             callback: function(records, operation, success) {
-                grid.getView().setScrollY(0);
+                if (success)
+                    grid.getView().setScrollY(0);
+                else
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: (operation.error && operation.error.status == 403) ?
+                            'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
                 }
             });
         },
         
     beforeLoadUserReportTrafficByHostsGridStore: function(store) {
         store.getProxy().setExtraParams({
-            'userId':this.getViewModel().data.currentUser.id,
-            'dateBeg':this.lookupReference('userReportTrafficByHostsDateBegRef').getValue(),
-            'dateEnd':this.lookupReference('userReportTrafficByHostsDateEndRef').getValue(),
-            'limit':this.lookupReference('userReportTrafficByHostsLimitRef').getValue()
+            'userId': this.getViewModel().data.selectedUser.id,
+            'dateBeg': this.lookupReference('userReportTrafficByHostsDateBegRef').getValue(),
+            'dateEnd': this.lookupReference('userReportTrafficByHostsDateEndRef').getValue(),
+            'limit': this.lookupReference('userReportTrafficByHostsLimitRef').getValue()
             });
         },
 
     beforeLoadUserReportTrafficByDatesGridStore: function(store) {
         store.getProxy().setExtraParams({
-            'userId':this.getViewModel().data.currentUser.id,
-            'dateBeg':this.lookupReference('userReportTrafficByDatesDateBegRef').getValue(),
-            'dateEnd':this.lookupReference('userReportTrafficByDatesDateEndRef').getValue()
+            'userId': this.getViewModel().data.selectedUser.id,
+            'dateBeg': this.lookupReference('userReportTrafficByDatesDateBegRef').getValue(),
+            'dateEnd': this.lookupReference('userReportTrafficByDatesDateEndRef').getValue()
             });
         },
 
     beforeLoadUserReportDayTrafficGridStore: function(store) {
         store.getProxy().setExtraParams({
-            'userId':this.getViewModel().data.currentUser.id,
-            'date':this.lookupReference('userReportDayTrafficDateRef').getValue()
+            'userId': this.getViewModel().data.selectedUser.id,
+            'date': this.lookupReference('userReportDayTrafficDateRef').getValue()
             });
         }
     })
