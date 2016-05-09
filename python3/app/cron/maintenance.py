@@ -16,7 +16,10 @@ def main():
     Session = scoped_session(sessionmaker(bind=engine))
 
     session = Session()
-    session.execute('call maintenance()')
+    
+    session.execute('call maintenance(:defaultDomainName)',
+        params={'defaultDomainName': config['Authentication']['DefaultDomainName']})
+        
     session.commit()
     session.close()
 
