@@ -48,11 +48,12 @@ Ext.define('tentacles.view.UserFormViewController', {
         
         this.getView().setActiveTab(0);
         
-        for (i = 1; i < this.getView().getTabBar().items.getCount(); i++)
+        for (i = 1; i < this.getView().getTabBar().items.getCount(); i++) {
             if (hideTabs)
                 this.getView().getTabBar().items.getAt(i).hide();
             else
                 this.getView().getTabBar().items.getAt(i).show();
+            }
 
         //setting the default field values and clean up stores
         var today = new Date();
@@ -81,7 +82,7 @@ Ext.define('tentacles.view.UserFormViewController', {
         this.lookupReference('userReportDayTrafficGridRef').getStore().removeAll();
         this.lookupReference('userReportDayTrafficGridRef').getStore().selectedPage = 1;
 
-        this.lookupReference('userReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar        
+        this.lookupReference('userReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar
         },
 
     onSaveUserClick: function() {

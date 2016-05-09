@@ -41,6 +41,5 @@ Ext.define('tentacles.view.UserFormView', {
         {
         xtype: 'userformviewreportdaytraffictab',
         hidden: true
-        }
-        ]
+        }]
     })

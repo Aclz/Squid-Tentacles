@@ -1,9 +1,10 @@
 from flask import request, jsonify
+from sqlalchemy.orm import aliased
 
 from sql_classes import User, UserGroup
 
 
-def report_select_group_users(current_user_properties, Session):
+def report_select_group_members(current_user_properties, Session):
     mandatory_params = ['userGroupId']
     
     for param_name in mandatory_params:
@@ -18,8 +19,12 @@ def report_select_group_users(current_user_properties, Session):
         if (request.args.get('userGroupId') == '0'):
             query_result = session.query(User).filter_by(hidden=0).order_by(User.cn).all()
         else:
+            user_group = aliased(UserGroup)
+            requested_group = aliased(UserGroup)
+            
             query_result = session.query(User).filter_by(hidden=0).\
-                join(UserGroup).filter(UserGroup.id==request.args.get('userGroupId')).order_by(User.cn).all()
+                join(user_group).join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
+                filter(requested_group.id==request.args.get('userGroupId')).order_by(User.cn).all()
     else:
         if (request.args.get('userGroupId') == '0'):
             query_result = session.query(User).filter_by(id=current_user_properties['user_object']['id'], hidden=0).\

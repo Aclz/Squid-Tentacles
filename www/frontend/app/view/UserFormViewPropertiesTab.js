@@ -111,7 +111,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         
     modelValidation: true,
-
+    
     title: 'Свойства',
 
     items: [        

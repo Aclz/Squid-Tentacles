@@ -30,7 +30,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
         formulas: {
             hideEditableControls: function(get) {
                 return this.get('myPermissionsStore').findExact('permissionName', 'EditSettings') == -1;
-                },
+                }
             }
         },
         

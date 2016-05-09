@@ -89,7 +89,7 @@ Ext.define('tentacles.view.RolePermissionsFormView', {
                 
             hideEditableControls: function(get) {
                 return this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') == -1;
-                },
+                }
             }
         },
         

@@ -78,7 +78,10 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
         tbar: {
             xtype: 'pagingtoolbar',
             reference: 'userReportDayTrafficGridTbarRef',
-            bind: {store: '{userReportDayTrafficGridStore}'},
+            
+            bind: {
+                store: '{userReportDayTrafficGridStore}'
+                },
 
             listeners: {
                 afterrender: function() {
@@ -87,7 +90,9 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
                 }
             },
 
-        bind: {store: '{userReportDayTrafficGridStore}'},
+        bind: {
+            store: '{userReportDayTrafficGridStore}'
+            },
             
         columns: [
             {

@@ -15,7 +15,7 @@ Ext.define('tentacles.view.MainView', {
         
     viewModel: {
         data: {
-            projectName: 'Squid Tentacles v0.7.0.0 beta'
+            projectName: 'Squid Tentacles v0.7.5.1 beta'
             },
             
         links: {

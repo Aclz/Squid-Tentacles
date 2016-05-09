@@ -30,6 +30,7 @@ engine = create_engine(config['SQLAlchemy']['DBConnectionString'],
 Session = scoped_session(sessionmaker(bind=engine))
 
 
+#Identity requests
 @app.route('/rest/whoami', methods=['GET'])
 @authorization(['Allow'], Session, True)
 def who_am_i(user_properties):
@@ -42,6 +43,7 @@ def my_permissions(user_properties):
     return init.my_permissions(user_properties['user_permissions'], Session)
 
 
+#URL lists
 @app.route('/rest/urllists', methods=['GET'])
 @authorization(['ViewSettings'], Session)
 def select_urllists():
@@ -89,7 +91,8 @@ def insert_urlmask(urllist_id):
 def delete_urlmask(urllist_id, urlmask_id):
     return urlmasks.delete_urlmask(urllist_id, urlmask_id, Session)
     
-    
+
+#Access templates
 @app.route('/rest/accesstemplates', methods=['GET'])
 @authorization(['ViewSettings', 'ViewUsers'], Session)
 def select_accesstemplates():
@@ -144,6 +147,7 @@ def delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id):
     return accesstemplatecontents.delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session)
 
 
+#Roles
 @app.route('/rest/permissions', methods=['GET'])
 @authorization(['ViewPermissions'], Session)
 def select_permissions():
@@ -198,6 +202,7 @@ def delete_role_permission(role_id, permission_id):
     return rolepermissions.delete_role_permission(role_id, permission_id, Session)
 
 
+#Users
 @app.route('/rest/users/<int:user_id>', methods=['GET'])
 @authorization(['Allow'], Session, True)
 def select_user(user_properties, user_id):
@@ -210,12 +215,14 @@ def update_user(user_id):
     return users.update_user(user_id, Session)
     
 
+#Main tree
 @app.route('/rest/tree/<node_name>', methods=['GET'])
 @authorization(['Allow'], Session, True)
 def select_tree(user_properties, node_name):
     return maintree.select_tree(user_properties, node_name, Session)
 
 
+#User reports
 @app.route('/rest/reports/user-traffic-by-hosts', methods=['GET'])
 @authorization(['_ViewUserTrafficReports'], Session)
 def report_user_traffic_by_hosts():
@@ -234,12 +241,32 @@ def report_user_day_traffic():
     return accesslogreports.report_user_day_traffic(Session)
     
     
-@app.route('/rest/reports/group-users', methods=['GET'])
+#Group reports
+@app.route('/rest/reports/group-members', methods=['GET'])
 @authorization(['Allow'], Session, True)
-def report_select_group_users(user_properties):
-    return usergroups.report_select_group_users(user_properties, Session)
+def report_select_group_members(user_properties):
+    return usergroups.report_select_group_members(user_properties, Session)
     
 
+@app.route('/rest/reports/group-traffic-by-hosts', methods=['GET'])
+@authorization(['ViewUsers'], Session)
+def report_group_traffic_by_hosts():
+    return accesslogreports.report_group_traffic_by_hosts(Session)
+    
+    
+@app.route('/rest/reports/group-traffic-by-dates', methods=['GET'])
+@authorization(['ViewUsers'], Session)
+def report_group_traffic_by_dates():
+    return accesslogreports.report_group_traffic_by_dates(Session)
+
+
+@app.route('/rest/reports/group-day-traffic', methods=['GET'])
+@authorization(['ViewUsers'], Session)
+def report_group_day_traffic():
+    return accesslogreports.report_group_day_traffic(Session)
+    
+
+#Settings requests
 @app.route('/rest/settings', methods=['GET'])
 @authorization(['ViewSettings', 'ViewPermissions'], Session, True)
 def select_settings(user_properties):
