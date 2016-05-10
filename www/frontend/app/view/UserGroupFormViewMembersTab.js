@@ -112,6 +112,7 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
     items: [{
         xtype: 'displayfield',
         fieldLabel: 'Группа',
+        labelWidth: 50,
 
         bind: {
             value: '{mainTreeViewRef.selection.text}'

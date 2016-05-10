@@ -23,12 +23,12 @@ Ext.define('tentacles.view.RolesFormViewController', {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
-                buttons: Ext.Msg.OKCANCEL,
+                buttons: Ext.Msg.YESNO,
                 icon: Ext.MessageBox.WARNING,
                 scope: this,
 
                 fn: function(btn) {
-                    if (btn == 'ok') {
+                    if (btn == 'yes') {
                         thisController.onSaveRoleClick();
                         }
 

@@ -60,6 +60,7 @@ def _place_user_onto_tree(user, usertree, user_groups):
         'id': 'user_' + str(user['id']),
         'text': user['cn'],
         'leaf': True,
+        'iconCls': 'x-fa fa-user' if user['status'] == 1 else 'x-fa fa-user-times',
         'objectType': 'User'
         })
 
@@ -108,11 +109,11 @@ def _get_user_tree(current_user_properties, Session):
             
     #Get all users if ViewUsers permission present
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) != None: 
-        query_result = session.query(User.id.label('user_id'), User.cn, UserGroup.id.label('usergroup_id'), \
+        query_result = session.query(User.id.label('user_id'), User.cn, User.status, UserGroup.id.label('usergroup_id'), \
             UserGroup.distinguishedName).join(UserGroup).filter(User.hidden==0).all()
     #Get just the requester otherwise
     else:
-        query_result = session.query(User.id.label('user_id'), User.cn, UserGroup.id.label('usergroup_id'), \
+        query_result = session.query(User.id.label('user_id'), User.cn, User.status, UserGroup.id.label('usergroup_id'), \
             UserGroup.distinguishedName).join(UserGroup).\
             filter(User.id==current_user_properties['user_object']['id'], User.hidden==0).all()
 
@@ -126,6 +127,7 @@ def _get_user_tree(current_user_properties, Session):
         user_object = {
             'id': query_result_row.user_id,
             'distinguishedName': query_result_row.distinguishedName,
+            'status': query_result_row.status,
             'cn': query_result_row.cn
             }
             
@@ -166,6 +168,7 @@ def _get_url_lists(Session):
             'id': 'urllist_' + str(query_result_row.id),
             'text': query_result_row.name,
             'leaf': True,
+            'iconCls': 'x-fa fa-unlock' if query_result_row.whitelist else 'x-fa fa-lock',
             'objectType': 'UrlList'
             }
 
@@ -175,6 +178,7 @@ def _get_url_lists(Session):
         'id': 'urllists',
         'objectType': 'UrlLists',
         'text': 'Списки URL',
+        'iconCls': 'x-fa fa-cog',
         'children': urllist_list
         }
         
@@ -200,6 +204,7 @@ def _get_access_templates(Session):
             'id': 'accesstemplate_' + str(query_result_row.id),
             'text': query_result_row.name,
             'leaf': True,
+            'iconCls': 'x-fa fa-filter',
             'objectType': 'AccessTemplateContents'
             }
 
@@ -209,6 +214,7 @@ def _get_access_templates(Session):
         'id': 'accesstemplates',
         'objectType': 'AccessTemplates',
         'text': 'Шаблоны доступа',
+        'iconCls': 'x-fa fa-cog',
         'children': access_templates_list
         }
         
@@ -234,6 +240,7 @@ def _get_roles(Session):
             'id': 'role_' + str(query_result_row.id),
             'text': query_result_row.name,
             'leaf': True,
+            'iconCls': 'x-fa fa-key',
             'objectType': 'Role'
             }
 
@@ -243,6 +250,7 @@ def _get_roles(Session):
         'id': 'roles',
         'objectType': 'Roles',
         'text': 'Роли',
+        'iconCls': 'x-fa fa-cog',
         'children': roles_list
         }
 
