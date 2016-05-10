@@ -15,7 +15,7 @@ Ext.define('tentacles.view.MainView', {
         
     viewModel: {
         data: {
-            projectName: 'Squid Tentacles v0.7.6.6 beta'
+            projectName: 'Squid Tentacles v0.7.6.9 beta'
             },
             
         links: {
@@ -32,7 +32,7 @@ Ext.define('tentacles.view.MainView', {
                     {name: 'permissionName', type: 'string'}
                     ],
                     
-                autoLoad: true,
+                autoLoad: false,
 
                 proxy: {
                     type: 'rest',
@@ -45,28 +45,47 @@ Ext.define('tentacles.view.MainView', {
                         type: 'json',
                         rootProperty: 'data'
                         }
+                    },
+                    
+                listeners: {
+                    load: 'onMyPermissionsStoreLoad'
                     }
                 },
                 
             mainTreeStore: {
                 type: 'tree',
-                model: 'MainTreeModel',  
-                rootVisible: true,
+                model: 'MainTreeModel',
                     
                 root: {
                     text: 'Tentacles',
                     expanded: true,
                     objectType: 'RootContainer'
+                    },
+                    
+                listeners: {
+                    load: {
+                        fn: 'onMainTreeStoreLoad',
+                        single: true
+                        }
+                    }
+                }
+            },
+            
+        formulas: {
+            hideExtraControls: {
+                bind: {
+                    bindTo: '{myPermissionsStore}',
+                    deep: true
+                    },
+                 
+                get: function(store) {
+                    return store.getCount() == 0;
                     }
                 }
             }
         },
         
     controller: 'mainviewcontroller',
-    
-    listeners: {
-        render: 'onRender'
-        },
     
     layout: 'border',
 
@@ -108,6 +127,8 @@ Ext.define('tentacles.view.MainView', {
         xtype: 'treepanel',
         region: 'west',
         split: true,
+        rootVisible: false,
+        collapsible: true,
         
         bind: {
             store: '{mainTreeStore}'
@@ -116,29 +137,63 @@ Ext.define('tentacles.view.MainView', {
         reference: 'mainTreeViewRef',
         width: 360,    
         useArrows: true,
-        title: 'Navigation tree',
+        title: 'Навигация',
         header: false,
 
-        tbar: [
+        dockedItems: [
             {
-            xtype: 'textfield',
-            fieldLabel: 'Быстрый поиск',
-            width: 345,
-            labelWidth: 100,
+            xtype: 'toolbar',
+            dock: 'top',
+            layout: 'fit',
+            hidden: true,
             
-            triggers: {
-                clearBtn: {
-                    cls: 'x-form-clear-trigger',
-                    
-                    handler: function() {
-                        this.reset();
-                        }
-                    }
+            bind: {
+                hidden: '{hideExtraControls}'
                 },
             
-            listeners: {
-                change: 'onFilterFieldChange'
-                }
+            items: [
+                {
+                xtype: 'textfield',
+                fieldLabel: 'Быстрый поиск',
+                labelWidth: 100,
+                
+                triggers: {
+                    clearBtn: {
+                        cls: 'x-form-clear-trigger',
+                        
+                        handler: function() {
+                            this.reset();
+                            }
+                        }
+                    },
+                
+                listeners: {
+                    change: 'onFilterFieldChange'
+                    }
+                }]
+            },
+            {
+            xtype: 'toolbar',
+            reference: 'bottomTreeToolbarRef',
+            dock: 'bottom',
+            layout: 'hbox',
+            hidden: true,
+            
+            bind: {
+                hidden: '{hideExtraControls}'
+                },            
+            
+            items: [
+                {
+                text: 'Развернуть всё',               
+                handler: 'expandTree',
+                flex: 1
+                },
+                {
+                text: 'Свернуть всё',               
+                handler: 'collapseTree',
+                flex: 1
+                }]
             }],
         
         listeners: {

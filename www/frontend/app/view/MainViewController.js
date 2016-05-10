@@ -34,57 +34,10 @@ Ext.define('tentacles.view.MainViewController', {
                 }
             }
         },
-        
-    onRender: function() {
-        var thisController = this;
-        
-        this.getViewModel().data.loggedInUser.load({
-            failure: function(record, operation) {
-                if (operation.error && operation.error.status == 403) {
-                    thisController.getViewModel().data.loggedInUser = {
-                        cn: 'Нет доступа',
-                        status: 2
-                        };
-
-                    Ext.MessageBox.show({
-                        title: 'Ошибка',
-                        message: 'Недостаточно прав доступа!',
-                        buttons: Ext.Msg.OK,
-                        icon: Ext.MessageBox.ERROR
-                        });
-                    }
-                else if (operation.error.status == 502) {
-                    thisController.getViewModel().data.loggedInUser = {
-                        cn: 'Нет связи',
-                        status: 2
-                        };
-                        
-                    Ext.MessageBox.show({
-                        title: 'Ошибка',
-                        message: 'Нет связи с сервером!',
-                        buttons: Ext.Msg.OK,
-                        icon: Ext.MessageBox.ERROR
-                        });
-                    }
-                else {
-                    thisController.getViewModel().data.loggedInUser = {
-                        cn: 'Анонимный пользователь',
-                        status: 2
-                        };
-
-                    Ext.MessageBox.show({
-                        title: 'Ошибка',
-                        message: 'Ошибка аутентификации пользователя',
-                        buttons: Ext.Msg.OK,
-                        icon: Ext.MessageBox.ERROR
-                        });
-                    }
-                }
-            });
-        },
  
     onTreeSelectionChange: function(args) {
-        if (!args || !args.selected || !args.selected.data || !args.selected.data.objectType) {            
+        if (!args || !args.selected || !args.selected.data || !args.selected.data.objectType) {
+            this.lookupReference('detailsPanelRef').removeAll();
             return;
             }
         
@@ -321,5 +274,90 @@ Ext.define('tentacles.view.MainViewController', {
         catch (e) {
             textfield.markInvalid('Invalid regular expression');
             }
+        },
+    
+    onMainTreeStoreLoad: function(store) {
+        this.getStore('myPermissionsStore').load();
+        },
+        
+    onMyPermissionsStoreLoad: function() {
+        thisController = this;
+        
+        this.getViewModel().data.loggedInUser.load({
+            failure: function(record, operation) {
+                if (operation.error && operation.error.status == 403) {
+                    thisController.getViewModel().data.loggedInUser = {
+                        cn: 'Нет доступа',
+                        status: 2
+                        };
+
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: 'Недостаточно прав доступа!',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
+                    }
+                else if (operation.error.status == 502) {
+                    thisController.getViewModel().data.loggedInUser = {
+                        cn: 'Нет связи',
+                        status: 2
+                        };
+                        
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: 'Нет связи с сервером!',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
+                    }
+                else {
+                    thisController.getViewModel().data.loggedInUser = {
+                        cn: 'Анонимный пользователь',
+                        status: 2
+                        };
+
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: 'Ошибка аутентификации пользователя',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
+                    }
+                },
+                
+            success: function() {
+                var tree = thisController.lookupReference('mainTreeViewRef');
+                var store = tree.getStore();
+                var node = store.getNodeById('user_' + thisController.getViewModel().data.loggedInUser.id);
+                
+                if (node != undefined) {
+                    tree.getSelectionModel().select([node]);
+                    tree.selectPath(node.getPath());
+                    }
+                }
+            });
+        },
+    
+    expandTree: function() {
+        var toolbar = this.lookupReference('bottomTreeToolbarRef');
+        var tree = this.lookupReference('mainTreeViewRef');
+
+        toolbar.disable();
+        
+        tree.expandAll(function() {
+            toolbar.enable();
+            });
+        },
+        
+    collapseTree: function() {
+        var toolbar = this.lookupReference('bottomTreeToolbarRef');
+        var tree = this.lookupReference('mainTreeViewRef');
+        
+        toolbar.disable();
+        
+        tree.collapseAll(function() {
+            toolbar.enable();
+            });
         }
     });
