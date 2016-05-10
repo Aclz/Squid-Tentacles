@@ -103,8 +103,6 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
     
     title: 'Пользователи',
     
-    bodyPadding: 10,
-    
     layout: {
         type: 'vbox',
         align : 'stretch',

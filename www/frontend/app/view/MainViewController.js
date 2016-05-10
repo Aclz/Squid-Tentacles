@@ -286,5 +286,40 @@ Ext.define('tentacles.view.MainViewController', {
                     }
                 });
             };
+        },
+        
+    onFilterFieldChange: function(textfield, value) {
+        var tree = this.lookupReference('mainTreeViewRef');
+        var regexp = new RegExp(value, 'i'); //i - case insensitive option
+
+        try {
+            Ext.suspendLayouts();
+            
+            tree.store.filter({
+                filterFn: function(node) {
+                    var children = node.childNodes;
+                    var len = children && children.length,
+
+                    // Visibility of leaf nodes is whether they pass the test.
+                    // Visibility of branch nodes depends on them having visible children.
+                    visible = node.isLeaf() ? regexp.test(node.get('text')) : false, i;
+
+                    // We're visible if one of our child nodes is visible.
+                    // No loop body here. We are looping only while the visible flag remains false.
+                    // Child nodes are filtered before parents, so we can check them here.
+                    // As soon as we find a visible child, this branch node must be visible.
+                    for (i = 0; i < len && !(visible = children[i].get('visible')); i++);
+                    
+                    return visible;
+                    },
+                
+                id: 'treeFilter'
+                });
+            
+            Ext.resumeLayouts(true);
+            }
+        catch (e) {
+            textfield.markInvalid('Invalid regular expression');
+            }
         }
     });

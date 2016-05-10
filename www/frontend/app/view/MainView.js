@@ -15,7 +15,7 @@ Ext.define('tentacles.view.MainView', {
         
     viewModel: {
         data: {
-            projectName: 'Squid Tentacles v0.7.5.1 beta'
+            projectName: 'Squid Tentacles v0.7.6.6 beta'
             },
             
         links: {
@@ -117,7 +117,29 @@ Ext.define('tentacles.view.MainView', {
         width: 360,    
         useArrows: true,
         title: 'Navigation tree',
-        header: false,    
+        header: false,
+
+        tbar: [
+            {
+            xtype: 'textfield',
+            fieldLabel: 'Быстрый поиск',
+            width: 345,
+            labelWidth: 100,
+            
+            triggers: {
+                clearBtn: {
+                    cls: 'x-form-clear-trigger',
+                    
+                    handler: function() {
+                        this.reset();
+                        }
+                    }
+                },
+            
+            listeners: {
+                change: 'onFilterFieldChange'
+                }
+            }],
         
         listeners: {
             beforeselect: 'beforeTreeSelect'
