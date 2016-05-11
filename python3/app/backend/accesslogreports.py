@@ -69,17 +69,10 @@ def report_group_traffic_by_hosts(Session):
     session = Session()
     
     if request.args.get('groupId') != '0':
-        user_group = aliased(UserGroup)
-        requested_group = aliased(UserGroup)
-        
-        users_sq = session.query(User.id).join(user_group).\
-            join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
-            filter(requested_group.id==request.args.get('groupId')).subquery()
-
         if request.args.get('limit') == '0':
             query_result = session.query(AccessLogArchive.host,
                 label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.userId.in_(users_sq),
+                AccessLogArchive.groupId == request.args.get('groupId'),
                 AccessLogArchive.date >= request.args.get('dateBeg'),
                 AccessLogArchive.date <= request.args.get('dateEnd')).\
                 group_by(AccessLogArchive.host).having(
@@ -88,7 +81,7 @@ def report_group_traffic_by_hosts(Session):
         else:
             query_result = session.query(AccessLogArchive.host,
                 label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.userId.in_(users_sq),
+                AccessLogArchive.groupId == request.args.get('groupId'),
                 AccessLogArchive.date >= request.args.get('dateBeg'),
                 AccessLogArchive.date <= request.args.get('dateEnd')).\
                 group_by(AccessLogArchive.host).having(
@@ -186,16 +179,9 @@ def report_group_traffic_by_dates(Session):
     session = Session()
     
     if request.args.get('groupId') != '0':
-        user_group = aliased(UserGroup)
-        requested_group = aliased(UserGroup)
-        
-        users_sq = session.query(User.id).join(user_group).\
-            join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
-            filter(requested_group.id==request.args.get('groupId')).subquery()
-            
         query_result = session.query(AccessLogArchive.date,
             label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-            AccessLogArchive.userId.in_(users_sq),
+            AccessLogArchive.groupId == request.args.get('groupId'),
             AccessLogArchive.date >= request.args.get('dateBeg'),
             AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(AccessLogArchive.date).having(
@@ -293,15 +279,8 @@ def report_group_day_traffic(Session):
     session = Session()
 
     if request.args.get('groupId') != '0':
-        user_group = aliased(UserGroup)
-        requested_group = aliased(UserGroup)
-        
-        users_sq = session.query(User.id).join(user_group).\
-            join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
-            filter(requested_group.id==request.args.get('groupId')).subquery()
-            
         query_result = session.query(AccessLog).filter(
-            AccessLog.userId.in_(users_sq),
+            AccessLog.groupId == request.args.get('groupId'),
             AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
                 request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
             AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(

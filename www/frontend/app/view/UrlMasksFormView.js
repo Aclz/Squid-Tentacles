@@ -201,7 +201,11 @@ Ext.define('tentacles.view.UrlMasksFormView', {
         {
         xtype: 'grid',
         reference: 'urlMaskGridRef', 
-        flex: 1,     
+        flex: 1,
+
+        viewConfig: {
+            enableTextSelection: true
+            },        
 
         bind: {
             store: '{urlMaskStore}'

@@ -92,6 +92,7 @@ class AccessLog(Base):
     http_reply_size = Column(Integer)
     http_url = Column(Text)
     userId = Column(Integer, ForeignKey('users.id'))
+    groupId = Column(Integer, ForeignKey('userGroups.id'), nullable=False)
 
 
 class Settings(Base):

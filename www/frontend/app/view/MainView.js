@@ -15,7 +15,7 @@ Ext.define('tentacles.view.MainView', {
         
     viewModel: {
         data: {
-            projectName: 'Squid Tentacles v0.7.8.0 beta'
+            projectName: 'Squid Tentacles v0.7.8.2 beta'
             },
             
         links: {
@@ -144,7 +144,7 @@ Ext.define('tentacles.view.MainView', {
             {
             xtype: 'toolbar',
             dock: 'top',
-            layout: 'fit',
+            layout: 'hbox',
             hidden: true,
             
             bind: {
@@ -156,6 +156,7 @@ Ext.define('tentacles.view.MainView', {
                 xtype: 'textfield',
                 fieldLabel: 'Быстрый поиск',
                 labelWidth: 100,
+                flex: 1,
                 
                 triggers: {
                     clearBtn: {

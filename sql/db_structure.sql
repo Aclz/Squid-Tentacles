@@ -42,11 +42,12 @@ CREATE TABLE `accessLog` (
   PRIMARY KEY (`id`),
   KEY `fk_groupId_idx` (`groupId`),
   KEY `fk_userId_idx` (`userId`),
-  KEY `ix_time_userId` (`time_since_epoch`,`userId`),
-  KEY `ix_time_groupId` (`time_since_epoch`,`groupId`),
+  KEY `ix_userId_time` (`userId`,`time_since_epoch`),
+  KEY `ix_groupId_time` (`groupId`,`time_since_epoch`),
+  KEY `ix_time` (`time_since_epoch`),
   CONSTRAINT `fk_accessLog_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3694294 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4634146 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -126,7 +127,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `fk_userId_idx` (`userId`),
   CONSTRAINT `fk_accessLogArchive_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=106413 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=129045 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +264,7 @@ CREATE TABLE `urlMasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `urlListId_idx` (`urlListId`,`name`),
   CONSTRAINT `urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -727,3 +728,5 @@ DELIMITER ;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-05-11 18:21:30
