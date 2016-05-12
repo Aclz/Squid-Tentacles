@@ -1,11 +1,10 @@
-# Tentacles
-Squid Tentacles v0.7 (beta)
+# Squid Tentacles
+Squid Tentacles v0.7x (beta)
 
-User management subsystem for Squid, which consists of:
+User management subsystem for Squid and Active Directory users:
 
-    1. Integration with Active Directory (Kerberos auth, LDAP)
-    2. User list stored in DB (MySQL, Postgre etc. accessed via ORM)
-    3. Challenge and IP-based authentication
-    4. Monthly traffic quotas with autolock when exceeded
-    5. Regexp url redirector
-    6. Versatile traffic reports
+    1. Tight integration with Active Directory (Kerberos auth)
+    2. Relational database access log and user data storage (currently MySQL only, in future engine-independent via ORM)
+    3. Regexp Squid URL-redirector with user account-based and IP-based authentication
+    4. User traffic quotas with account lock on exceed
+    5. Versatile traffic reports
