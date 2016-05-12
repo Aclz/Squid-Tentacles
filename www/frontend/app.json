@@ -34,8 +34,7 @@
      */
     "overrides": [
         "overrides",
-        "${toolkit.name}/overrides",
-        "${app.dir}/locale/${app.locale}"
+        "${toolkit.name}/overrides"
     ],
 
     /**

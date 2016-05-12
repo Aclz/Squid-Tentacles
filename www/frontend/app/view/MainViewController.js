@@ -293,7 +293,7 @@ Ext.define('tentacles.view.MainViewController', {
 
                     Ext.MessageBox.show({
                         title: 'Ошибка',
-                        message: 'Недостаточно прав доступа!',
+                        message: 'Недостаточно прав доступа!<br>Возможно, пользователь не имеет доступа к прокси-серверу.',
                         buttons: Ext.Msg.OK,
                         icon: Ext.MessageBox.ERROR
                         });
@@ -319,7 +319,7 @@ Ext.define('tentacles.view.MainViewController', {
 
                     Ext.MessageBox.show({
                         title: 'Ошибка',
-                        message: 'Ошибка аутентификации пользователя',
+                        message: 'Ошибка аутентификации пользователя!<br>Возможно, пользователь не зарегистрирован в системе.',
                         buttons: Ext.Msg.OK,
                         icon: Ext.MessageBox.ERROR
                         });

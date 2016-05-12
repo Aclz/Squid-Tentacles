@@ -15,8 +15,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 
             authMethodsStore: {
                 data: [
-                    {id: 0, name: 'Kerberos'},
-                    {id: 1, name: 'IP'}
+                    {id: 0, name: 'Пользователь'},
+                    {id: 1, name: 'IP-адрес'}
                     ]
                 },
                 

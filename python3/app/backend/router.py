@@ -265,6 +265,12 @@ def report_group_traffic_by_dates():
 def report_group_day_traffic():
     return accesslogreports.report_group_day_traffic(Session)
     
+    
+@app.route('/rest/reports/group-traffic-by-users', methods=['GET'])
+@authorization(['ViewUsers'], Session)
+def report_group_traffic_by_users():
+    return accesslogreports.report_group_traffic_by_users(Session)
+    
 
 #Settings requests
 @app.route('/rest/settings', methods=['GET'])

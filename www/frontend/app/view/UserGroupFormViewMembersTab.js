@@ -83,8 +83,8 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
                     ],
                 
                 data: [
-                    [0, 'Kerberos'],
-                    [1, 'IP']
+                    [0, 'Пользователь'],
+                    [1, 'IP-адрес']
                     ]
                 }
             },

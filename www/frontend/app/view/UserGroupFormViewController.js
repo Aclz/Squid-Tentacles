@@ -65,6 +65,16 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
 
         this.lookupReference('userReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar
         
+        //userGroupReportTrafficByUsers
+        this.lookupReference('userGroupReportTrafficByUsersDateBegRef').setValue(
+            new Date(today.getFullYear(), today.getMonth(), 1));
+
+        this.lookupReference('userGroupReportTrafficByUsersDateEndRef').setValue(
+            new Date(today.getFullYear(), today.getMonth() + 1, 0));
+
+        this.lookupReference('userGroupReportTrafficByUsersGridRef').getStore().removeAll();
+        
+        //Start load chain
         if (this.getViewModel().get('myPermissionsStore').findExact('permissionName', 'ViewUsers') != -1) {
             accessTemplatesStore.load();
             }
@@ -192,6 +202,26 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
             });
         },
         
+    onShowUserGroupReportTrafficByUsersClick: function() {
+        var grid = this.lookupReference('userGroupReportTrafficByUsersGridRef');
+        var gridStore = grid.getStore();
+
+        gridStore.load({
+            callback: function(records, operation, success) {
+                if (success)
+                    grid.getView().setScrollY(0);
+                else
+                    Ext.MessageBox.show({
+                        title: 'Ошибка',
+                        message: (operation.error && operation.error.status == 403) ?
+                            'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                        });
+                }
+            });
+        },
+        
     beforeLoadGroupMembersStore: function(store) {
         store.getProxy().setExtraParam('userGroupId', this.getViewModel().get('selectedGroupId'));
         },
@@ -223,6 +253,15 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         store.getProxy().setExtraParams({
             'groupId': this.getViewModel().data.selectedGroupId,
             'date': this.lookupReference('userReportDayTrafficDateRef').getValue()
+            });
+        },
+        
+    beforeLoadUserGroupReportTrafficByUsersGridStore: function(store) {
+        store.getProxy().setExtraParams({
+            'groupId': this.getViewModel().data.selectedGroupId,
+            'dateBeg': this.lookupReference('userGroupReportTrafficByUsersDateBegRef').getValue(),
+            'dateEnd': this.lookupReference('userGroupReportTrafficByUsersDateEndRef').getValue(),
+            'limit': this.lookupReference('userGroupReportTrafficByUsersLimitRef').getValue()
             });
         }
     })

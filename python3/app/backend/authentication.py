@@ -163,6 +163,10 @@ def authorization(permission_list, session, return_user_properties = False):
                 user_principal_name = ctx.kerberos_user
                 user_object = get_user_by_principal_name(user_principal_name, session)
                 
+                #Kerberos-authenticated but db-absent user
+                if user_object is None:
+                    return _forbidden()
+                
                 if return_user_properties:
                     role_object = get_role_object(user_object['roleId'], session)
                     role_permissions = get_role_permissions(role_object['id'], session)

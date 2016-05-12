@@ -52,8 +52,8 @@ Ext.define('tentacles.view.UserFormViewReportDayTrafficTab', {
             xtype: 'datefield',
             reference: 'userReportDayTrafficDateRef',
             fieldLabel: 'Дата',
-            labelWidth: 110,
-            width: 250,
+            labelWidth: 60,
+            width: 200,
             format: 'd.m.Y'
             },
             {

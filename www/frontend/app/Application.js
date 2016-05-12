@@ -15,10 +15,6 @@ Ext.define('tentacles.Application', {
     stores: [
         // TODO: add global / shared stores here
     ],
-    
-    launch: function () {
-        // TODO - Launch the application
-    },
 
     onAppUpdate: function () {
         Ext.Msg.confirm('Обновление программы', 'Обнаружено обновление программы, загрузить?',

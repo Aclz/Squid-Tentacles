@@ -13,11 +13,7 @@ Ext.define('tentacles.view.MainView', {
         'tentacles.view.AccessTemplateContentsFormView'
     ],
         
-    viewModel: {
-        data: {
-            projectName: 'Squid Tentacles v0.7.8.2 beta'
-            },
-            
+    viewModel: {            
         links: {
             loggedInUser: {
                 reference: 'LoggedInUserModel',
@@ -103,17 +99,12 @@ Ext.define('tentacles.view.MainView', {
         items: [
             {
             xtype: 'panel',
-            flex: 1,
-                 
-            bind: {
-                title: '{projectName}'
-                },
-            
-            title: 'Tentacles'
+            flex: 2,
+            title: 'Squid Tentacles v0.7.9.2 beta'
             },
             {
             xtype: 'panel',
-            flex: 2,
+            flex: 1,
             titleAlign: 'right',
 
             bind: {
