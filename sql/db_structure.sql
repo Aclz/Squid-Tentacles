@@ -37,17 +37,14 @@ CREATE TABLE `accessLog` (
   `squid_hier_status` varchar(50) DEFAULT NULL,
   `squid_request_status` varchar(50) DEFAULT NULL,
   `userId` int(11) DEFAULT NULL,
-  `groupId` int(11) DEFAULT NULL,
   `archived` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_groupId_idx` (`groupId`),
   KEY `fk_userId_idx` (`userId`),
   KEY `ix_userId_time` (`userId`,`time_since_epoch`),
-  KEY `ix_groupId_time` (`groupId`,`time_since_epoch`),
   KEY `ix_time` (`time_since_epoch`),
-  CONSTRAINT `fk_accessLog_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  KEY `ix_groupId_time` (`time_since_epoch`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4634146 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6144788 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -64,7 +61,6 @@ BEFORE INSERT ON `accessLog`
 FOR EACH ROW
 	BEGIN	
 	declare logUserId int;
-	declare logGroupId int;
 
 	-- declare user_identifier varchar(250);
 
@@ -77,26 +73,15 @@ FOR EACH ROW
 	from
 		users 
 	where 
-		(ip=NEW.ip_client and authMethod=1)
-		or (userPrincipalName=NEW.http_username and authMethod=0)
+		(ip = NEW.ip_client and authMethod = 1)
+		or (userPrincipalName = NEW.http_username and authMethod = 0)
 	limit
 		1;
 
 	-- if found...
 	if not logUserId is null then
 		begin
-		-- geting groupId
-		select
-			groupId
-		into
-			logGroupId
-		from
-			users
-		where
-			id=logUserId;
-
 		set NEW.userId = logUserId;
-		set NEW.groupId = logGroupId;
 		end;
 	end if;
 	END */;;
@@ -117,17 +102,14 @@ CREATE TABLE `accessLogArchive` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` date NOT NULL,
   `userId` int(11) NOT NULL,
-  `groupId` int(11) NOT NULL,
   `host` varchar(255) DEFAULT NULL,
   `traffic` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_groupId_idx` (`groupId`),
-  KEY `ix_date_groupId` (`date`,`groupId`),
+  KEY `ix_date_groupId` (`date`),
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `fk_userId_idx` (`userId`),
-  CONSTRAINT `fk_accessLogArchive_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=129045 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=162575 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +246,7 @@ CREATE TABLE `urlMasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `urlListId_idx` (`urlListId`,`name`),
   CONSTRAINT `urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -406,7 +388,6 @@ START TRANSACTION;
 			al.squid_hier_status,
 			al.squid_request_status,
 			al.userId,
-			al.groupId,
 			al.archived
 		FROM 
 			accessLog as al
@@ -417,10 +398,9 @@ START TRANSACTION;
 	update 
 		accessLogArchive arch,
 		(
-		select distinct
+		select
 			date(FROM_UNIXTIME(time_since_epoch)) as date,
 			userId,
-			groupId,
 			host_from_url(http_url) as host,
 			sum(http_reply_size) as traffic
 		from 
@@ -430,7 +410,6 @@ START TRANSACTION;
 		group by
 			date,
 			userId,
-			groupId,
 			host
 		having
 			traffic > 0
@@ -440,7 +419,6 @@ START TRANSACTION;
 	where
 		arch.date = tmp.date
 		and arch.userId = tmp.userId
-		and arch.groupId = tmp.groupId
 		and arch.host = tmp.host;
 
 	insert into
@@ -448,7 +426,6 @@ START TRANSACTION;
 			(
 			date,
 			userId,
-			groupId,
 			host,
 			traffic
 			)
@@ -459,7 +436,6 @@ START TRANSACTION;
 			select distinct
 				date(FROM_UNIXTIME(time_since_epoch)) as date,
 				userId,
-				groupId,
 				host_from_url(http_url) as host,
 				sum(http_reply_size) as traffic
 			from 
@@ -469,7 +445,6 @@ START TRANSACTION;
 			group by
 				date,
 				userId,
-				groupId,
 				host
 			having
 				traffic > 0
@@ -479,12 +454,10 @@ START TRANSACTION;
 			left join accessLogArchive arch
 				on arch.date = tmp.date
 				and arch.userId = tmp.userId
-				and arch.groupId = tmp.groupId
 				and arch.host = tmp.host
 		where
 			arch.id is null
-			and not tmp.userId is null
-			and not tmp.groupId is null;
+			and not tmp.userId is null;
 
 	update
 		accessLog al
@@ -729,4 +702,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-11 18:21:30
+-- Dump completed on 2016-05-14  3:22:23

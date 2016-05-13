@@ -100,7 +100,7 @@ Ext.define('tentacles.view.MainView', {
             {
             xtype: 'panel',
             flex: 2,
-            title: 'Squid Tentacles v0.7.9.2 beta'
+            title: 'Squid Tentacles v0.7.9.6 beta'
             },
             {
             xtype: 'panel',

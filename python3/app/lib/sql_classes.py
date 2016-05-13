@@ -79,7 +79,6 @@ class AccessLogArchive(Base):
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
     userId = Column(Integer, ForeignKey('users.id'), nullable=False)
-    groupId = Column(Integer, ForeignKey('userGroups.id'), nullable=False)
     host = Column(String(250))
     traffic = Column(Numeric(15, 2))
 
@@ -92,7 +91,6 @@ class AccessLog(Base):
     http_reply_size = Column(Integer)
     http_url = Column(Text)
     userId = Column(Integer, ForeignKey('users.id'))
-    groupId = Column(Integer, ForeignKey('userGroups.id'), nullable=False)
 
 
 class Settings(Base):
