@@ -15,7 +15,10 @@ def report_user_traffic_by_hosts(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
     
@@ -60,7 +63,10 @@ def report_group_traffic_by_hosts(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
     
@@ -130,7 +136,10 @@ def report_user_traffic_by_dates(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
 
@@ -170,7 +179,10 @@ def report_group_traffic_by_dates(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
     
@@ -230,7 +242,10 @@ def report_user_day_traffic(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
 
@@ -279,7 +294,10 @@ def report_group_day_traffic(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
 
@@ -347,7 +365,10 @@ def report_group_traffic_by_users(Session):
 
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
 
     session = Session()
 

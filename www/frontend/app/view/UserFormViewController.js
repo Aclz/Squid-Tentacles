@@ -90,14 +90,22 @@ Ext.define('tentacles.view.UserFormViewController', {
         
         this.getViewModel().data.selectedUser.save({
             failure: function(record, operation) {
+                var messageText = 'Ошибка совершения операции.';
+                
                 thisController.getViewModel().data.selectedUser.reject();
                 
                 //Ошибка неуникальности айпишника...
+                if (operation.error && operation.error.status == 403) {
+                    messageText = 'Недостаточно прав доступа!';
+                    }
+                else if (operation.getError().indexOf('IP_NOT_UNIQUE') == 0) {
+                    messageText = 'Этот IP-адрес уже присвоен пользователю ' +
+                        operation.getError().substring(operation.getError().indexOf(':') + 1) + '!';
+                    }
             
                 Ext.MessageBox.show({
                     title: 'Ошибка',
-                    message: (operation.error && operation.error.status == 403) ?
-                        'Недостаточно прав доступа!' : 'Ошибка совершения операции.',
+                    message: messageText,
                     buttons: Ext.Msg.OK,
                     icon: Ext.MessageBox.ERROR
                     });

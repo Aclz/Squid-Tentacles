@@ -9,7 +9,10 @@ def report_select_group_members(current_user_properties, Session):
     
     for param_name in mandatory_params:
         if request.args.get(param_name) == None:
-            return jsonify({'success': False, 'message': 'Absent ' + param_name + ' parameter!'})
+            return jsonify({
+                'success': False,
+                'message': 'ABSENT_REQUEST_PARAMETER:' + param_name
+                })
             
     current_user_permissions = current_user_properties['user_permissions']
     

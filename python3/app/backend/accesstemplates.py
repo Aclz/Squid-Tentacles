@@ -65,7 +65,7 @@ def insert_accesstemplate(Session):
     if not json_data or json_data.get('name') == None:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()
@@ -96,7 +96,7 @@ def update_accesstemplate(accesstemplate_id, Session):
     if not json_data:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()

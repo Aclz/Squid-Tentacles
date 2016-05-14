@@ -23,7 +23,8 @@ Ext.define('tentacles.model.AccessTemplateContentsModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            messageProperty: 'message'
             }
         }
     })

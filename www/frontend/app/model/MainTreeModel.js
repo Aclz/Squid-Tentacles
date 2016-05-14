@@ -14,7 +14,8 @@ Ext.define('tentacles.model.MainTreeModel', {
             
         reader: {
             type: 'json',
-            rootProperty: 'children'
+            rootProperty: 'children',
+            messageProperty: 'message'
             }
         }
     })

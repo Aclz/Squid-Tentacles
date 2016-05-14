@@ -16,7 +16,8 @@ Ext.define('tentacles.model.SettingsModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            messageProperty: 'message'
             }
         }
     })

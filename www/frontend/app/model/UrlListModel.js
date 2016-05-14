@@ -26,7 +26,8 @@ Ext.define('tentacles.model.UrlListModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            messageProperty: 'message'
             }
         }
     })

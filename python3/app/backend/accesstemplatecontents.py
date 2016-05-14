@@ -40,7 +40,7 @@ def insert_accesstemplatecontents(accesstemplate_id, Session):
     if not json_data or json_data.get('urlListId') == None:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()
@@ -74,7 +74,7 @@ def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, S
     if not json_data:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()

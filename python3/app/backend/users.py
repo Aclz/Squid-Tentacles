@@ -59,7 +59,7 @@ def update_user(user_id, Session):
     if not json_data:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()
@@ -72,8 +72,7 @@ def update_user(user_id, Session):
         if query_result != None:
             return jsonify({
                 'success': False,
-                'message': 'IP_NOT_UNIQUE',
-                'object': query_result.cn + ' (' + query_result.userPrincipalName + ')'
+                'message': 'IP_NOT_UNIQUE:' + query_result.cn + ' (' + query_result.userPrincipalName + ')'
                 })
 
     query_result = session.query(User).get(user_id)

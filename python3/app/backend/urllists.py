@@ -67,7 +67,7 @@ def insert_urllist(Session):
     if not json_data or json_data.get('name') == None:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()
@@ -98,7 +98,7 @@ def update_urllist(urllist_id, Session):
     if not json_data:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()

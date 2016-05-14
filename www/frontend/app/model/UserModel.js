@@ -34,7 +34,8 @@ Ext.define('tentacles.model.UserModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            messageProperty: 'message'
             }
         }
     })

@@ -18,7 +18,8 @@ Ext.define('tentacles.model.RolePermissionModel', {
 
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'data',
+            messageProperty: 'message'
             }
         }
     })

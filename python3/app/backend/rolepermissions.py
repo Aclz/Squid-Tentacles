@@ -39,7 +39,7 @@ def insert_role_permissions(role_id, Session):
     if not json_data or json_data.get('permissionId') == None:
         return jsonify({
             'success': False,
-            'message': 'Bad JSON request'
+            'message': 'BAD_JSON_REQUEST'
             })
 
     session = Session()
