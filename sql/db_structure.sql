@@ -42,9 +42,9 @@ CREATE TABLE `accessLog` (
   KEY `fk_userId_idx` (`userId`),
   KEY `ix_userId_time` (`userId`,`time_since_epoch`),
   KEY `ix_time` (`time_since_epoch`),
-  KEY `ix_groupId_time` (`time_since_epoch`),
+  KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6144788 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6179304 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -109,7 +109,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `fk_userId_idx` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=162575 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=162817 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -702,4 +702,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-14  3:22:23
+-- Dump completed on 2016-05-14 11:55:40
