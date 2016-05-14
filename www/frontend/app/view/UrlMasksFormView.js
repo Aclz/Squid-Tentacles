@@ -31,6 +31,7 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 listeners: { 
                     write: 'writeUrlMaskStore',                   
                     datachanged: 'onUrlMaskStoreDataChanged',
+                    update: 'onUrlMaskStoreUpdate',
                     load: 'onUrlMaskStoreLoad'
                     }
                 }
@@ -164,6 +165,18 @@ Ext.define('tentacles.view.UrlMasksFormView', {
                 xtype: 'button',
                 width: 100,
                 margin: '0 0 0 5',
+                text: 'Изменить',
+                handler: 'onEditUrlMaskClick',
+                disabled: true,
+
+                bind: {
+                    disabled: '{gridSelectionEmpty}'
+                    }
+                },
+                {
+                xtype: 'button',
+                width: 100,
+                margin: '0 0 0 5',
                 text: 'Удалить',
                 handler: 'onRemoveUrlMaskClick',
                 disabled: true,
@@ -204,7 +217,8 @@ Ext.define('tentacles.view.UrlMasksFormView', {
         flex: 1,
 
         viewConfig: {
-            enableTextSelection: true
+            enableTextSelection: true,
+            markDirty: false
             },        
 
         bind: {

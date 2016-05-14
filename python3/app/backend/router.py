@@ -84,6 +84,12 @@ def select_urlmasks(urllist_id):
 @authorization(['EditSettings'], Session)
 def insert_urlmask(urllist_id):
     return urlmasks.insert_urlmask(urllist_id, Session)
+    
+    
+@app.route('/rest/urllists/<int:urllist_id>/urlmasks/<int:urlmask_id>', methods=['PUT'])
+@authorization(['EditSettings'], Session)
+def update_urlmask(urllist_id, urlmask_id):
+    return urlmasks.update_urlmask(urllist_id, urlmask_id, Session)
 
 
 @app.route('/rest/urllists/<int:urllist_id>/urlmasks/<int:urlmask_id>', methods=['DELETE'])

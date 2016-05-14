@@ -46,6 +46,10 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         this.getViewModel().set('storeIsDirty', (store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
+    onUrlMaskStoreUpdate: function(store) {
+        this.getViewModel().set('storeIsDirty', (store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
+        },
+        
     onUrlListSelect: function(selectedId) {        
         this.getViewModel().linkTo('selectedUrlList', {reference: 'UrlListModel', id: selectedId});
         this.getStore('urlMaskStore').getProxy().setExtraParam('parentId', selectedId);
@@ -74,6 +78,21 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
                         }
                     }
                 });
+        },
+        
+    onEditUrlMaskClick: function() {
+        var selection = this.lookupReference('urlMaskGridRef').getSelection()[0];
+        var urlMaskStore = this.getStore('urlMaskStore');
+        
+        Ext.MessageBox.prompt('Введите значение', 'Введите выражение маски URL:',
+            function(btn, text) {
+                trimmedText = text.trim();
+
+                if (btn == 'ok' && trimmedText != '') {
+                    urlMaskStore.getById(selection.get('id')).set('name', trimmedText);
+                    urlMaskStore.sort('name', 'ASC');
+                    }
+                }, undefined, undefined, selection.get('name'));
         },
         
     onRemoveUrlMaskClick: function() {

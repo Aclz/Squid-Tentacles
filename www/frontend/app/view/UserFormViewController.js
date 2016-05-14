@@ -94,7 +94,6 @@ Ext.define('tentacles.view.UserFormViewController', {
                 
                 thisController.getViewModel().data.selectedUser.reject();
                 
-                //Ошибка неуникальности айпишника...
                 if (operation.error && operation.error.status == 403) {
                     messageText = 'Недостаточно прав доступа!';
                     }

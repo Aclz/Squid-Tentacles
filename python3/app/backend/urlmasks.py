@@ -62,6 +62,48 @@ def insert_urlmask(urllist_id, Session):
     session.close()
 
     return jsonify(response)
+    
+    
+def update_urlmask(urllist_id, urlmask_id, Session):
+    json_data = request.get_json()
+
+    if not json_data:
+        return jsonify({
+            'success': False,
+            'message': 'BAD_JSON_REQUEST'
+            })
+
+    session = Session()
+
+    query_result = session.query(UrlMask).filter_by(urlListId=urllist_id, id=urlmask_id).first()
+
+    if query_result == None:
+        return jsonify(success = False)
+
+    do_commit = False
+
+    allowed_to_update_fields = ['name']
+
+    for field_name in allowed_to_update_fields:
+        if json_data.get(field_name) != None:
+            setattr(query_result, field_name, json_data.get(field_name))
+            do_commit = True
+
+    try:
+        if do_commit:
+            session.commit()
+
+        response = {
+            'success': True
+            }
+    except Exception as e:
+        response = {
+            'success': False
+            }
+
+    session.close()
+
+    return jsonify(response)
 
 
 def delete_urlmask(urllist_id, urlmask_id, Session):
