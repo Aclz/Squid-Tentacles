@@ -37,14 +37,13 @@ CREATE TABLE `accessLog` (
   `squid_hier_status` varchar(50) DEFAULT NULL,
   `squid_request_status` varchar(50) DEFAULT NULL,
   `userId` int(11) DEFAULT NULL,
-  `archived` bit(1) DEFAULT NULL,
+  `archived` smallint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_userId_idx` (`userId`),
   KEY `ix_userId_time` (`userId`,`time_since_epoch`),
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6179304 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6189120 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -105,11 +104,10 @@ CREATE TABLE `accessLogArchive` (
   `host` varchar(255) DEFAULT NULL,
   `traffic` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_date_groupId` (`date`),
   KEY `ix_date_userId` (`date`,`userId`),
-  KEY `fk_userId_idx` (`userId`),
+  KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=162817 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=162887 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +121,7 @@ CREATE TABLE `accessTemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `ux_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -140,10 +138,10 @@ CREATE TABLE `accessTemplatesContents` (
   `urlListId` int(11) NOT NULL,
   `orderNumber` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_accessTemplate_idx` (`accessTemplateId`),
-  KEY `fk_urlList_idx` (`urlListId`),
-  CONSTRAINT `fk_accessTemplate` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_urlList` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `ux_accessTemplateId_urlListId` (`accessTemplateId`,`urlListId`),
+  KEY `ix_urlListId` (`urlListId`),
+  CONSTRAINT `fk_accessTemplatesContents_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_accessTemplateContents_accessTemplateId` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -156,9 +154,9 @@ DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `ux_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -174,11 +172,10 @@ CREATE TABLE `rolePermissions` (
   `roleId` int(11) NOT NULL,
   `permissionId` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `role_permission_UNIQUE` (`roleId`,`permissionId`),
-  KEY `role_idx` (`roleId`),
-  KEY `permission_idx` (`permissionId`),
-  CONSTRAINT `permission` FOREIGN KEY (`permissionId`) REFERENCES `permissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `role` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `ux_roleId_permissionId` (`roleId`,`permissionId`),
+  KEY `ix_permissionId` (`permissionId`),
+  CONSTRAINT `fk_rolePermissions_permissionId` FOREIGN KEY (`permissionId`) REFERENCES `permissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_rolePermissions_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -193,7 +190,7 @@ CREATE TABLE `roles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `ux_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -209,10 +206,10 @@ CREATE TABLE `settings` (
   `defaultAccessTemplateId` int(11) DEFAULT NULL,
   `defaultRoleId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_defaultAccessTemplate_idx` (`defaultAccessTemplateId`),
-  KEY `fk_defaultRoleId_idx` (`defaultRoleId`),
-  CONSTRAINT `fk_defaultAccessTemplate` FOREIGN KEY (`defaultAccessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_defaultRoleId` FOREIGN KEY (`defaultRoleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `ix_defaultAccessTemplate` (`defaultAccessTemplateId`),
+  KEY `ix_defaultRoleId` (`defaultRoleId`),
+  CONSTRAINT `fk_settings_defaultAccessTemplate` FOREIGN KEY (`defaultAccessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_settings_defaultRoleId` FOREIGN KEY (`defaultRoleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -228,7 +225,7 @@ CREATE TABLE `urlLists` (
   `name` varchar(100) NOT NULL,
   `whitelist` smallint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `ux_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -244,8 +241,8 @@ CREATE TABLE `urlMasks` (
   `urlListId` int(11) NOT NULL,
   `name` varchar(250) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `urlListId_idx` (`urlListId`,`name`),
-  CONSTRAINT `urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `ux_urlListId_name` (`urlListId`,`name`),
+  CONSTRAINT `fk_urlMasks_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -260,7 +257,7 @@ CREATE TABLE `userGroups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `distinguishedName` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `distinguishedName_UNIQUE` (`distinguishedName`)
+  UNIQUE KEY `ux_distinguishedName` (`distinguishedName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1128 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -280,18 +277,19 @@ CREATE TABLE `users` (
   `status` smallint(6) NOT NULL DEFAULT '0',
   `quota` int(11) NOT NULL DEFAULT '0',
   `authMethod` smallint(6) NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '0.0.0.0',
-  `traffic` bigint(20) DEFAULT '0',
+  `ip` varchar(15) DEFAULT NULL,
+  `traffic` bigint(20) NOT NULL DEFAULT '0',
   `accessTemplateId` int(11) DEFAULT NULL,
   `roleId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `userPrincipalName_UNIQUE` (`userPrincipalName`),
-  KEY `fk_group_idx` (`groupId`),
-  KEY `fk_accessTemplates_idx` (`accessTemplateId`),
-  KEY `fk_userRoles_idx` (`roleId`),
-  CONSTRAINT `fk_accessTemplates` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_userRoles` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_users_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  UNIQUE KEY `ux_userPrincipalName` (`userPrincipalName`),
+  UNIQUE KEY `ux_ip` (`ip`),
+  KEY `ix_groupId` (`groupId`),
+  KEY `ix_accessTemplateId` (`accessTemplateId`),
+  KEY `ix_roleId` (`roleId`),
+  CONSTRAINT `fk_users_accessTemplateId` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_users_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_users_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -640,7 +638,8 @@ update
 	left join tempUsers tu
 		on u.userPrincipalName = tu.userPrincipalName
 set
-	u.hidden = 1
+	u.hidden = 1,
+    u.ip = NULL -- nullify ip of users being hidden
 where
 	tu.userPrincipalName is null;
 
@@ -654,7 +653,13 @@ update
 set
 	u.cn = tu.cn,
 	u.groupId = g.id,
-	u.hidden = 0
+	u.hidden = 0,
+    u.ip = case u.hidden
+		when 0 then
+			u.ip
+		else
+			NULL -- nullify ip of users being unhidden
+		end		
 where
 	u.cn <> tu.cn
 	or u.groupId <> g.id
@@ -702,4 +707,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-14 11:55:40
+-- Dump completed on 2016-05-14 20:50:47

@@ -91,6 +91,8 @@ Ext.define('tentacles.view.UserFormViewController', {
         this.getViewModel().data.selectedUser.save({
             failure: function(record, operation) {
                 thisController.getViewModel().data.selectedUser.reject();
+                
+                //Ошибка неуникальности айпишника...
             
                 Ext.MessageBox.show({
                     title: 'Ошибка',

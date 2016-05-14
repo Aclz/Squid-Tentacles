@@ -20,7 +20,7 @@ def select_user(current_user_properties, requested_user_id, Session):
         'status': query_result.status,
         'quota': query_result.quota,
         'authMethod': query_result.authMethod,
-        'ip': query_result.ip,
+        'ip': query_result.ip if query_result.ip != None else '0.0.0.0',
         'traffic': round(query_result.traffic/1024/1024, 2),
         'accessTemplateId': query_result.accessTemplateId,
         'roleId': query_result.roleId
@@ -63,6 +63,18 @@ def update_user(user_id, Session):
             })
 
     session = Session()
+    
+    ip_to_set = json_data.get('ip')
+    
+    if ip_to_set != None and ip_to_set != '0.0.0.0':
+        query_result = session.query(User).filter(User.ip == ip_to_set, User.id != user_id).first()
+        
+        if query_result != None:
+            return jsonify({
+                'success': False,
+                'message': 'IP_NOT_UNIQUE',
+                'object': query_result.cn + ' (' + query_result.userPrincipalName + ')'
+                })
 
     query_result = session.query(User).get(user_id)
 
@@ -75,6 +87,9 @@ def update_user(user_id, Session):
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
+            if field_name == 'ip' and json_data.get(field_name) == '0.0.0.0':
+                continue
+                
             setattr(query_result, field_name, json_data.get(field_name))
             do_commit = True
 
