@@ -34,7 +34,7 @@ def get_user_by_principal_name(user_principal_name, Session):
         'authMethod': query_result.authMethod,
         'ip': query_result.ip,
         'traffic': round(query_result.traffic/1024/1024, 2),
-        'accessTemplateId': query_result.accessTemplateId,
+        'aclId': query_result.aclId,
         'roleId': query_result.roleId
         }
 

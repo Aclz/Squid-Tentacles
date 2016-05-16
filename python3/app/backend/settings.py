@@ -18,7 +18,7 @@ def select_settings(current_user_properties, Session):
 
     settings_object = {
         'id': query_result.id,
-        'defaultAccessTemplateId': query_result.defaultAccessTemplateId,
+        'defaultAclId': query_result.defaultAclId,
         'defaultRoleId': query_result.defaultRoleId
         }
 
@@ -34,7 +34,7 @@ def select_settings(current_user_properties, Session):
                 settings_object.pop(item)
                 
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) == None:
-        forbidden_items = ['defaultAccessTemplateId']
+        forbidden_items = ['defaultAclId']
 
         for item in forbidden_items:
             if settings_object.get(item) != None:
@@ -68,7 +68,7 @@ def update_settings(Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['defaultAccessTemplateId', 'defaultRoleId']
+    allowed_to_update_fields = ['defaultAclId', 'defaultRoleId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

@@ -22,7 +22,7 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
     onUserGroupSelect: function(selectedId) {
         var userGroupFormViewMembersTab = this.lookupReference('userGroupFormViewMembersTab');
         var groupMembersStore = userGroupFormViewMembersTab.getViewModel().getStore('groupMembersStore');
-        var accessTemplatesStore = userGroupFormViewMembersTab.getViewModel().getStore('accessTemplatesStore');
+        var aclStore = userGroupFormViewMembersTab.getViewModel().getStore('aclStore');
         var hideTabs = this.getViewModel().get('myPermissionsStore').findExact('permissionName', 'ViewUsers') == -1;
             
         this.getViewModel().set('selectedGroupId', selectedId);
@@ -76,7 +76,7 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         
         //Start load chain
         if (this.getViewModel().get('myPermissionsStore').findExact('permissionName', 'ViewUsers') != -1) {
-            accessTemplatesStore.load();
+            aclStore.load();
             }
         else {
             groupMembersStore.load();
@@ -86,17 +86,17 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
     onGroupMembersStoreLoad: function() {
         var userGroupFormViewMembersTab = this.lookupReference('userGroupFormViewMembersTab');
         var groupMembersStore = userGroupFormViewMembersTab.getViewModel().getStore('groupMembersStore');
-        var accessTemplatesStore = userGroupFormViewMembersTab.getViewModel().getStore('accessTemplatesStore');
+        var aclStore = userGroupFormViewMembersTab.getViewModel().getStore('aclStore');
         var userStatusesStore = userGroupFormViewMembersTab.getViewModel().getStore('userStatusesStore');
         var authMethodsStore = userGroupFormViewMembersTab.getViewModel().getStore('authMethodsStore');
         var rolesStore = userGroupFormViewMembersTab.getViewModel().getStore('rolesStore');
         
         groupMembersStore.each(function(item) {
-            if (item.data['accessTemplateName'] == '') {                
-                var recordFound = accessTemplatesStore.getById(item.get('accessTemplateId'));
+            if (item.data['aclName'] == '') {                
+                var recordFound = aclStore.getById(item.get('aclId'));
 
                 if (recordFound) {
-                    item.set('accessTemplateName', recordFound.get('name'));
+                    item.set('aclName', recordFound.get('name'));
                     }
                 }
                 
@@ -126,7 +126,7 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
             });
         },
         
-    onAccessTemplatesStoreLoad: function() {
+    onAclStoreLoad: function() {
         var userGroupFormViewMembersTab = this.lookupReference('userGroupFormViewMembersTab');
         var rolesStore = userGroupFormViewMembersTab.getViewModel().getStore('rolesStore');
         

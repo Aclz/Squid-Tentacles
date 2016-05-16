@@ -27,7 +27,7 @@ Ext.define('tentacles.view.RolePermissionsFormViewController', {
 
                 fn: function(btn) {
                     if (btn == 'yes') {
-                        this.onSaveAccessTemplateClick();
+                        this.onSaveRolePermissionsClick();
                         }
 
                     this.fireEvent('onTreeSelectionChange', {selected: args.selected});

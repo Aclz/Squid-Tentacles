@@ -9,8 +9,8 @@ Ext.define('tentacles.view.MainView', {
         'tentacles.view.RolePermissionsFormView',
         'tentacles.view.UrlListsFormView',
         'tentacles.view.UrlMasksFormView',
-        'tentacles.view.AccessTemplatesFormView',
-        'tentacles.view.AccessTemplateContentsFormView'
+        'tentacles.view.AclsFormView',
+        'tentacles.view.AclContentsFormView'
     ],
         
     viewModel: {            
@@ -100,7 +100,7 @@ Ext.define('tentacles.view.MainView', {
             {
             xtype: 'panel',
             flex: 2,
-            title: 'Squid Tentacles v0.8.0.0 beta'
+            title: 'Squid Tentacles v0.8.0.5 beta'
             },
             {
             xtype: 'panel',

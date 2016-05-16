@@ -43,7 +43,7 @@ CREATE TABLE `accessLog` (
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6189120 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6525643 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -107,42 +107,41 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=162887 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=172324 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `accessTemplates`
+-- Table structure for table `aclContents`
 --
 
-DROP TABLE IF EXISTS `accessTemplates`;
+DROP TABLE IF EXISTS `aclContents`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `accessTemplates` (
+CREATE TABLE `aclContents` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `aclId` int(11) NOT NULL,
+  `urlListId` int(11) NOT NULL,
+  `orderNumber` smallint(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_accessTemplateId_urlListId` (`aclId`,`urlListId`),
+  KEY `ix_urlListId` (`urlListId`),
+  CONSTRAINT `fk_aclContents_aclId` FOREIGN KEY (`aclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `acls`
+--
+
+DROP TABLE IF EXISTS `acls`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `acls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `accessTemplatesContents`
---
-
-DROP TABLE IF EXISTS `accessTemplatesContents`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `accessTemplatesContents` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `accessTemplateId` int(11) NOT NULL,
-  `urlListId` int(11) NOT NULL,
-  `orderNumber` smallint(6) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_accessTemplateId_urlListId` (`accessTemplateId`,`urlListId`),
-  KEY `ix_urlListId` (`urlListId`),
-  CONSTRAINT `fk_accessTemplatesContents_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_accessTemplateContents_accessTemplateId` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,12 +202,13 @@ DROP TABLE IF EXISTS `settings`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `defaultAccessTemplateId` int(11) DEFAULT NULL,
+  `defaultAclId` int(11) DEFAULT NULL,
   `defaultRoleId` int(11) DEFAULT NULL,
+  `currentTrafficPeriod` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_defaultAccessTemplate` (`defaultAccessTemplateId`),
+  KEY `ix_defaultAccessTemplate` (`defaultAclId`),
   KEY `ix_defaultRoleId` (`defaultRoleId`),
-  CONSTRAINT `fk_settings_defaultAccessTemplate` FOREIGN KEY (`defaultAccessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_settings_defaultAccessTemplate` FOREIGN KEY (`defaultAclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_settings_defaultRoleId` FOREIGN KEY (`defaultRoleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -226,7 +226,7 @@ CREATE TABLE `urlLists` (
   `whitelist` smallint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -279,32 +279,18 @@ CREATE TABLE `users` (
   `authMethod` smallint(6) NOT NULL DEFAULT '0',
   `ip` varchar(15) DEFAULT NULL,
   `traffic` bigint(20) NOT NULL DEFAULT '0',
-  `accessTemplateId` int(11) DEFAULT NULL,
+  `aclId` int(11) DEFAULT NULL,
   `roleId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_userPrincipalName` (`userPrincipalName`),
   UNIQUE KEY `ux_ip` (`ip`),
   KEY `ix_groupId` (`groupId`),
-  KEY `ix_accessTemplateId` (`accessTemplateId`),
+  KEY `ix_accessTemplateId` (`aclId`),
   KEY `ix_roleId` (`roleId`),
-  CONSTRAINT `fk_users_accessTemplateId` FOREIGN KEY (`accessTemplateId`) REFERENCES `accessTemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_users_accessTemplateId` FOREIGN KEY (`aclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `variables`
---
-
-DROP TABLE IF EXISTS `variables`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `variables` (
-  `name` varchar(25) NOT NULL,
-  `value` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -551,32 +537,31 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`%` PROCEDURE `openNewTrafficPeriod`()
 BEGIN
-declare currentTrafficPeriod date;
+declare currTrafficPeriod date;
 
 DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
 
 select
-	value
-into
 	currentTrafficPeriod
+into
+	currTrafficPeriod
 from
-	variables
+	settings
 where
-	name = 'Current traffic period';
+	id = 1;
 
-if currentTrafficPeriod is null then
-	set currentTrafficPeriod = DATE_FORMAT(NOW(),'%Y-%m-01');
-
-	insert into
-		variables(name,value)
-	values
-		(
-		'Current traffic period',
-		currentTrafficPeriod
-		);
+if currTrafficPeriod is null then
+	set currTrafficPeriod = DATE_FORMAT(NOW(), '%Y-%m-01');
+    
+	update
+		settings
+	set
+		currentTrafficPeriod = currTrafficPeriod
+	where
+		id = 1;
 end if;
 
-if currentTrafficPeriod <> DATE_FORMAT(NOW(),'%Y-%m-01') then
+if currTrafficPeriod <> DATE_FORMAT(NOW(), '%Y-%m-01') then
 	START TRANSACTION;
 		update
 			users
@@ -589,13 +574,14 @@ if currentTrafficPeriod <> DATE_FORMAT(NOW(),'%Y-%m-01') then
 			status = 1
 		where
 			status = 2;
-
+            
 		update
-			variables
+			settings
 		set
-			value = DATE_FORMAT(NOW(),'%Y-%m-01')
+			currentTrafficPeriod = DATE_FORMAT(NOW(),'%Y-%m-01')
 		where
-			name = 'Current traffic period';
+			id = 1;
+            
 	COMMIT;
 end if;
 END ;;
@@ -707,4 +693,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-14 20:50:47
+-- Dump completed on 2016-05-16 12:41:48

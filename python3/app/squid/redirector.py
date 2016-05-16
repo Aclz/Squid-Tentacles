@@ -7,7 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql.expression import literal
 
 from config import config
-from sql_classes import User, AccessTemplateContents, UrlList, UrlMask, Settings
+from sql_classes import User, AclContents, UrlList, UrlMask, Settings
 
 
 def get_user_status(givenUsername, givenIp):
@@ -18,7 +18,7 @@ def get_user_status(givenUsername, givenIp):
     if query_result != None:
         return {
             'status_ok': True,
-            'access_template': query_result.accessTemplateId
+            'acl': query_result.aclId
             }
 
     session = Session()
@@ -28,7 +28,7 @@ def get_user_status(givenUsername, givenIp):
     if query_result != None:
         return {
             'status_ok': True,
-            'access_template': query_result.accessTemplateId
+            'acl': query_result.aclId
             }
 
     return {
@@ -36,15 +36,15 @@ def get_user_status(givenUsername, givenIp):
         }
     
     
-def url_ok(url, access_template):
+def url_ok(url, acl):
     session = Session()
     
     query_result = session.query(UrlList.whitelist).\
-        join(AccessTemplateContents, AccessTemplateContents.urlListId==UrlList.id).\
+        join(AclContents, AclContents.urlListId==UrlList.id).\
         join(UrlMask, UrlMask.urlListId==UrlList.id).\
-        filter(AccessTemplateContents.accessTemplateId==access_template).\
+        filter(AclContents.aclId==acl).\
         filter(literal(url).like('%' + UrlMask.name + '%')).\
-        order_by(AccessTemplateContents.accessTemplateId, AccessTemplateContents.orderNumber).first()
+        order_by(AclContents.aclId, AclContents.orderNumber).first()
 
     session.close()
     
@@ -74,7 +74,7 @@ def modify_url(line):
     if not user_status['status_ok']:
         return 'http://' + config['Network']['WebInterfaceIpAddress'] + '/redir/banned.html\n'
         
-    if not url_ok(url, user_status['access_template']):
+    if not url_ok(url, user_status['acl']):
         return 'http://' + config['Network']['WebInterfaceIpAddress'] + '/redir/forbidden.html\n'
     
     return '\n'

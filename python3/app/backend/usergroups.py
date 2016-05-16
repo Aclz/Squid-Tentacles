@@ -46,13 +46,13 @@ def report_select_group_members(current_user_properties, Session):
             'status': result_row.status,
             'roleId': result_row.roleId,
             'authMethod': result_row.authMethod,
-            'accessTemplateId': result_row.accessTemplateId,
+            'aclId': result_row.aclId,
             'quota': result_row.quota,
             'traffic': round(result_row.traffic/1024/1024, 2),
             }
             
         if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) == None:
-            forbidden_items = ['authMethod', 'accessTemplateId', 'roleId']
+            forbidden_items = ['authMethod', 'aclId', 'roleId']
             
             if result_row.id != current_user_properties['user_object']['id']:
                 forbidden_items.extend(['status', 'quota', 'traffic'])

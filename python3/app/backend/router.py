@@ -10,7 +10,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from authentication import init_kerberos, authorization
 
 from config import config
-import maintree, urllists, urlmasks, accesstemplates, accesstemplatecontents
+import maintree, urllists, urlmasks, acls, aclcontents
 import users, usergroups, permissions, roles, rolepermissions, accesslogreports, settings
 import init
 
@@ -98,59 +98,59 @@ def delete_urlmask(urllist_id, urlmask_id):
     return urlmasks.delete_urlmask(urllist_id, urlmask_id, Session)
     
 
-#Access templates
-@app.route('/rest/accesstemplates', methods=['GET'])
+#Access control lists
+@app.route('/rest/acls', methods=['GET'])
 @authorization(['ViewSettings', 'ViewUsers'], Session)
-def select_accesstemplates():
-    return accesstemplates.select_accesstemplates(Session)
+def select_acls():
+    return acls.select_acls(Session)
     
     
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>', methods=['GET'])
+@app.route('/rest/acls/<int:acl_id>', methods=['GET'])
 @authorization(['ViewSettings'], Session)
-def select_accesstemplate(accesstemplate_id):
-    return accesstemplates.select_accesstemplate(accesstemplate_id, Session)
+def select_acl(acl_id):
+    return acls.select_acl(acl_id, Session)
     
     
-@app.route('/rest/accesstemplates', methods=['POST'])
+@app.route('/rest/acls', methods=['POST'])
 @authorization(['EditSettings'], Session)
-def insert_accesstemplate():
-    return accesstemplates.insert_accesstemplate(Session)
+def insert_acl():
+    return acls.insert_acl(Session)
     
     
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>', methods=['PUT'])
+@app.route('/rest/acls/<int:acl_id>', methods=['PUT'])
 @authorization(['EditSettings'], Session)
-def update_accesstemplate(accesstemplate_id):
-    return accesstemplates.update_accesstemplate(accesstemplate_id, Session)
+def update_acl(acl_id):
+    return acls.update_acl(acl_id, Session)
 
 
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>', methods=['DELETE'])
+@app.route('/rest/acls/<int:acl_id>', methods=['DELETE'])
 @authorization(['EditSettings'], Session)
-def delete_accesstemplate(accesstemplate_id):
-    return accesstemplates.delete_accesstemplate(accesstemplate_id, Session)
+def delete_acl(acl_id):
+    return acls.delete_acl(acl_id, Session)
     
     
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents', methods=['GET'])
+@app.route('/rest/acls/<int:acl_id>/contents', methods=['GET'])
 @authorization(['ViewSettings'], Session)
-def select_accesstemplatecontents(accesstemplate_id):
-    return accesstemplatecontents.select_accesstemplatecontents(accesstemplate_id, Session)
+def select_acl_contents(acl_id):
+    return aclcontents.select_acl_contents(acl_id, Session)
 
 
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents', methods=['POST'])
+@app.route('/rest/acls/<int:acl_id>/contents', methods=['POST'])
 @authorization(['EditSettings'], Session)
-def insert_accesstemplatecontents(accesstemplate_id):
-    return accesstemplatecontents.insert_accesstemplatecontents(accesstemplate_id, Session)
+def insert_acl_contents(acl_id):
+    return aclcontents.insert_acl_contents(acl_id, Session)
     
     
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents/<int:accesstemplatecontent_id>', methods=['PUT'])
+@app.route('/rest/acls/<int:acl_id>/contents/<int:aclcontent_id>', methods=['PUT'])
 @authorization(['EditSettings'], Session)
-def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id):
-    return accesstemplatecontents.update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session)
+def update_acl_contents(acl_id, acl_content_id):
+    return aclcontents.update_acl_contents(acl_id, acl_content_id, Session)
 
 
-@app.route('/rest/accesstemplates/<int:accesstemplate_id>/contents/<int:accesstemplatecontent_id>', methods=['DELETE'])
+@app.route('/rest/acls/<int:acl_id>/contents/<int:aclcontent_id>', methods=['DELETE'])
 @authorization(['EditSettings'], Session)
-def delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id):
-    return accesstemplatecontents.delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session)
+def delete_acl_contents(acl_id, aclcontent_id):
+    return aclcontents.delete_acl_contents(acl_id, aclcontent_id, Session)
 
 
 #Roles

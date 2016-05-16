@@ -1,10 +1,10 @@
-Ext.define('tentacles.view.AccessTemplatesFormView', {
+Ext.define('tentacles.view.AclsFormView', {
     extend: 'Ext.form.Panel',
     
-    alias: 'widget.accesstemplatesformview',
+    alias: 'widget.aclsformview',
     
     requires: [
-        'tentacles.view.AccessTemplatesFormViewController'
+        'tentacles.view.AclsFormViewController'
         ],
     
     bodyPadding: 10,
@@ -22,16 +22,16 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             },
             
         stores: {
-            accessTemplateStore: {
-                model: 'AccessTemplateModel',
+            aclStore: {
+                model: 'AclModel',
 
                 pageSize: 0,
 
                 autoLoad: false,
 
                 listeners: {                    
-                    datachanged: 'onAccessTemplateStoreDataChanged',
-                    load: 'onAccessTemplateStoreLoad'
+                    datachanged: 'onAclStoreDataChanged',
+                    load: 'onAclStoreLoad'
                     }
                 }
             },
@@ -72,7 +72,7 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             }
         },
         
-    controller: 'accesstemplatesformviewcontroller',
+    controller: 'aclsformviewcontroller',
         
     layout: {
         type: 'vbox',
@@ -91,36 +91,30 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             xtype: 'displayfield',
             width: 415,
             labelWidth: 205,
-            fieldLabel: 'Шаблон доступа по-умолчанию',
+            fieldLabel: 'Список доступа по-умолчанию',
             hidden: false,
 
             bind: {
-                value: '{defaultaccesstemplatecombobox.selection.name}',
+                value: '{defaultaclcombobox.selection.name}',
                 hidden: '{!hideEditableControls}'
                 }
             },
             {
             xtype: 'combobox',
-            reference: 'defaultaccesstemplatecombobox',
+            reference: 'defaultaclcombobox',
             width: 415,
             labelWidth: 205,
-            fieldLabel: 'Шаблон доступа по-умолчанию',
+            fieldLabel: 'Список доступа по-умолчанию',
             editable: false,
             hidden: true,
-
-            /*store: {
-                model: 'tentacles.model.AccessTemplateModel',
-                autoload: false
-                },*/
-
             displayField: 'name',
             valueField: 'id',
             autoLoadOnValue: true,
 
             bind: {
-                value: '{settings.defaultAccessTemplateId}',
+                value: '{settings.defaultAclId}',
                 hidden: '{hideEditableControls}',
-                store: '{accessTemplateStore}'
+                store: '{aclStore}'
                 }
             },
             {
@@ -137,14 +131,14 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
                 xtype: 'button',
                 width: 100,
                 text: 'Добавить',
-                handler: 'onAddAccessTemplateClick'
+                handler: 'onAddAclClick'
                 },
                 {
                 xtype: 'button',
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Удалить',
-                handler: 'onRemoveAccessTemplateClick',
+                handler: 'onRemoveAclClick',
                 disabled: true,
 
                 bind: {
@@ -156,7 +150,7 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Сохранить',
-                handler: 'onSaveAccessTemplateClick',
+                handler: 'onSaveAclClick',
                 disabled: true,
                 
                 bind: {
@@ -168,7 +162,7 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Отменить',
-                handler: 'onRevertAccessTemplateClick',
+                handler: 'onRevertAclClick',
                 disabled: true,
 
                 bind: {
@@ -179,15 +173,16 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
         },
         {
         xtype: 'grid',
-        reference: 'accessTemplateGridRef',
+        reference: 'aclGridRef',
+        columnLines: true,
         flex: 1,     
 
         bind: {
-            store: '{accessTemplateStore}'
+            store: '{aclStore}'
             },
         
         listeners: {
-            selectionChange: 'onAccessTemplateGridSelectionChange'
+            selectionChange: 'onAclGridSelectionChange'
             },
         
         columns: [
@@ -197,9 +192,9 @@ Ext.define('tentacles.view.AccessTemplatesFormView', {
             hideable: false
             },
             {
-            text: 'Шаблон доступа',
+            text: 'Список доступа',
             dataIndex: 'name',
-            width: 200
+            width: 415
             }]
         }]
     })

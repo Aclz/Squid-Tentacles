@@ -22,14 +22,14 @@ def select_user(current_user_properties, requested_user_id, Session):
         'authMethod': query_result.authMethod,
         'ip': query_result.ip if query_result.ip != None else '0.0.0.0',
         'traffic': round(query_result.traffic/1024/1024, 2),
-        'accessTemplateId': query_result.accessTemplateId,
+        'aclId': query_result.aclId,
         'roleId': query_result.roleId
         }
             
     current_user_permissions = current_user_properties['user_permissions']
     
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) == None:
-        forbidden_items = ['authMethod', 'ip', 'accessTemplateId', 'roleId']
+        forbidden_items = ['authMethod', 'ip', 'aclId', 'roleId']
         
         if requested_user_id != current_user_properties['user_object']['id']:
             forbidden_items.extend(['status', 'quota', 'traffic'])
@@ -82,7 +82,7 @@ def update_user(user_id, Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['status', 'quota', 'authMethod', 'ip', 'traffic', 'accessTemplateId', 'roleId']
+    allowed_to_update_fields = ['status', 'quota', 'authMethod', 'ip', 'traffic', 'aclId', 'roleId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

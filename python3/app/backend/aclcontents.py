@@ -1,11 +1,11 @@
 from flask import request, jsonify
 
-from sql_classes import AccessTemplateContents
+from sql_classes import AclContents
 
-def select_accesstemplatecontents(accesstemplate_id, Session):
+def select_acl_contents(acl_id, Session):
     session = Session()
 
-    query_result = session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id).all()
+    query_result = session.query(AclContents).filter_by(aclId=acl_id).all()
 
     session.close()
 
@@ -15,26 +15,26 @@ def select_accesstemplatecontents(accesstemplate_id, Session):
             'data': []
             })
 
-    access_template_contents_list = []
+    acl_contents_list = []
 
     for query_result_row in query_result:
-        access_template_contents_object = {
+        acl_contents_object = {
             'id': query_result_row.id,
             'urlListId': query_result_row.urlListId,
             'orderNumber': query_result_row.orderNumber
             }
 
-        access_template_contents_list.append(access_template_contents_object)
+        acl_contents_list.append(acl_contents_object)
 
     response = {
         'success': True,
-        'data': access_template_contents_list
+        'data': acl_contents_list
         }
 
     return jsonify(response)
     
     
-def insert_accesstemplatecontents(accesstemplate_id, Session):
+def insert_acl_contents(acl_id, Session):
     json_data = request.get_json()
 
     if not json_data or json_data.get('urlListId') == None:
@@ -45,18 +45,18 @@ def insert_accesstemplatecontents(accesstemplate_id, Session):
 
     session = Session()
 
-    new_access_template_content = AccessTemplateContents(
-        accessTemplateId=accesstemplate_id,
+    new_acl_content = AclContents(
+        aclId=acl_id,
         urlListId=json_data.get('urlListId'),
         orderNumber=json_data.get('orderNumber'))
 
     try:
-        session.add(new_access_template_content)
+        session.add(new_acl_content)
         session.commit()
 
         response = {
             'success': True,
-            'data': [{'id': new_access_template_content.id}]
+            'data': [{'id': new_acl_content.id}]
             }
     except Exception as e:
         response = {
@@ -68,7 +68,7 @@ def insert_accesstemplatecontents(accesstemplate_id, Session):
     return jsonify(response)
     
     
-def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session):
+def update_acl_contents(acl_id, aclcontent_id, Session):
     json_data = request.get_json()
 
     if not json_data:
@@ -79,7 +79,7 @@ def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, S
 
     session = Session()
 
-    query_result = session.query(AccessTemplateContents).get(accesstemplatecontent_id)
+    query_result = session.query(AclContents).get(aclcontent_id)
 
     if query_result == None:
         return jsonify(success = False)
@@ -110,12 +110,12 @@ def update_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, S
     return jsonify(response)
 
 
-def delete_accesstemplatecontents(accesstemplate_id, accesstemplatecontent_id, Session):
+def delete_acl_contents(acl_id, aclcontent_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(AccessTemplateContents).filter_by(accessTemplateId=accesstemplate_id,
-            id=accesstemplatecontent_id).first())
+        session.delete(session.query(AclContents).filter_by(aclId=acl_id,
+            id=aclcontent_id).first())
             
         session.commit()
 

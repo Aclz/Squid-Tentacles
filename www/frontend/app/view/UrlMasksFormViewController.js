@@ -105,7 +105,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         var thisController = this;
         
         if (this.getViewModel().data.selectedUrlList.dirty) {
-            var isNameModified = this.getViewModel().data.selectedUrlList.isModified('name');
+            var isModified = this.getViewModel().data.selectedUrlList.dirty;
             
             this.getViewModel().data.selectedUrlList.save({
                 failure: function(record, operation) {
@@ -121,7 +121,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
                     },
 
                 callback: function() {
-                    if (isNameModified) {
+                    if (isModified) {
                         thisController.fireEvent('onUrlListReloadRequest');
                         }
                     }

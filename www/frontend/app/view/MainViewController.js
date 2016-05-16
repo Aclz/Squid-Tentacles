@@ -25,12 +25,12 @@ Ext.define('tentacles.view.MainViewController', {
                 onUrlListReloadRequest: 'onUrlListReloadRequest'
                 },
                 
-            'accesstemplatesformviewcontroller': {
-                onAccessTemplateReloadRequest: 'onAccessTemplateReloadRequest'
+            'aclsformviewcontroller': {
+                onAclReloadRequest: 'onAclReloadRequest'
                 },
                 
-            'accesstemplatecontentsformviewcontroller': {
-                onAccessTemplateReloadRequest: 'onAccessTemplateReloadRequest'
+            'aclcontentsformviewcontroller': {
+                onAclReloadRequest: 'onAclReloadRequest'
                 }
             }
         },
@@ -108,26 +108,26 @@ Ext.define('tentacles.view.MainViewController', {
                 this.fireEvent('onUrlListSelect', args.selected.data.id.replace('urllist_', ''));
 
                 break;
-            case 'AccessTemplates':
+            case 'Acls':
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
-                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'accesstemplatesformview') {
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'aclsformview') {
 
                     this.lookupReference('detailsPanelRef').removeAll();
-                    this.lookupReference('detailsPanelRef').add(new tentacles.view.AccessTemplatesFormView());
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.AclsFormView());
                     }
 
-                this.fireEvent('onAccessTemplatesSelect');
+                this.fireEvent('onAclsSelect');
 
                 break;
-            case 'AccessTemplateContents':
+            case 'AclContents':
                 if (!this.lookupReference('detailsPanelRef').items.items[0] ||
-                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'accesstemplatecontentsformview') {
+                    this.lookupReference('detailsPanelRef').items.items[0].xtype != 'aclcontentsformview') {
 
                     this.lookupReference('detailsPanelRef').removeAll();
-                    this.lookupReference('detailsPanelRef').add(new tentacles.view.AccessTemplateContentsFormView());
+                    this.lookupReference('detailsPanelRef').add(new tentacles.view.AclContentsFormView());
                     }
 
-                this.fireEvent('onAccessTemplateContentsSelect', args.selected.data.id.replace('accesstemplate_', ''));
+                this.fireEvent('onAclContentsSelect', args.selected.data.id.replace('acl_', ''));
 
                 break;
             default:
@@ -179,10 +179,10 @@ Ext.define('tentacles.view.MainViewController', {
             };
         },
         
-    onAccessTemplateReloadRequest: function () {
-        var accessTemplatesRootNode = this.getStore('mainTreeStore').getRootNode().findChildBy(
+    onAclReloadRequest: function () {
+        var aclsRootNode = this.getStore('mainTreeStore').getRootNode().findChildBy(
             function(child) {
-                if (child.data.objectType == 'AccessTemplates') {
+                if (child.data.objectType == 'Acls') {
                     return true;
                     }
                 else {
@@ -191,19 +191,19 @@ Ext.define('tentacles.view.MainViewController', {
                 }
             );
 
-        if (accessTemplatesRootNode) {
-            var isNodeExpanded = accessTemplatesRootNode.isExpanded();
+        if (aclsRootNode) {
+            var isNodeExpanded = aclsRootNode.isExpanded();
 
             if (!isNodeExpanded) {
-                accessTemplatesRootNode.expand();
+                aclsRootNode.expand();
                 }
 
             this.getViewModel().getStore('mainTreeStore').load({
-                node: accessTemplatesRootNode,
+                node: aclsRootNode,
 
                 callback: function() {
                     if (!isNodeExpanded) {
-                        accessTemplatesRootNode.collapse();
+                        aclsRootNode.collapse();
                         }
                     }
                 });

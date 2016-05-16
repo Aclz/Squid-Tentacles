@@ -102,6 +102,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
         {
         xtype: 'grid',
         reference: 'urlListGridRef',
+        columnLines: true,
         flex: 1,    
 
         bind: {
@@ -121,7 +122,7 @@ Ext.define('tentacles.view.UrlListsFormView', {
             {
             text: 'Список URL',
             dataIndex: 'name',
-            width: 200
+            width: 295
             },
             {
             xtype: 'booleancolumn',

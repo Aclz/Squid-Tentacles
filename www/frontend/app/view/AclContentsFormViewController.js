@@ -1,12 +1,12 @@
-Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
+Ext.define('tentacles.view.AclContentsFormViewController', {
     extend: 'Ext.app.ViewController',
     
-    alias: 'controller.accesstemplatecontentsformviewcontroller',
+    alias: 'controller.aclcontentsformviewcontroller',
     
     listen: {
         controller: {
             'mainviewcontroller': {
-                onAccessTemplateContentsSelect: 'onAccessTemplateContentsSelect',
+                onAclContentsSelect: 'onAclContentsSelect',
                 beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
             }
@@ -17,7 +17,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             return;
             }
 
-        if (this.getViewModel().get('accessTemplateRecordAndStoreStatus').dirty) {
+        if (this.getViewModel().get('aclRecordAndStoreStatus').dirty) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -27,7 +27,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
 
                 fn: function(btn) {
                     if (btn == 'yes') {
-                        this.onSaveAccessTemplateContentsClick();
+                        this.onSaveAclContentsClick();
                         }
 
                     this.fireEvent('onTreeSelectionChange', {selected: args.selected});
@@ -39,10 +39,10 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             }
         },
         
-    onAccessTemplateContentsStoreDataChanged: function(store) {
+    onAclContentsStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty', (store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         
-        var storeToIdArray = this.getStore('accessTemplateContentsStore').getData().getValues('urlListId', 'data');
+        var storeToIdArray = this.getStore('aclContentsStore').getData().getValues('urlListId', 'data');
         
         this.getStore('urlListStore').clearFilter();
         
@@ -53,11 +53,11 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             }
         },
         
-    onAccessTemplateContentsSelect: function(selectedId) {
-        this.getViewModel().linkTo('selectedAccessTemplate', {reference: 'AccessTemplateModel', id: selectedId});
+    onAclContentsSelect: function(selectedId) {
+        this.getViewModel().linkTo('selectedAcl', {reference: 'AclModel', id: selectedId});
         
         if (this.getStore('urlListStore').isLoaded()) {
-            this.loadAccessTemplateContentsStoreAndSyncPanels(selectedId);
+            this.loadAclContentsStoreAndSyncPanels(selectedId);
             }
         },
         
@@ -69,22 +69,22 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
         this.getViewModel().set('toGridSelectionEmpty', selected.length == 0);
         
         this.getViewModel().set('canMoveUp', selected.length != 0 &&
-            selected[0].get('id') != this.getStore('accessTemplateContentsStore').first().get('id'));
+            selected[0].get('id') != this.getStore('aclContentsStore').first().get('id'));
         
         this.getViewModel().set('canMoveDown', selected.length != 0 &&
-            selected[selected.length - 1].get('id') != this.getStore('accessTemplateContentsStore').last().get('id'));
+            selected[selected.length - 1].get('id') != this.getStore('aclContentsStore').last().get('id'));
         },
         
-    loadAccessTemplateContentsStoreAndSyncPanels: function(selectedId) {
+    loadAclContentsStoreAndSyncPanels: function(selectedId) {
         var fromGridRef = this.lookupReference('fromGridRef');
         var toGridRef = this.lookupReference('toGridRef');
         
         fromGridRef.setSelection();
         toGridRef.setSelection();
         
-        this.getStore('accessTemplateContentsStore').getProxy().setExtraParam('parentId', selectedId);
+        this.getStore('aclContentsStore').getProxy().setExtraParam('parentId', selectedId);
         
-        this.getStore('accessTemplateContentsStore').load({
+        this.getStore('aclContentsStore').load({
             callback: function() {
                 fromGridRef.setBind({
                     store: '{urlListStore}'
@@ -94,19 +94,19 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
         },
         
     onUrlListStoreLoad: function(store) {
-        this.loadAccessTemplateContentsStoreAndSyncPanels(this.getViewModel().data.selectedAccessTemplate.id);        
+        this.loadAclContentsStoreAndSyncPanels(this.getViewModel().data.selectedAcl.id);        
         store.sort('name', 'ASC');
         },
 
-    onSaveAccessTemplateContentsClick: function() {
+    onSaveAclContentsClick: function() {
         var thisController = this;
         
-        if (this.getViewModel().data.selectedAccessTemplate.dirty) {
-            var isNameModified = this.getViewModel().data.selectedAccessTemplate.isModified('name');
+        if (this.getViewModel().data.selectedAcl.dirty) {
+            var isNameModified = this.getViewModel().data.selectedAcl.isModified('name');
             
-            this.getViewModel().data.selectedAccessTemplate.save({
+            this.getViewModel().data.selectedAcl.save({
                 failure: function(record, operation) {                    
-                    thisController.getViewModel().data.selectedAccessTemplate.reject();
+                    thisController.getViewModel().data.selectedAcl.reject();
                         
                     Ext.MessageBox.show({
                         title: 'Ошибка',
@@ -119,13 +119,13 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
                     
                 callback: function() {
                     if (isNameModified) {
-                        thisController.fireEvent('onAccessTemplateReloadRequest');
+                        thisController.fireEvent('onAclReloadRequest');
                         }
                     }
                 })
             }
             
-        var store = this.getStore('accessTemplateContentsStore');
+        var store = this.getStore('aclContentsStore');
         
         store.sync({
             failure: function(batch, options) {
@@ -142,21 +142,21 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             });
         },
         
-    onRevertAccessTemplateContentsClick: function() {
-        this.getViewModel().data.selectedAccessTemplate.reject();
-        this.getStore('accessTemplateContentsStore').rejectChanges();
+    onRevertAclContentsClick: function() {
+        this.getViewModel().data.selectedAcl.reject();
+        this.getStore('aclContentsStore').rejectChanges();
         },
         
     onUpClick: function() {
         var selectedRecord = this.lookupReference('toGridRef').getSelection()[0];
-        var storeRecordCount = this.getStore('accessTemplateContentsStore').getCount();
+        var storeRecordCount = this.getStore('aclContentsStore').getCount();
         
         if (!selectedRecord) {
             return;
             }
             
         var recordToSwapWith = 
-            this.getStore('accessTemplateContentsStore').findRecord('orderNumber', selectedRecord.get('orderNumber') - 1);
+            this.getStore('aclContentsStore').findRecord('orderNumber', selectedRecord.get('orderNumber') - 1);
             
         if (!recordToSwapWith) {
             return;
@@ -174,19 +174,19 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             
         recordToSwapWith.set('orderNumber', recordToSwapWith.get('orderNumber') + 1);
         
-        this.getStore('accessTemplateContentsStore').sort('orderNumber', 'ASC');
+        this.getStore('aclContentsStore').sort('orderNumber', 'ASC');
         },
         
     onDownClick: function() {
         var selectedRecord = this.lookupReference('toGridRef').getSelection()[0];
-        var storeRecordCount = this.getStore('accessTemplateContentsStore').getCount();
+        var storeRecordCount = this.getStore('aclContentsStore').getCount();
         
         if (!selectedRecord) {
             return;
             }
             
         var recordToSwapWith = 
-            this.getStore('accessTemplateContentsStore').findRecord('orderNumber', selectedRecord.get('orderNumber') + 1);
+            this.getStore('aclContentsStore').findRecord('orderNumber', selectedRecord.get('orderNumber') + 1);
             
         if (!recordToSwapWith) {
             return;
@@ -204,7 +204,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             
         recordToSwapWith.set('orderNumber', recordToSwapWith.get('orderNumber') - 1);
         
-        this.getStore('accessTemplateContentsStore').sort('orderNumber', 'ASC');
+        this.getStore('aclContentsStore').sort('orderNumber', 'ASC');
         },
         
     onAddClick: function() {
@@ -214,9 +214,9 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
             return;
             }
         
-        this.getStore('accessTemplateContentsStore').add({
+        this.getStore('aclContentsStore').add({
             urlListId: selection[0].get('id'),
-            orderNumber: this.getStore('accessTemplateContentsStore').getCount() + 1
+            orderNumber: this.getStore('aclContentsStore').getCount() + 1
             });
             
         this.lookupReference('fromGridRef').setSelection();
@@ -225,7 +225,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormViewController', {
     onRemoveClick: function() {
         var selection = this.lookupReference('toGridRef').getSelection();
         
-        this.getStore('accessTemplateContentsStore').remove(selection);
+        this.getStore('aclContentsStore').remove(selection);
         },
         
     renderUrlListName: function(value, metaData, record) {

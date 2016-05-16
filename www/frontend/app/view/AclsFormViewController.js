@@ -1,12 +1,12 @@
-Ext.define('tentacles.view.AccessTemplatesFormViewController', {
+Ext.define('tentacles.view.AclsFormViewController', {
     extend: 'Ext.app.ViewController',
     
-    alias: 'controller.accesstemplatesformviewcontroller',
+    alias: 'controller.aclsformviewcontroller',
     
     listen: {
         controller: {
             'mainviewcontroller': {
-                onAccessTemplatesSelect: 'onAccessTemplatesSelect',
+                onAclsSelect: 'onAclsSelect',
                 beforeTreeSelectionChange: 'beforeTreeSelectionChange'
                 }
             }
@@ -29,7 +29,7 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
 
                 fn: function(btn) {
                     if (btn == 'yes') {
-                        thisController.onSaveAccessTemplateClick();
+                        thisController.onSaveAclClick();
                         }
 
                     this.fireEvent('onTreeSelectionChange', {selected: args.selected});
@@ -41,48 +41,48 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
             }
         },
         
-    onAccessTemplateStoreLoad: function(store) {
+    onAclStoreLoad: function(store) {
         store.sort('name', 'ASC');
         },
         
-    onAccessTemplateStoreDataChanged: function(store) {
+    onAclStoreDataChanged: function(store) {
         this.getViewModel().set('storeIsDirty', (store.getModifiedRecords().length + store.getRemovedRecords().length > 0));
         },
         
-    onAccessTemplatesSelect: function(selectedId) {
+    onAclsSelect: function(selectedId) {
         this.getViewModel().linkTo('settings', {reference: 'SettingsModel', id: 1});
-        this.getStore('accessTemplateStore').load();
+        this.getStore('aclStore').load();
         },
         
-    onAccessTemplateGridSelectionChange: function() {
-        this.getViewModel().set('gridSelectionEmpty', this.lookupReference('accessTemplateGridRef').getSelection().length == 0);
+    onAclGridSelectionChange: function() {
+        this.getViewModel().set('gridSelectionEmpty', this.lookupReference('aclGridRef').getSelection().length == 0);
         },
         
-    onAddAccessTemplateClick: function() {
-        var accessTemplateStore = this.getStore('accessTemplateStore');
+    onAddAclClick: function() {
+        var aclStore = this.getStore('aclStore');
         
-        Ext.MessageBox.prompt('Введите значение', 'Введите название шаблона доступа:',
+        Ext.MessageBox.prompt('Введите значение', 'Введите название списка доступа:',
             function(btn, text) {
                 trimmedText = text.trim();
                 
                 if (btn == 'ok' && trimmedText != '') {
-                    if (accessTemplateStore.find('name', trimmedText) == -1) {                   
-                        accessTemplateStore.add({name: trimmedText});
-                        accessTemplateStore.sort('name', 'ASC');
+                    if (aclStore.find('name', trimmedText) == -1) {                   
+                        aclStore.add({name: trimmedText});
+                        aclStore.sort('name', 'ASC');
                         }
                     }
                 }
             );
         },
         
-    onRemoveAccessTemplateClick: function() {
-        var selection = this.lookupReference('accessTemplateGridRef').getSelection();
-        this.getStore('accessTemplateStore').remove(selection); 
+    onRemoveAclClick: function() {
+        var selection = this.lookupReference('aclGridRef').getSelection();
+        this.getStore('aclStore').remove(selection); 
         },
 
-    onSaveAccessTemplateClick: function() {
+    onSaveAclClick: function() {
         var thisController = this;
-        var store = this.getStore('accessTemplateStore');
+        var store = this.getStore('aclStore');
         
         if (this.getViewModel().data.settings.dirty) {
             this.getViewModel().data.settings.save({
@@ -115,16 +115,16 @@ Ext.define('tentacles.view.AccessTemplatesFormViewController', {
                 },
                 
             callback: function() {
-                thisController.fireEvent('onAccessTemplateReloadRequest');
+                thisController.fireEvent('onAclReloadRequest');
                 }
             });
         },
         
-    onRevertAccessTemplateClick: function() {
-        var accessTemplateStore = this.getStore('accessTemplateStore');
+    onRevertAclClick: function() {
+        var aclStore = this.getStore('aclStore');
 
         this.getViewModel().data.settings.reject();
-        accessTemplateStore.rejectChanges();
-        this.onAccessTemplateStoreLoad(accessTemplateStore);
+        aclStore.rejectChanges();
+        this.onAclStoreLoad(aclStore);
         }
     })

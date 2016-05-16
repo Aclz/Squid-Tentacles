@@ -39,20 +39,20 @@ class AccessLogArchive(Base):
     Index('ix_userId', 'userId')
 
     
-class AccessTemplate(Base):
-    __tablename__ = 'accessTemplates'
+class Acl(Base):
+    __tablename__ = 'acls'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False, unique=True)
     Index('ux_name', 'name', unique=True)
     
     
-class AccessTemplateContents(Base):
-    __tablename__ = 'accessTemplatesContents'
+class AclContents(Base):
+    __tablename__ = 'aclContents'
     id = Column(Integer, primary_key=True)
-    accessTemplateId = Column(Integer, ForeignKey('accessTemplates.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
+    aclId = Column(Integer, ForeignKey('acls.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     urlListId = Column(Integer, ForeignKey('urlLists.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     orderNumber = Column(SmallInteger, nullable=False)
-    Index('ux_accessTemplateId_urlListId', 'accessTemplateId', 'urlListId', unique=True)
+    Index('ux_aclId_urlListId', 'aclId', 'urlListId', unique=True)
     #Index('ix_urlListId', 'urlListId')
     
     
@@ -82,9 +82,9 @@ class RolePermission(Base):
 class Settings(Base):
     __tablename__ = 'settings'
     id = Column(Integer, primary_key=True)
-    defaultAccessTemplateId = Column(Integer, ForeignKey('accessTemplates.id'))
+    defaultAclId = Column(Integer, ForeignKey('acls.id'))
     defaultRoleId = Column(Integer, ForeignKey('roles.id'))
-    #Index('ix_defaultAccessTemplate', 'defaultAccessTemplateId')
+    #Index('ix_defaultAcl', 'defaultAclId')
     #Index('ix_defaultRoleId', 'defaultRoleId')
     
 
@@ -116,12 +116,12 @@ class User(Base):
     authMethod = Column(SmallInteger, nullable=False, default=0)
     ip = Column(String(15))
     traffic = Column(BigInteger, nullable=False, default=0)
-    accessTemplateId = Column(Integer, ForeignKey('accessTemplates.id'))
+    aclId = Column(Integer, ForeignKey('acls.id'))
     roleId = Column(Integer, ForeignKey('roles.id'))
     Index('ux_userPrincipalName', 'userPrincipalName', unique=True)
     Index('ux_ip', 'ip', unique=True)
     Index('ix_groupId', 'groupId')
-    #Index('ix_accessTemplateId', 'accessTemplateId')
+    #Index('ix_aclId', 'aclId')
     #Index('ix_roleId', 'roleId')
     
     

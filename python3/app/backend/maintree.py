@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from sql_classes import UrlList, AccessTemplate, UserGroup, User, Role
+from sql_classes import UrlList, Acl, UserGroup, User, Role
 
     
 #Returns a tuple: (the substring of a path after the last nodeSeparator, the preceding path before it)
@@ -187,41 +187,41 @@ def _get_url_lists(Session):
 
     return url_lists
     
-#Get access templates
-def _get_access_templates(Session):
+#Get ACLs
+def _get_acls(Session):
     session = Session()
 
-    #Get all access templates from DB
-    query_result = session.query(AccessTemplate).all()
+    #Get all access control lists from DB
+    query_result = session.query(Acl).all()
 
     session.close()
 
-    access_templates_list = []
+    acl_list = []
 
     #Making a list of them
     for query_result_row in query_result:
-        access_template_object = {
-            'id': 'accesstemplate_' + str(query_result_row.id),
+        acl_object = {
+            'id': 'acl_' + str(query_result_row.id),
             'text': query_result_row.name,
             'leaf': True,
             'iconCls': 'x-fa fa-filter',
-            'objectType': 'AccessTemplateContents'
+            'objectType': 'AclContents'
             }
 
-        access_templates_list.append(access_template_object)
+        acl_list.append(acl_object)
 
-    access_templates = {
-        'id': 'accesstemplates',
-        'objectType': 'AccessTemplates',
-        'text': 'Шаблоны доступа',
+    acls = {
+        'id': 'acls',
+        'objectType': 'Acls',
+        'text': 'Списки доступа',
         'iconCls': 'x-fa fa-cog',
-        'children': access_templates_list
+        'children': acl_list
         }
         
     #Sorting tree elements
-    _sort_tree(access_templates, 'text')
+    _sort_tree(acls, 'text')
 
-    return access_templates
+    return acls
     
 #Get user roles
 def _get_roles(Session):
@@ -262,7 +262,7 @@ def _get_roles(Session):
 
 def select_tree(current_user_properties, node_name, Session):     
     url_lists_node = None
-    access_templates_node = None
+    acls_node = None
     roles_node = None
     users_node = None
      
@@ -272,8 +272,8 @@ def select_tree(current_user_properties, node_name, Session):
         if node_name in ['root', 'urllists']:
             url_lists_node = _get_url_lists(Session)
         
-        if node_name in ['root', 'accesstemplates']:
-            access_templates_node = _get_access_templates(Session)
+        if node_name in ['root', 'acls']:
+            acls_node = _get_acls(Session)
 
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewPermissions'), None) != None:
         if node_name in ['root', 'roles']:
@@ -288,8 +288,8 @@ def select_tree(current_user_properties, node_name, Session):
         if url_lists_node != None:
             children_list.append(url_lists_node)
             
-        if access_templates_node != None:
-            children_list.append(access_templates_node)
+        if acls_node != None:
+            children_list.append(acls_node)
             
         if roles_node != None:
             children_list.append(roles_node)
@@ -309,11 +309,11 @@ def select_tree(current_user_properties, node_name, Session):
                 }
         else:
             return Response('Forbidden', 403)
-    elif node_name == 'accesstemplates':
+    elif node_name == 'acls':
         if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) != None:
             result = {
                 'success': True,
-                'children': access_templates_node['children']
+                'children': acls_node['children']
                 }
         else:
             return Response('Forbidden', 403)

@@ -1,4 +1,4 @@
-Ext.define('tentacles.model.AccessTemplateContentsModel', {
+Ext.define('tentacles.model.AclContentsModel', {
     extend: 'tentacles.model.BaseModel',
 
     fields: [
@@ -13,7 +13,7 @@ Ext.define('tentacles.model.AccessTemplateContentsModel', {
         
     proxy: {
         type: 'rest',
-        url: '/rest/accesstemplates/{parentId}/contents',
+        url: '/rest/acls/{parentId}/contents',
 
         appendId: true,
         noCache: false,

@@ -1,10 +1,10 @@
-Ext.define('tentacles.view.AccessTemplateContentsFormView', {
+Ext.define('tentacles.view.AclContentsFormView', {
     extend: 'Ext.form.Panel',
     
-    alias: 'widget.accesstemplatecontentsformview',
+    alias: 'widget.aclcontentsformview',
     
     requires: [
-        'tentacles.view.AccessTemplateContentsFormViewController'
+        'tentacles.view.AclContentsFormViewController'
         ],
 
     viewModel: {
@@ -17,8 +17,8 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             },
             
         links: {
-            selectedAccessTemplate: {
-                reference: 'AccessTemplateModel',
+            selectedAcl: {
+                reference: 'AclModel',
                 create: true
                 }
             },
@@ -34,29 +34,29 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                     }
                 },
             
-            accessTemplateContentsStore: {
-                model: 'AccessTemplateContentsModel',
+            aclContentsStore: {
+                model: 'AclContentsModel',
                 pageSize: 0,
                 autoLoad: false,
                 sorters: 'orderNumber',
 
                 listeners: {
-                    datachanged: 'onAccessTemplateContentsStoreDataChanged'
+                    datachanged: 'onAclContentsStoreDataChanged'
                     }
                 }
             },
             
         formulas: {
-            accessTemplateRecordStatus: {
+            aclRecordStatus: {
                 bind: {
-                    bindTo: '{selectedAccessTemplate}',
+                    bindTo: '{selectedAcl}',
                     deep: true
                     },
 
-                get: function(accessTemplate) {
+                get: function(acl) {
                     var result = {
-                        dirty: accessTemplate ? accessTemplate.dirty : false,
-                        valid: accessTemplate ? accessTemplate.isValid() : false
+                        dirty: acl ? acl.dirty : false,
+                        valid: acl ? acl.isValid() : false
                         };
 
                     result.dirtyAndValid = result.dirty && result.valid;
@@ -65,10 +65,10 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                     }
                 },
                 
-            accessTemplateRecordAndStoreStatus: function (get) {
+            aclRecordAndStoreStatus: function (get) {
                 var result = {
-                    dirty: get('accessTemplateRecordStatus').dirty || get('storeIsDirty'),
-                    valid: get('accessTemplateRecordStatus').valid
+                    dirty: get('aclRecordStatus').dirty || get('storeIsDirty'),
+                    valid: get('aclRecordStatus').valid
                     };
 
                 result.dirtyAndValid = result.dirty && result.valid;
@@ -80,13 +80,13 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 return this.get('myPermissionsStore').findExact('permissionName', 'EditSettings') == -1;
                 },
                 
-            selectTemplatesControlWidth: function(get) {
+            aclPickerControlWidth: function(get) {
                 return this.get('hideEditableControls') ? 335 : 750;
                 }
             }
         },
 
-    controller: 'accesstemplatecontentsformviewcontroller',
+    controller: 'aclcontentsformviewcontroller',
     
     modelValidation: true,
         
@@ -109,23 +109,23 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             xtype: 'displayfield',
             width: 415,
             labelWidth: 120,
-            fieldLabel: 'Шаблон доступа',
+            fieldLabel: 'Список доступа',
             hidden: false,
 
             bind: {
-                value: '{selectedAccessTemplate.name}',
+                value: '{selectedAcl.name}',
                 hidden: '{!hideEditableControls}'
                 }
             },
             {
             xtype: 'textfield',
-            fieldLabel: 'Шаблон доступа',
+            fieldLabel: 'Список доступа',
             width: 415,
             labelWidth: 120,
             hidden: true,
 
             bind: {
-                value: '{selectedAccessTemplate.name}',
+                value: '{selectedAcl.name}',
                 hidden: '{hideEditableControls}'
                 }
             },
@@ -143,11 +143,11 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 xtype: 'button',
                 width: 100,
                 text: 'Сохранить',
-                handler: 'onSaveAccessTemplateContentsClick',
+                handler: 'onSaveAclContentsClick',
                 disabled: true,
 
                 bind: {
-                    disabled: '{!accessTemplateRecordAndStoreStatus.dirtyAndValid}'
+                    disabled: '{!aclRecordAndStoreStatus.dirtyAndValid}'
                     }
                 },
                 {
@@ -155,11 +155,11 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
                 width: 100,
                 margin: '0 0 0 5',
                 text: 'Отменить',
-                handler: 'onRevertAccessTemplateContentsClick',
+                handler: 'onRevertAclContentsClick',
                 disabled: true,
 
                 bind: {
-                    disabled: '{!accessTemplateRecordAndStoreStatus.dirty}'
+                    disabled: '{!aclRecordAndStoreStatus.dirty}'
                     }
                 }]
             }]
@@ -170,7 +170,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
         width: 750,
 
         bind: {
-            width: '{selectTemplatesControlWidth}'
+            width: '{aclPickerControlWidth}'
             },
         
         items: [
@@ -275,7 +275,7 @@ Ext.define('tentacles.view.AccessTemplateContentsFormView', {
             sortableColumns: false,
             
             bind: {
-                store: '{accessTemplateContentsStore}'
+                store: '{aclContentsStore}'
                 },
                 
             listeners: {

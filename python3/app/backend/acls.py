@@ -1,11 +1,11 @@
 from flask import request, jsonify
 
-from sql_classes import AccessTemplate
+from sql_classes import Acl
 
-def select_accesstemplates(Session):
+def select_acls(Session):
     session = Session()
 
-    query_result = session.query(AccessTemplate).all()
+    query_result = session.query(Acl).all()
     
     session.close()
 
@@ -15,28 +15,28 @@ def select_accesstemplates(Session):
             'data': []
             })
 
-    access_templates_list = []
+    acl_list = []
 
     for query_result_row in query_result:
-        access_template_object = {
+        acl_object = {
             'id': query_result_row.id,
             'name': query_result_row.name
             }
 
-        access_templates_list.append(access_template_object)
+        acl_list.append(acl_object)
 
     response = {
         'success': True,
-        'data': access_templates_list
+        'data': acl_list
         }
 
     return jsonify(response)
     
     
-def select_accesstemplate(accesstemplate_id, Session):
+def select_acl(acl_id, Session):
     session = Session()
 
-    query_result = session.query(AccessTemplate).get(accesstemplate_id)
+    query_result = session.query(Acl).get(acl_id)
 
     session.close()
 
@@ -46,20 +46,20 @@ def select_accesstemplate(accesstemplate_id, Session):
             'data': []
             })
 
-    access_template_object = {
+    acl_object = {
         'id': query_result.id,
         'name': query_result.name
         }
 
     response = {
         'success': True,
-        'data': access_template_object
+        'data': acl_object
         }
 
     return jsonify(response)
     
     
-def insert_accesstemplate(Session):
+def insert_acl(Session):
     json_data = request.get_json()
 
     if not json_data or json_data.get('name') == None:
@@ -70,15 +70,15 @@ def insert_accesstemplate(Session):
 
     session = Session()
 
-    new_access_template = AccessTemplate(name=json_data.get('name'))
+    new_acl = Acl(name=json_data.get('name'))
 
     try:
-        session.add(new_access_template)
+        session.add(new_acl)
         session.commit()
 
         response = {
             'success': True,
-            'data': [{'id': new_access_template.id}]
+            'data': [{'id': new_acl.id}]
             }
     except Exception as e:
         response = {
@@ -90,7 +90,7 @@ def insert_accesstemplate(Session):
     return jsonify(response)
     
     
-def update_accesstemplate(accesstemplate_id, Session):
+def update_acl(acl_id, Session):
     json_data = request.get_json()
 
     if not json_data:
@@ -101,7 +101,7 @@ def update_accesstemplate(accesstemplate_id, Session):
 
     session = Session()
 
-    query_result = session.query(AccessTemplate).get(accesstemplate_id)
+    query_result = session.query(Acl).get(acl_id)
 
     if query_result == None:
         return jsonify(success = False)
@@ -132,11 +132,11 @@ def update_accesstemplate(accesstemplate_id, Session):
     return jsonify(response)
 
 
-def delete_accesstemplate(accesstemplate_id, Session):
+def delete_acl(acl_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(AccessTemplate).filter_by(id=accesstemplate_id).first())
+        session.delete(session.query(Acl).filter_by(id=acl_id).first())
         session.commit()
 
         response = {

@@ -37,7 +37,7 @@ def main():
         distinguishedName = Column(String(250), nullable=False)
         cn = Column(String(250), nullable=False)
         userPrincipalName = Column(String(250), nullable=False, unique=True)
-        accessTemplateId = Column(Integer)
+        aclId = Column(Integer)
         roleId = Column(Integer)
         
     class TempGroup(Temp):
@@ -59,16 +59,16 @@ def main():
     query_result = session.query(Settings).filter_by(id=1).first()
 
     if query_result == None:
-        default_access_template_id = sqlalchemy.sql.null()
+        default_acl_id = sqlalchemy.sql.null()
         default_role_id = sqlalchemy.sql.null()
     else:
-        default_access_template_id = query_result.defaultAccessTemplateId
+        default_acl_id = query_result.defaultAclId
         default_role_id = query_result.defaultRoleId
     
     #Fill users temporary table    
     for ldap_user in ldap_users:
         temp_user = TempUser(distinguishedName=ldap_user[0], cn=ldap_user[1], userPrincipalName=ldap_user[2],
-            accessTemplateId=default_access_template_id, roleId=default_role_id)
+            aclId=default_acl_id, roleId=default_role_id)
 
         session.add(temp_user)
     

@@ -20,8 +20,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                     ]
                 },
                 
-            accessTemplatesStore: {
-                model: 'tentacles.model.AccessTemplateModel',
+            aclStore: {
+                model: 'tentacles.model.AclModel',
                 autoLoad: false
                 },
                 
@@ -68,12 +68,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 return get('selectedUser.authMethod') != 1 || !get('hideEditableControls');
                 },
                 
-            accessTemplateDisplayFieldHidden: function(get) {
-                return get('selectedUser.accessTemplateId') == undefined || !get('hideEditableControls');
+            aclDisplayFieldHidden: function(get) {
+                return get('selectedUser.aclId') == undefined || !get('hideEditableControls');
                 },
                 
-            accessTemplateComboboxHidden: function(get) {
-                return get('selectedUser.accessTemplateId') == undefined || get('hideEditableControls');
+            aclComboboxHidden: function(get) {
+                return get('selectedUser.aclId') == undefined || get('hideEditableControls');
                 },
                 
             roleDisplayFieldHidden: function(get) {
@@ -256,20 +256,20 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         {
         xtype: 'displayfield',
         labelWidth: 150,
-        fieldLabel: 'Шаблон доступа',
+        fieldLabel: 'Список доступа',
         hidden: true,
 
         bind: {
-            value: '{useraccesstemplatecombobox.selection.name}',
-            hidden: '{accessTemplateDisplayFieldHidden}'
+            value: '{useraclcombobox.selection.name}',
+            hidden: '{aclDisplayFieldHidden}'
             }
         },
         {
         xtype: 'combobox',
-        reference: 'useraccesstemplatecombobox',
+        reference: 'useraclcombobox',
         width: 390,
         labelWidth: 150,
-        fieldLabel: 'Шаблон доступа',
+        fieldLabel: 'Список доступа',
         editable: false,
         hidden: true,
         displayField: 'name',
@@ -277,9 +277,9 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         autoLoadOnValue: true,
 
         bind: {
-            value: '{selectedUser.accessTemplateId}',
-            hidden: '{accessTemplateComboboxHidden}',
-            store: '{accessTemplatesStore}'
+            value: '{selectedUser.aclId}',
+            hidden: '{aclComboboxHidden}',
+            store: '{aclStore}'
             }
         },
         {

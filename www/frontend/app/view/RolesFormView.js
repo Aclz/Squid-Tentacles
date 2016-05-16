@@ -179,6 +179,7 @@ Ext.define('tentacles.view.RolesFormView', {
         {
         xtype: 'grid',
         reference: 'roleGridRef',
+        columnLines: true,
         flex: 1,    
 
         bind: {
@@ -198,7 +199,7 @@ Ext.define('tentacles.view.RolesFormView', {
             {
             text: 'Роль',
             dataIndex: 'name',
-            width: 200
+            width: 415
             }]
         }]
     })

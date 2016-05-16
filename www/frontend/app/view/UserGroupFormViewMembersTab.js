@@ -12,8 +12,8 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
                     {name: 'statusName', type: 'string'},
                     {name: 'roleId'},
                     {name: 'roleName', type: 'string'},
-                    {name: 'accessTemplateId'},
-                    {name: 'accessTemplateName', type: 'string'},
+                    {name: 'aclId'},
+                    {name: 'aclName', type: 'string'},
                     {name: 'authMethod'},
                     {name: 'authMethodName', type: 'string'},
                     {name: 'quota'},
@@ -43,13 +43,13 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
                     }
                 },
 
-            accessTemplatesStore: {
-                model: 'AccessTemplateModel',
+            aclStore: {
+                model: 'AclModel',
                 pageSize: 0,
                 autoLoad: false,
 
                 listeners: {
-                    load: 'onAccessTemplatesStoreLoad'
+                    load: 'onAclStoreLoad'
                     }
                 },
                 
@@ -167,9 +167,9 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
                 }
             },
             {
-            text: 'Шаблон',
+            text: 'Список доступа',
             width: 125,
-            dataIndex: 'accessTemplateName',
+            dataIndex: 'aclName',
             hidden: true,
             
             bind: {
