@@ -118,6 +118,7 @@ class User(Base):
     traffic = Column(BigInteger, nullable=False, default=0)
     aclId = Column(Integer, ForeignKey('acls.id'))
     roleId = Column(Integer, ForeignKey('roles.id'))
+    extraQuota = Column(Integer, nullable=False, default=0)
     Index('ux_userPrincipalName', 'userPrincipalName', unique=True)
     Index('ux_ip', 'ip', unique=True)
     Index('ix_groupId', 'groupId')

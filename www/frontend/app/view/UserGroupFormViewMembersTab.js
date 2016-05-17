@@ -139,17 +139,17 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             {
             text: 'Пользователь',
             dataIndex: 'username',
-            flex: 1
+            flex: 3
             },
             {
             text: 'Статус',
-            width: 125,
-            dataIndex: 'statusName'
+            dataIndex: 'statusName',
+            flex: 2
             },
             {
             text: 'Роль',
-            width: 125,
             dataIndex: 'roleName',
+            flex: 2,
             hidden: true,
             
             bind: {
@@ -158,8 +158,8 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             },
             {
             text: 'Аутентификация',
-            width: 125,
             dataIndex: 'authMethodName',
+            flex: 2,
             hidden: true,
             
             bind: {
@@ -168,8 +168,8 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             },
             {
             text: 'Список доступа',
-            width: 125,
             dataIndex: 'aclName',
+            flex: 2,
             hidden: true,
             
             bind: {
@@ -182,7 +182,15 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             dataIndex: 'quota',
             align: 'right',
             format: '0',
-            width: 110
+            flex: 1.5
+            },
+            {
+            xtype: 'numbercolumn',
+            text: 'Доп. квота, Мб',
+            dataIndex: 'extraQuota',
+            align: 'right',
+            format: '0',
+            flex: 1.5
             },
             {
             xtype: 'numbercolumn',
@@ -190,7 +198,7 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             dataIndex: 'traffic',
             align: 'right',
             format: '0.00',
-            width: 110
+            flex: 1.5
             }]
         }]
     })

@@ -48,6 +48,7 @@ def report_select_group_members(current_user_properties, Session):
             'authMethod': result_row.authMethod,
             'aclId': result_row.aclId,
             'quota': result_row.quota,
+            'extraQuota': result_row.extraQuota,
             'traffic': round(result_row.traffic/1024/1024, 2),
             }
             
@@ -55,7 +56,7 @@ def report_select_group_members(current_user_properties, Session):
             forbidden_items = ['authMethod', 'aclId', 'roleId']
             
             if result_row.id != current_user_properties['user_object']['id']:
-                forbidden_items.extend(['status', 'quota', 'traffic'])
+                forbidden_items.extend(['status', 'quota', 'extraQuota', 'traffic'])
             
             for item in forbidden_items:
                 if row_object.get(item) != None:

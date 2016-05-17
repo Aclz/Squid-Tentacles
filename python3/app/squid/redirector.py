@@ -12,7 +12,7 @@ from sql_classes import User, AclContents, UrlList, UrlMask, Settings
 
 def get_user_status(givenUsername, givenIp):
     session = Session()
-    query_result = session.query(User).filter_by(userPrincipalName=givenUsername, status=1, hidden=0, authMethod=0).first()
+    query_result = session.query(User).filter_by(userPrincipalName = givenUsername, status = 1, hidden = 0, authMethod = 0).first()
     session.close()
 
     if query_result != None:
@@ -22,7 +22,7 @@ def get_user_status(givenUsername, givenIp):
             }
 
     session = Session()
-    query_result = session.query(User).filter_by(ip=givenIp, status=1, hidden=0, authMethod=1).first()
+    query_result = session.query(User).filter_by(ip = givenIp, status = 1, hidden = 0, authMethod = 1).first()
     session.close()
 
     if query_result != None:
@@ -40,9 +40,9 @@ def url_ok(url, acl):
     session = Session()
     
     query_result = session.query(UrlList.whitelist).\
-        join(AclContents, AclContents.urlListId==UrlList.id).\
-        join(UrlMask, UrlMask.urlListId==UrlList.id).\
-        filter(AclContents.aclId==acl).\
+        join(AclContents, AclContents.urlListId == UrlList.id).\
+        join(UrlMask, UrlMask.urlListId == UrlList.id).\
+        filter(AclContents.aclId == acl).\
         filter(literal(url).like('%' + UrlMask.name + '%')).\
         order_by(AclContents.aclId, AclContents.orderNumber).first()
 
@@ -81,9 +81,9 @@ def modify_url(line):
 
 
 engine = create_engine(config['SQLAlchemy']['DBConnectionString'],
-    pool_recycle=int(config['SQLAlchemy']['DBConnectionPoolRecycleTimeout']))
+    pool_recycle = int(config['SQLAlchemy']['DBConnectionPoolRecycleTimeout']))
 
-Session = scoped_session(sessionmaker(bind=engine))
+Session = scoped_session(sessionmaker(bind = engine))
 
 while True:
     line = sys.stdin.readline().strip()

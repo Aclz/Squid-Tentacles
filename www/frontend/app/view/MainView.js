@@ -11,7 +11,7 @@ Ext.define('tentacles.view.MainView', {
         'tentacles.view.UrlMasksFormView',
         'tentacles.view.AclsFormView',
         'tentacles.view.AclContentsFormView'
-    ],
+        ],
         
     viewModel: {            
         links: {
@@ -100,7 +100,7 @@ Ext.define('tentacles.view.MainView', {
             {
             xtype: 'panel',
             flex: 2,
-            title: 'Squid Tentacles v0.8.0.5 beta'
+            title: 'Squid Tentacles v0.8.5.0 beta'
             },
             {
             xtype: 'panel',

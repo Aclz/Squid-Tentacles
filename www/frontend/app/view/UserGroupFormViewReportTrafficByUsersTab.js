@@ -104,7 +104,7 @@ Ext.define('tentacles.view.UserGroupFormViewReportTrafficByUsersTab', {
             text: '№',
             dataIndex: 'position',
             align: 'right',
-            width: 50
+            width: 60
             },
             {
             text: 'Пользователь',

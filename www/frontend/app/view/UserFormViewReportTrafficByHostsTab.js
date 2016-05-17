@@ -103,7 +103,7 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByHostsTab', {
             text: '№',
             dataIndex: 'position',
             align: 'right',
-            width: 50
+            width: 60
             },
             {
             text: 'Сайт',

@@ -272,7 +272,7 @@ Ext.define('tentacles.view.MainViewController', {
             Ext.resumeLayouts(true);
             }
         catch (e) {
-            textfield.markInvalid('Invalid regular expression');
+            textfield.markInvalid('Ошибка в регулярном выражении');
             }
         },
     

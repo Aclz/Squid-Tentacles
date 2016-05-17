@@ -19,6 +19,7 @@ def select_user(current_user_properties, requested_user_id, Session):
         'userPrincipalName': query_result.userPrincipalName,
         'status': query_result.status,
         'quota': query_result.quota,
+        'extraQuota': query_result.extraQuota,
         'authMethod': query_result.authMethod,
         'ip': query_result.ip if query_result.ip != None else '0.0.0.0',
         'traffic': round(query_result.traffic/1024/1024, 2),
@@ -32,7 +33,7 @@ def select_user(current_user_properties, requested_user_id, Session):
         forbidden_items = ['authMethod', 'ip', 'aclId', 'roleId']
         
         if requested_user_id != current_user_properties['user_object']['id']:
-            forbidden_items.extend(['status', 'quota', 'traffic'])
+            forbidden_items.extend(['status', 'quota', 'extraQuota', 'traffic'])
         
         for item in forbidden_items:
             if requested_user_object.get(item) != None:
@@ -82,7 +83,7 @@ def update_user(user_id, Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['status', 'quota', 'authMethod', 'ip', 'traffic', 'aclId', 'roleId']
+    allowed_to_update_fields = ['status', 'quota', 'extraQuota', 'authMethod', 'ip', 'traffic', 'aclId', 'roleId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:

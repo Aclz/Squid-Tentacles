@@ -43,7 +43,7 @@ CREATE TABLE `accessLog` (
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6525643 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6838566 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -107,7 +107,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=172324 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=182290 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,7 +175,7 @@ CREATE TABLE `rolePermissions` (
   KEY `ix_permissionId` (`permissionId`),
   CONSTRAINT `fk_rolePermissions_permissionId` FOREIGN KEY (`permissionId`) REFERENCES `permissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_rolePermissions_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,6 +281,7 @@ CREATE TABLE `users` (
   `traffic` bigint(20) NOT NULL DEFAULT '0',
   `aclId` int(11) DEFAULT NULL,
   `roleId` int(11) DEFAULT NULL,
+  `extraQuota` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_userPrincipalName` (`userPrincipalName`),
   UNIQUE KEY `ux_ip` (`ip`),
@@ -498,7 +499,7 @@ set
 	status = 2
 where
 	status = 1
-	and round(traffic/1024/1024) > quota;
+	and round(traffic/1024/1024) > quota + extraQuota;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -566,7 +567,8 @@ if currTrafficPeriod <> DATE_FORMAT(NOW(), '%Y-%m-01') then
 		update
 			users
 		set
-			traffic = 0;
+			traffic = 0,
+            extraQuota = 0;
 
 		update
 			users
@@ -693,4 +695,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-16 12:41:48
+-- Dump completed on 2016-05-17  8:04:43

@@ -2,7 +2,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
     extend: 'Ext.form.Panel',
     
     alias: 'widget.userformviewproperties',
-    
+        
     viewModel: {
         stores: {
             statusesStore: {
@@ -38,6 +38,10 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 
             quotaNumberFieldHidden: function(get) {
                 return get('selectedUser.quota') == undefined || get('hideEditableControls');
+                },
+                
+            extraQuotaDisplayFieldHidden: function(get) {
+                return get('selectedUser.extraQuota') == undefined || get('selectedUser.extraQuota') == 0;
                 },
                 
             trafficDisplayFieldHidden: function(get) {
@@ -106,6 +110,21 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
                     return result;
                     }
+                },
+                
+            extraQuotaText: {
+                bind: {
+                    bindTo: '{selectedUser}',
+                    deep: true
+                    },
+
+                get: function(user) {
+                    if (!user || !user.get('quota')) {
+                        return '';
+                        }
+                                    
+                    return user.get('quota') != 0 ? ' + ' + user.get('quota') : '';
+                    }
                 }
             }
         },
@@ -114,13 +133,27 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
     
     title: 'Свойства',
 
-    items: [        
+    items: [
         {
         xtype: 'displayfield',
         labelWidth: 150,
         fieldLabel: 'ФИО',
-        bind: {value: '{selectedUser.cn}'}
-        },        
+        
+        bind: {
+            value: '{selectedUser.cn}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Имя пользователя в Active Directory.'
+                    });
+                }
+            }
+        },      
         {
         xtype: 'displayfield',
         labelWidth: 150,
@@ -128,6 +161,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         
         bind: {
             value: '{selectedUser.userPrincipalName}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Логин пользователя в Active Directory.'
+                    });
+                }
             }
         },
         {
@@ -140,21 +184,96 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.quota}',
             hidden: '{quotaDisplayFieldHidden}'
             },
+            
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Месячный объем трафика, после расхода которого<br>' +
+                        'пользователь будет заблокирован.'
+                    });
+                }
+            },
 
         renderer: Ext.util.Format.numberRenderer('0.00')
         },
         {
         xtype: 'numberfield',
-        width: 280,
+        width: 250,
         labelWidth: 150,
         fieldLabel: 'Квота, Мб',
         minValue: 0,
-        maxValue: 999999999999, //seems to be enough
+        maxValue: 499999999999, //would be enough
         hidden: true,
 
         bind: {
             value: '{selectedUser.quota}',
             hidden: '{quotaNumberFieldHidden}'
+            },
+            
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Месячный объем трафика, после расхода которого<br>' +
+                        'пользователь будет заблокирован.'
+                    });
+                }
+            }
+        },
+        {
+        xtype: 'displayfield',
+        labelWidth: 150,
+        fieldLabel: 'Доп. квота, Мб',
+        hidden: true,
+
+        bind: {
+            value: '{selectedUser.extraQuota}',
+            hidden: '{quotaDisplayFieldHidden}'
+            },
+            
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: 'Дополнительная квота',
+                    text: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
+                        'По наступлении следующего месяца данный параметр обнуляется.'
+                    });
+                }
+            },
+            
+        renderer: Ext.util.Format.numberRenderer('0.00')
+        },
+        {
+        xtype: 'numberfield',
+        width: 250,
+        labelWidth: 150,
+        fieldLabel: 'Доп. квота, Мб',
+        minValue: 0,
+        maxValue: 499999999999,
+        hidden: true,
+        
+        bind: {
+            value: '{selectedUser.extraQuota}',
+            hidden: '{quotaNumberFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: 'Дополнительная квота',
+                    text: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
+                        'По наступлении следующего месяца данный параметр обнуляется.'
+                    });
+                }
             }
         },
         {
@@ -166,6 +285,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{selectedUser.traffic}',
             hidden: '{trafficDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: 'Расход трафика',
+                    text: 'Объем трафика, скачанного пользователем в текущем месяце.'
+                    });
+                }
             },
             
         renderer: Ext.util.Format.numberRenderer('0.00')
@@ -179,12 +309,26 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{userstatuscombobox.selection.name}',
             hidden: '{statusDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Принимает следующие значения:<br>' +
+                        '<ul><li><b>Активен</b> - пользователь включен;</li>' +
+                        '<li><b>Отключен за превышение квоты</b> - пользователь отключен до начала следующего месяца;</li>' +
+                        '<li><b>Заблокирован</b> - пользователь отключен до разблокировки администратором вручную.</li></ul>'
+                    });
+                }
             }
         }, 
         {
         xtype: 'combobox',
         reference: 'userstatuscombobox',
-        width: 390,
+        width: 415,
         labelWidth: 150,
         fieldLabel: 'Состояние',
         editable: false,
@@ -196,25 +340,52 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.status}',
             hidden: '{statusComboboxHidden}',
             store: '{statusesStore}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Принимает следующие значения:<br>' +
+                        '<ul><li><b>Активен</b> - пользователь включен;</li>' +
+                        '<li><b>Отключен за превышение квоты</b> - пользователь отключен до начала следующего месяца;</li>' +
+                        '<li><b>Заблокирован</b> - пользователь отключен до разблокировки администратором вручную.</li></ul>'
+                    });
+                }
             }
         },
         {
         xtype: 'displayfield',
         labelWidth: 150,
-        fieldLabel: 'Аутентификация',
+        fieldLabel: 'Авторизация',
         hidden: true,
 
         bind: {
             value: '{userauthmethodcombobox.selection.name}',
             hidden: '{authMethodDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Принимает следующие значения:<br>' +
+                        '<ul><li><b>Пользователь</b> - авторизация в Squid и URL-редиректоре осуществляется по имени пользователя;</li>' +
+                        '<li><b>IP-адрес</b> - авторизация в Squid и URL-редиректоре осуществляется по IP-адресу пользователя.</li></ul>'
+                    });
+                }
             }
         },
         {
         xtype: 'combobox',
         reference: 'userauthmethodcombobox',
-        width: 390,
+        width: 415,
         labelWidth: 150,
-        fieldLabel: 'Аутентификация',
+        fieldLabel: 'Авторизация',
         editable: false,
         hidden: true,
         displayField: 'name',
@@ -224,6 +395,19 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.authMethod}',
             hidden: '{authMethodComboboxHidden}',
             store: '{authMethodsStore}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Принимает следующие значения:<br>' +
+                        '<ul><li><b>Пользователь</b> - авторизация в Squid и URL-редиректоре осуществляется по имени пользователя;</li>' +
+                        '<li><b>IP-адрес</b> - авторизация в Squid и URL-редиректоре осуществляется по IP-адресу пользователя.</li></ul>'
+                    });
+                }
             }
         },
         {
@@ -235,6 +419,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{selectedUser.ip}',
             hidden: '{ipAddressDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'IP-адрес пользователя в случае IP-авторизации.'
+                    });
+                }
             }
         },
         {
@@ -250,6 +445,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.ip}',
             hidden: '{ipAddressTextFieldHidden}'
             },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'IP-адрес пользователя в случае IP-авторизации.'
+                    });
+                }
+            },
             
         maskRe: /[\d\.]/
         },
@@ -262,12 +468,23 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{useraclcombobox.selection.name}',
             hidden: '{aclDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Определяет множество URL, доступных или недоступных пользователю.'
+                    });
+                }
             }
         },
         {
         xtype: 'combobox',
         reference: 'useraclcombobox',
-        width: 390,
+        width: 415,
         labelWidth: 150,
         fieldLabel: 'Список доступа',
         editable: false,
@@ -280,6 +497,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.aclId}',
             hidden: '{aclComboboxHidden}',
             store: '{aclStore}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Определяет множество URL, доступных или недоступных пользователю.'
+                    });
+                }
             }
         },
         {
@@ -291,12 +519,23 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{userrolecombobox.selection.name}',
             hidden: '{roleDisplayFieldHidden}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Определяет набор прав пользователя в данном приложении.'
+                    });
+                }
             }
         },
         {
         xtype: 'combobox',
         reference: 'userrolecombobox',
-        width: 390,
+        width: 415,
         labelWidth: 150,
         fieldLabel: 'Роль',
         editable: false,
@@ -309,6 +548,17 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.roleId}',
             hidden: '{roleComboboxHidden}',
             store: '{rolesStore}'
+            },
+
+        listeners: {
+            afterrender: function(me) {
+                Ext.tip.QuickTipManager.register({
+                    target: me.getId(),
+                    dismissDelay: 10000,
+                    title: me.fieldLabel,
+                    text: 'Определяет набор прав пользователя в данном приложении.'
+                    });
+                }
             }
         },
         {

@@ -93,7 +93,7 @@ Ext.define('tentacles.view.UserFormViewReportTrafficByDatesTab', {
             text: '№',
             dataIndex: 'position',
             align: 'right',
-            width: 50
+            width: 60
             },
             {
             xtype: 'datecolumn',
