@@ -97,6 +97,18 @@ Ext.define('tentacles.view.AclsFormView', {
             bind: {
                 value: '{defaultaclcombobox.selection.name}',
                 hidden: '{!hideEditableControls}'
+                },
+            
+            listeners: {
+                afterrender: function(me) {
+                    Ext.create('Ext.tip.ToolTip', {
+                        target: me.getId(),
+                        showDelay: 750,
+                        dismissDelay: 10000,
+                        title: me.fieldLabel,
+                        html: 'Список доступа, автоматически присваеваемый новым пользователям.'
+                        });
+                    }
                 }
             },
             {
@@ -115,6 +127,18 @@ Ext.define('tentacles.view.AclsFormView', {
                 value: '{settings.defaultAclId}',
                 hidden: '{hideEditableControls}',
                 store: '{aclStore}'
+                },
+            
+            listeners: {
+                afterrender: function(me) {
+                    Ext.create('Ext.tip.ToolTip', {
+                        target: me.getId(),
+                        showDelay: 750,
+                        dismissDelay: 10000,
+                        title: me.fieldLabel,
+                        html: 'Список доступа, автоматически присваеваемый новым пользователям.'
+                        });
+                    }
                 }
             },
             {

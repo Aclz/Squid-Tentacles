@@ -144,12 +144,13 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             },
 
         listeners: {
-            afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+            afterrender: function(me) {           
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Имя пользователя в Active Directory.'
+                    html: 'Имя пользователя в Active Directory.'
                     });
                 }
             }
@@ -165,11 +166,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Логин пользователя в Active Directory.'
+                    html: 'Логин пользователя в Active Directory.'
                     });
                 }
             }
@@ -187,11 +189,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Месячный объем трафика, после расхода которого<br>' +
+                    html: 'Месячный объем трафика, после расхода которого<br>' +
                         'пользователь будет заблокирован.'
                     });
                 }
@@ -215,11 +218,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Месячный объем трафика, после расхода которого<br>' +
+                    html: 'Месячный объем трафика, после расхода которого<br>' +
                         'пользователь будет заблокирован.'
                     });
                 }
@@ -238,11 +242,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: 'Дополнительная квота',
-                    text: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
+                    html: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
                         'По наступлении следующего месяца данный параметр обнуляется.'
                     });
                 }
@@ -266,11 +271,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: 'Дополнительная квота',
-                    text: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
+                    html: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
                         'По наступлении следующего месяца данный параметр обнуляется.'
                     });
                 }
@@ -289,11 +295,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: 'Расход трафика',
-                    text: 'Объем трафика, скачанного пользователем в текущем месяце.'
+                    html: 'Объем трафика, скачанного пользователем в текущем месяце.'
                     });
                 }
             },
@@ -313,11 +320,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Принимает следующие значения:<br>' +
+                    html: 'Принимает следующие значения:<br>' +
                         '<ul><li><b>Активен</b> - пользователь включен;</li>' +
                         '<li><b>Отключен за превышение квоты</b> - пользователь отключен до начала следующего месяца;</li>' +
                         '<li><b>Заблокирован</b> - пользователь отключен до разблокировки администратором вручную.</li></ul>'
@@ -344,11 +352,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Принимает следующие значения:<br>' +
+                    html: 'Принимает следующие значения:<br>' +
                         '<ul><li><b>Активен</b> - пользователь включен;</li>' +
                         '<li><b>Отключен за превышение квоты</b> - пользователь отключен до начала следующего месяца;</li>' +
                         '<li><b>Заблокирован</b> - пользователь отключен до разблокировки администратором вручную.</li></ul>'
@@ -369,11 +378,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Принимает следующие значения:<br>' +
+                    html: 'Принимает следующие значения:<br>' +
                         '<ul><li><b>Пользователь</b> - авторизация в Squid и URL-редиректоре осуществляется по имени пользователя;</li>' +
                         '<li><b>IP-адрес</b> - авторизация в Squid и URL-редиректоре осуществляется по IP-адресу пользователя.</li></ul>'
                     });
@@ -399,11 +409,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Принимает следующие значения:<br>' +
+                    html: 'Принимает следующие значения:<br>' +
                         '<ul><li><b>Пользователь</b> - авторизация в Squid и URL-редиректоре осуществляется по имени пользователя;</li>' +
                         '<li><b>IP-адрес</b> - авторизация в Squid и URL-редиректоре осуществляется по IP-адресу пользователя.</li></ul>'
                     });
@@ -423,11 +434,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'IP-адрес пользователя в случае IP-авторизации.'
+                    html: 'IP-адрес пользователя в случае IP-авторизации.'
                     });
                 }
             }
@@ -448,11 +460,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'IP-адрес пользователя в случае IP-авторизации.'
+                    html: 'IP-адрес пользователя в случае IP-авторизации.'
                     });
                 }
             },
@@ -472,11 +485,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Определяет множество URL, доступных или недоступных пользователю.'
+                    html: 'Определяет множество URL, доступных или недоступных пользователю.'
                     });
                 }
             }
@@ -501,11 +515,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Определяет множество URL, доступных или недоступных пользователю.'
+                    html: 'Определяет множество URL, доступных или недоступных пользователю.'
                     });
                 }
             }
@@ -523,11 +538,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Определяет набор прав пользователя в данном приложении.'
+                    html: 'Определяет набор прав пользователя в данном приложении.'
                     });
                 }
             }
@@ -552,11 +568,12 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
 
         listeners: {
             afterrender: function(me) {
-                Ext.tip.QuickTipManager.register({
+                Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
+                    showDelay: 750,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
-                    text: 'Определяет набор прав пользователя в данном приложении.'
+                    html: 'Определяет набор прав пользователя в данном приложении.'
                     });
                 }
             }

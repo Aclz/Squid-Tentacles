@@ -97,14 +97,26 @@ Ext.define('tentacles.view.RolesFormView', {
             bind: {
                 value: '{defaultrolecombobox.selection.name}',
                 hidden: '{!hideEditableControls}'
+                },
+            
+            listeners: {
+                afterrender: function(me) {
+                    Ext.create('Ext.tip.ToolTip', {
+                        target: me.getId(),
+                        showDelay: 750,
+                        dismissDelay: 10000,
+                        title: me.fieldLabel,
+                        html: 'Роль, автоматически присваеваемая новым пользователям.'
+                        });
+                    }
                 }
             },
             {
             xtype: 'combobox',
             reference: 'defaultrolecombobox',
             width: 415,
-            labelWidth: 220,
-            fieldLabel: 'Роль пользователя по-умолчанию',
+            labelWidth: 150,
+            fieldLabel: 'Роль по-умолчанию',
             editable: false,
             hidden: true,
 
@@ -120,6 +132,18 @@ Ext.define('tentacles.view.RolesFormView', {
             bind: {
                 value: '{settings.defaultRoleId}',
                 hidden: '{hideEditableControls}'
+                },
+            
+            listeners: {
+                afterrender: function(me) {
+                    Ext.create('Ext.tip.ToolTip', {
+                        target: me.getId(),
+                        showDelay: 750,
+                        dismissDelay: 10000,
+                        title: me.fieldLabel,
+                        html: 'Роль, автоматически присваеваемая новым пользователям.'
+                        });
+                    }
                 }
             },
             {
