@@ -139,7 +139,7 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
             {
             text: 'Пользователь',
             dataIndex: 'username',
-            flex: 3
+            flex: 3.5
             },
             {
             text: 'Статус',
@@ -157,7 +157,7 @@ Ext.define('tentacles.view.UserGroupFormViewMembersTab', {
                 }
             },
             {
-            text: 'Аутентификация',
+            text: 'Авторизация',
             dataIndex: 'authMethodName',
             flex: 2,
             hidden: true,

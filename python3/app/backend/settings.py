@@ -6,11 +6,11 @@ from sql_classes import Settings
 def select_settings(current_user_properties, Session):
     session = Session()
 
-    query_result = session.query(Settings).filter_by(id = 1).first()
+    query_result = session.query(Settings).filter_by(id=1).first()
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': {'id': 1}
@@ -23,7 +23,7 @@ def select_settings(current_user_properties, Session):
         }
 
     session.close()
-    
+
     current_user_permissions = current_user_properties['user_permissions']
 
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewPermissions'), None) == None:
@@ -32,7 +32,7 @@ def select_settings(current_user_properties, Session):
         for item in forbidden_items:
             if settings_object.get(item) != None:
                 settings_object.pop(item)
-                
+
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewSettings'), None) == None:
         forbidden_items = ['defaultAclId']
 
@@ -61,7 +61,7 @@ def update_settings(Session):
 
     query_result = session.query(Settings).get(1)
 
-    if query_result == None:
+    if query_result is None:
         new_settings = Settings(id=1)
         session.add(new_settings)
         query_result = session.query(Settings).get(1)

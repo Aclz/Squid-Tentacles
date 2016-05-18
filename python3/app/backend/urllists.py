@@ -2,6 +2,7 @@ from flask import request, jsonify
 
 from sql_classes import UrlList
 
+
 def select_urllists(Session):
     session = Session()
 
@@ -9,7 +10,7 @@ def select_urllists(Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -32,8 +33,8 @@ def select_urllists(Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def select_urllist(urllist_id, Session):
     session = Session()
 
@@ -41,7 +42,7 @@ def select_urllist(urllist_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -59,8 +60,8 @@ def select_urllist(urllist_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_urllist(Session):
     json_data = request.get_json()
 
@@ -90,7 +91,7 @@ def insert_urllist(Session):
     session.close()
 
     return jsonify(response)
-    
+
 
 def update_urllist(urllist_id, Session):
     json_data = request.get_json()
@@ -105,8 +106,8 @@ def update_urllist(urllist_id, Session):
 
     query_result = session.query(UrlList).get(urllist_id)
 
-    if query_result == None:
-        return jsonify(success = False)
+    if query_result is None:
+        return jsonify(success=False)
 
     do_commit = False
 

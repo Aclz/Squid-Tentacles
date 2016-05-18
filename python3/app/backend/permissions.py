@@ -2,14 +2,15 @@ from flask import request, jsonify
 
 from sql_classes import Permission
 
+
 def select_permissions(Session):
     session = Session()
 
     query_result = session.query(Permission).all()
-    
+
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []

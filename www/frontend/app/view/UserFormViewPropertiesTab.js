@@ -193,7 +193,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                     target: me.getId(),
                     showDelay: 750,
                     dismissDelay: 10000,
-                    title: me.fieldLabel,
+                    title: 'Квота',
                     html: 'Месячный объем трафика, после расхода которого<br>' +
                         'пользователь будет заблокирован.'
                     });
@@ -222,7 +222,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                     target: me.getId(),
                     showDelay: 750,
                     dismissDelay: 10000,
-                    title: me.fieldLabel,
+                    title: 'Квота',
                     html: 'Месячный объем трафика, после расхода которого<br>' +
                         'пользователь будет заблокирован.'
                     });

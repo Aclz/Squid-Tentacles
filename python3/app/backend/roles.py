@@ -2,14 +2,15 @@ from flask import request, jsonify
 
 from sql_classes import Role
 
+
 def select_roles(Session):
     session = Session()
 
     query_result = session.query(Role).all()
-    
+
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -31,8 +32,8 @@ def select_roles(Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def select_role(role_id, Session):
     session = Session()
 
@@ -40,7 +41,7 @@ def select_role(role_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -57,8 +58,8 @@ def select_role(role_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_role(Session):
     json_data = request.get_json()
 
@@ -88,8 +89,8 @@ def insert_role(Session):
     session.close()
 
     return jsonify(response)
-    
-    
+
+
 def update_role(role_id, Session):
     json_data = request.get_json()
 
@@ -103,8 +104,8 @@ def update_role(role_id, Session):
 
     query_result = session.query(Role).get(role_id)
 
-    if query_result == None:
-        return jsonify(success = False)
+    if query_result is None:
+        return jsonify(success=False)
 
     do_commit = False
 

@@ -2,6 +2,7 @@ from flask import request, jsonify
 
 from sql_classes import RolePermission
 
+
 def select_role_permissions(role_id, Session):
     session = Session()
 
@@ -9,7 +10,7 @@ def select_role_permissions(role_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -31,8 +32,8 @@ def select_role_permissions(role_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_role_permissions(role_id, Session):
     json_data = request.get_json()
 
@@ -69,7 +70,7 @@ def delete_role_permission(role_id, permission_id, Session):
 
     try:
         session.delete(session.query(RolePermission).filter_by(roleId=role_id, id=permission_id).first())
-            
+
         session.commit()
 
         response = {

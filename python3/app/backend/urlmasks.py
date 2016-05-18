@@ -2,6 +2,7 @@ from flask import request, jsonify
 
 from sql_classes import UrlMask
 
+
 def select_urlmasks(urllist_id, Session):
     session = Session()
 
@@ -9,7 +10,7 @@ def select_urlmasks(urllist_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -31,8 +32,8 @@ def select_urlmasks(urllist_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_urlmask(urllist_id, Session):
     json_data = request.get_json()
 
@@ -62,8 +63,8 @@ def insert_urlmask(urllist_id, Session):
     session.close()
 
     return jsonify(response)
-    
-    
+
+
 def update_urlmask(urllist_id, urlmask_id, Session):
     json_data = request.get_json()
 
@@ -77,8 +78,8 @@ def update_urlmask(urllist_id, urlmask_id, Session):
 
     query_result = session.query(UrlMask).filter_by(urlListId=urllist_id, id=urlmask_id).first()
 
-    if query_result == None:
-        return jsonify(success = False)
+    if query_result is None:
+        return jsonify(success=False)
 
     do_commit = False
 

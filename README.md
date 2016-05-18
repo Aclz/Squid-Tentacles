@@ -1,6 +1,7 @@
 # Squid Tentacles
 Squid Tentacles v0.8x (beta)
 
+WARNING: Currently only russian interface present. English option coming soon!
 
 User management subsystem for Squid and Active Directory users:
 

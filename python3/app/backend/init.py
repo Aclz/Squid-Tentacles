@@ -13,7 +13,7 @@ def who_am_i(user_object, session):
                 'cn': 'Анонимный пользователь'
                 }
             })
-    
+
     return jsonify({
         'success': True,
         'data': {

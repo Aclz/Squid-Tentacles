@@ -2,6 +2,7 @@ from flask import request, jsonify
 
 from sql_classes import AclContents
 
+
 def select_acl_contents(acl_id, Session):
     session = Session()
 
@@ -9,7 +10,7 @@ def select_acl_contents(acl_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -32,8 +33,8 @@ def select_acl_contents(acl_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_acl_contents(acl_id, Session):
     json_data = request.get_json()
 
@@ -66,8 +67,8 @@ def insert_acl_contents(acl_id, Session):
     session.close()
 
     return jsonify(response)
-    
-    
+
+
 def update_acl_contents(acl_id, aclcontent_id, Session):
     json_data = request.get_json()
 
@@ -81,8 +82,8 @@ def update_acl_contents(acl_id, aclcontent_id, Session):
 
     query_result = session.query(AclContents).get(aclcontent_id)
 
-    if query_result == None:
-        return jsonify(success = False)
+    if query_result is None:
+        return jsonify(success=False)
 
     do_commit = False
 
@@ -114,9 +115,9 @@ def delete_acl_contents(acl_id, aclcontent_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(AclContents).filter_by(aclId=acl_id,
-            id=aclcontent_id).first())
-            
+        session.delete(session.query(AclContents).filter_by(
+            aclId=acl_id, id=aclcontent_id).first())
+
         session.commit()
 
         response = {

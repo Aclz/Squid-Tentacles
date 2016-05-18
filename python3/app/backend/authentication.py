@@ -12,13 +12,14 @@ from sql_classes import User
 from authorization import check_permissions, get_role_object, get_role_permissions
 from config import config
 
+
 _SERVICE_NAME = None
 
 
 def get_user_by_principal_name(user_principal_name, Session):
     session = Session()
 
-    query_result = session.query(User).filter_by(userPrincipalName = user_principal_name, hidden = 0).first()
+    query_result = session.query(User).filter_by(userPrincipalName=user_principal_name, hidden=0).first()
 
     session.close()
 
@@ -56,7 +57,7 @@ def init_kerberos(app, service='HTTP', hostname=gethostname()):
     '''
     if config['Authentication']['Enabled'] == 'False':
         return
-        
+
     global _SERVICE_NAME
     _SERVICE_NAME = "%s@%s" % (service, hostname)
 
@@ -100,14 +101,15 @@ def _gssapi_authenticate(token):
     '''
     state = None
     ctx = stack.top
+
     try:
         rc, state = kerberos.authGSSServerInit(_SERVICE_NAME)
-        
+
         if rc != kerberos.AUTH_GSS_COMPLETE:
             return None
-            
+
         rc = kerberos.authGSSServerStep(state, token)
-        
+
         if rc == kerberos.AUTH_GSS_COMPLETE:
             ctx.kerberos_token = kerberos.authGSSServerResponse(state)
             ctx.kerberos_user = kerberos.authGSSServerUserName(state)
@@ -122,7 +124,8 @@ def _gssapi_authenticate(token):
         if state:
             kerberos.authGSSServerClean(state)
 
-def authorization(permission_list, session, return_user_properties = False):
+
+def authorization(permission_list, session, return_user_properties=False):
     '''
     Require that the wrapped view function only be called by users
     authenticated with Kerberos. The view function will have the authenticated
@@ -151,52 +154,52 @@ def authorization(permission_list, session, return_user_properties = False):
                     response = function(*args, **kwargs)
 
                 response = make_response(response)
-                
+
                 return response
-                
+
             header = request.headers.get("Authorization")
-        
+
             if header:
                 ctx = stack.top
                 token = ''.join(header.split()[1:])
                 rc = _gssapi_authenticate(token)
-                
+
                 user_principal_name = ctx.kerberos_user
                 user_object = get_user_by_principal_name(user_principal_name, session)
-                
-                #Kerberos-authenticated but db-absent user
+
+                # Kerberos-authenticated but db-absent user
                 if user_object is None:
                     return _forbidden()
-                
+
                 if return_user_properties:
                     role_object = get_role_object(user_object['roleId'], session)
                     role_permissions = get_role_permissions(role_object['id'], session)
-                    
+
                     user_properties = {
                         'user_object': user_object,
                         'user_permissions': role_permissions
                         }
-                
+
                 if rc == kerberos.AUTH_GSS_COMPLETE:
                     if user_object is None:
                         return _forbidden()
-                                            
+
                     if check_permissions(user_object['id'], permission_list, session):
                         if return_user_properties:
                             response = function(user_properties, *args, **kwargs)
                         else:
                             response = function(*args, **kwargs)
-                    
+
                         response = make_response(response)
-                
+
                         if ctx.kerberos_token is not None:
                             response.headers['WWW-Authenticate'] = ' '.join(['negotiate', ctx.kerberos_token])
-                        
+
                         return response
                     else:
-                        return _forbidden()                   
+                        return _forbidden()
                 elif rc != kerberos.AUTH_GSS_CONTINUE:
-                    return  _forbidden()                    
+                    return _forbidden()
             return _unauthorized()
-        return decorated        
+        return decorated
     return decorator

@@ -5,7 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-
 class AccessLog(Base):
     __tablename__ = 'accessLog'
     id = Column(Integer, primary_key=True)
@@ -26,7 +25,7 @@ class AccessLog(Base):
     Index('ix_userId_time', 'userId', 'time_since_epoch')
     Index('ix_time', 'time_since_epoch')
     Index('ix_archived', 'date', 'userId')
-    
+
 
 class AccessLogArchive(Base):
     __tablename__ = 'accessLogArchive'
@@ -38,14 +37,14 @@ class AccessLogArchive(Base):
     Index('ix_date_userId', 'date', 'userId')
     Index('ix_userId', 'userId')
 
-    
+
 class Acl(Base):
     __tablename__ = 'acls'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False, unique=True)
     Index('ux_name', 'name', unique=True)
-    
-    
+
+
 class AclContents(Base):
     __tablename__ = 'aclContents'
     id = Column(Integer, primary_key=True)
@@ -53,30 +52,30 @@ class AclContents(Base):
     urlListId = Column(Integer, ForeignKey('urlLists.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     orderNumber = Column(SmallInteger, nullable=False)
     Index('ux_aclId_urlListId', 'aclId', 'urlListId', unique=True)
-    #Index('ix_urlListId', 'urlListId')
-    
-    
+    # Index('ix_urlListId', 'urlListId')
+
+
 class Permission(Base):
     __tablename__ = 'permissions'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False, unique=True)
     Index('ux_name', 'name', unique=True)
-    
-    
+
+
 class Role(Base):
     __tablename__ = 'roles'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False, unique=True)
     Index('ux_name', 'name', unique=True)
-    
-    
+
+
 class RolePermission(Base):
     __tablename__ = 'rolePermissions'
     id = Column(Integer, primary_key=True)
     roleId = Column(Integer, ForeignKey('roles.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     permissionId = Column(Integer, ForeignKey('permissions.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     Index('ux_roleId_permissionId', 'roleId', 'permissionId', unique=True)
-    #Index('ix_permissionId', 'permissionId')
+    # Index('ix_permissionId', 'permissionId')
 
 
 class Settings(Base):
@@ -84,9 +83,9 @@ class Settings(Base):
     id = Column(Integer, primary_key=True)
     defaultAclId = Column(Integer, ForeignKey('acls.id'))
     defaultRoleId = Column(Integer, ForeignKey('roles.id'))
-    #Index('ix_defaultAcl', 'defaultAclId')
-    #Index('ix_defaultRoleId', 'defaultRoleId')
-    
+    # Index('ix_defaultAcl', 'defaultAclId')
+    # Index('ix_defaultRoleId', 'defaultRoleId')
+
 
 class UrlList(Base):
     __tablename__ = 'urlLists'
@@ -94,7 +93,7 @@ class UrlList(Base):
     name = Column(String(100), nullable=False, unique=True)
     whitelist = Column(Boolean, nullable=False)
     Index('ux_name', 'name', unique=True)
-    
+
 
 class UrlMask(Base):
     __tablename__ = 'urlMasks'
@@ -102,8 +101,8 @@ class UrlMask(Base):
     urlListId = Column(Integer, ForeignKey('urlLists.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     name = Column(String(250), nullable=False)
     Index('ux_urlListId_name', 'urlListId', 'name', unique=True)
-    
-    
+
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -122,12 +121,28 @@ class User(Base):
     Index('ux_userPrincipalName', 'userPrincipalName', unique=True)
     Index('ux_ip', 'ip', unique=True)
     Index('ix_groupId', 'groupId')
-    #Index('ix_aclId', 'aclId')
-    #Index('ix_roleId', 'roleId')
-    
-    
+    # Index('ix_aclId', 'aclId')
+    # Index('ix_roleId', 'roleId')
+
+
 class UserGroup(Base):
     __tablename__ = 'userGroups'
     id = Column(Integer, primary_key=True)
     distinguishedName = Column(String(255), nullable=False, unique=True)
     Index('ux_distinguishedName', 'distinguishedName', unique=True)
+
+
+class EventLog(Base):
+    __tablename__ = 'eventLog'
+    id = Column(Integer, primary_key=True)
+    authorId = Column(Integer, ForeignKey('users.id'), nullable=False)
+    time_since_epoch = Column(Numeric(15, 3))
+    action = Column(String(45))
+    tablename = Column(String(45))
+    row_id = Column(Integer)
+    fieldname = Column(String(45))
+    old_val = Column(String(45))
+    new_val = Column(String(45))
+    Index('ix_author', 'authorId')
+    Index('ix_time', 'time_since_epoch')
+    Index('ix_tablename_fieldname', 'tablename', 'fieldname')

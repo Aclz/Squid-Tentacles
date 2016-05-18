@@ -2,14 +2,15 @@ from flask import request, jsonify
 
 from sql_classes import Acl
 
+
 def select_acls(Session):
     session = Session()
 
     query_result = session.query(Acl).all()
-    
+
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -31,8 +32,8 @@ def select_acls(Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def select_acl(acl_id, Session):
     session = Session()
 
@@ -40,7 +41,7 @@ def select_acl(acl_id, Session):
 
     session.close()
 
-    if query_result == None:
+    if query_result is None:
         return jsonify({
             'success': True,
             'data': []
@@ -57,8 +58,8 @@ def select_acl(acl_id, Session):
         }
 
     return jsonify(response)
-    
-    
+
+
 def insert_acl(Session):
     json_data = request.get_json()
 
@@ -88,8 +89,8 @@ def insert_acl(Session):
     session.close()
 
     return jsonify(response)
-    
-    
+
+
 def update_acl(acl_id, Session):
     json_data = request.get_json()
 
@@ -103,8 +104,8 @@ def update_acl(acl_id, Session):
 
     query_result = session.query(Acl).get(acl_id)
 
-    if query_result == None:
-        return jsonify(success = False)
+    if query_result is None:
+        return jsonify(success=False)
 
     do_commit = False
 
