@@ -6,7 +6,7 @@ from sql_classes import UrlList
 def select_urllists(Session):
     session = Session()
 
-    query_result = session.query(UrlList).all()
+    query_result = session.query(UrlList.id, UrlList.name, UrlList.whitelist).all()
 
     session.close()
 
@@ -87,8 +87,8 @@ def insert_urllist(Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -129,8 +129,8 @@ def update_urllist(urllist_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -139,7 +139,7 @@ def delete_urllist(urllist_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(UrlList).filter_by(id=urllist_id).first())
+        session.delete(session.query(UrlList).get(urllist_id))
         session.commit()
 
         response = {
@@ -149,7 +149,7 @@ def delete_urllist(urllist_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

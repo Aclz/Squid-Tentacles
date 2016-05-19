@@ -43,7 +43,7 @@ CREATE TABLE `accessLog` (
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6838566 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8137265 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -107,7 +107,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=182290 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=231306 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +126,7 @@ CREATE TABLE `aclContents` (
   UNIQUE KEY `ux_accessTemplateId_urlListId` (`aclId`,`urlListId`),
   KEY `ix_urlListId` (`urlListId`),
   CONSTRAINT `fk_aclContents_aclId` FOREIGN KEY (`aclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +141,32 @@ CREATE TABLE `acls` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `eventLog`
+--
+
+DROP TABLE IF EXISTS `eventLog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `eventLog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `authorId` int(11) NOT NULL,
+  `time_since_epoch` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `action` varchar(45) NOT NULL,
+  `tablename` varchar(45) DEFAULT NULL,
+  `objectId` int(11) DEFAULT NULL,
+  `fieldname` varchar(45) DEFAULT NULL,
+  `oldVal` varchar(45) DEFAULT NULL,
+  `newVal` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ix_author` (`authorId`),
+  KEY `ix_time` (`time_since_epoch`),
+  KEY `ix_tablename_fieldname` (`tablename`,`fieldname`),
+  CONSTRAINT `fk_eventLog_author` FOREIGN KEY (`authorId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +215,7 @@ CREATE TABLE `roles` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,7 +251,7 @@ CREATE TABLE `urlLists` (
   `whitelist` smallint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +268,7 @@ CREATE TABLE `urlMasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_urlListId_name` (`urlListId`,`name`),
   CONSTRAINT `fk_urlMasks_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -661,7 +686,7 @@ insert into
 		hidden,
 		userPrincipalName,
 		cn,
-		accessTemplateId,
+		aclId,
         roleId
 		)
 	select
@@ -669,7 +694,7 @@ insert into
 		0,
 		tu.userPrincipalName,
 		tu.cn,
-        tu.accessTemplateId,
+        tu.aclId,
         tu.roleId
 	from
 		tempUsers tu
@@ -695,4 +720,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-17  8:04:43
+-- Dump completed on 2016-05-19 19:18:03

@@ -118,7 +118,7 @@ def _get_user_tree(current_user_properties, Session):
     session = Session()
 
     # Get all groups
-    query_result = session.query(UserGroup).all()
+    query_result = session.query(UserGroup.id, UserGroup.distinguishedName).all()
 
     user_groups = {}
 
@@ -179,7 +179,7 @@ def _get_url_lists(Session):
     session = Session()
 
     # Get all urllists from DB
-    query_result = session.query(UrlList).all()
+    query_result = session.query(UrlList.id, UrlList.name, UrlList.whitelist).all()
 
     session.close()
 
@@ -218,7 +218,7 @@ def _get_acls(Session):
     session = Session()
 
     # Get all access control lists from DB
-    query_result = session.query(Acl).all()
+    query_result = session.query(Acl.id, Acl.name).all()
 
     session.close()
 
@@ -257,7 +257,7 @@ def _get_roles(Session):
     session = Session()
 
     # Get all roles from DB
-    query_result = session.query(Role).all()
+    query_result = session.query(Role.id, Role.name).all()
 
     session.close()
 

@@ -58,12 +58,12 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         this.lookupReference('userReportTrafficByDatesGridRef').getStore().removeAll();
 
         //userReportDateTraffic
-        this.lookupReference('userReportDayTrafficDateRef').setValue(today);
+        this.lookupReference('userGroupReportDayTrafficDateRef').setValue(today);
 
-        this.lookupReference('userReportDayTrafficGridRef').getStore().removeAll();
-        this.lookupReference('userReportDayTrafficGridRef').getStore().selectedPage = 1;
+        this.lookupReference('userGroupReportDayTrafficGridRef').getStore().removeAll();
+        this.lookupReference('userGroupReportDayTrafficGridRef').getStore().selectedPage = 1;
 
-        this.lookupReference('userReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar
+        this.lookupReference('userGroupReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar
         
         //userGroupReportTrafficByUsers
         this.lookupReference('userGroupReportTrafficByUsersDateBegRef').setValue(
@@ -180,8 +180,8 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
             });
         },
 
-    onShowUserReportDayTrafficClick: function() {
-        var grid = this.lookupReference('userReportDayTrafficGridRef');
+    onShowUserGroupReportDayTrafficClick: function() {
+        var grid = this.lookupReference('userGroupReportDayTrafficGridRef');
         var gridStore = grid.getStore();
 
         gridStore.selectedPage = 1;
@@ -248,11 +248,9 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         },
 
     beforeLoadUserReportDayTrafficGridStore: function(store) {
-        store.getProxy().url = '/rest/reports/group-day-traffic';
-        
         store.getProxy().setExtraParams({
             'groupId': this.getViewModel().data.selectedGroupId,
-            'date': this.lookupReference('userReportDayTrafficDateRef').getValue()
+            'date': this.lookupReference('userGroupReportDayTrafficDateRef').getValue()
             });
         },
         

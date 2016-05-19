@@ -6,7 +6,7 @@ from sql_classes import RolePermission
 def select_role_permissions(role_id, Session):
     session = Session()
 
-    query_result = session.query(RolePermission).filter_by(roleId=role_id).all()
+    query_result = session.query(RolePermission.id, RolePermission.permissionId).filter_by(roleId=role_id).all()
 
     session.close()
 
@@ -59,8 +59,8 @@ def insert_role_permissions(role_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -80,7 +80,7 @@ def delete_role_permission(role_id, permission_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

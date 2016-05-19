@@ -6,7 +6,7 @@ from sql_classes import Settings
 def select_settings(current_user_properties, Session):
     session = Session()
 
-    query_result = session.query(Settings).filter_by(id=1).first()
+    query_result = session.query(Settings).get(1)
 
     session.close()
 
@@ -86,7 +86,7 @@ def update_settings(Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

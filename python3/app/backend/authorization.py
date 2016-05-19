@@ -34,7 +34,7 @@ def get_user_object(user_id, Session):
 def get_role_object(role_id, Session):
     session = Session()
 
-    query_result = session.query(Role).filter_by(id=role_id).first()
+    query_result = session.query(Role).get(role_id)
 
     session.close()
 
@@ -58,7 +58,7 @@ def check_role_permission(role_id, permission, Session):
 
         session = Session()
 
-        query_result = session.query(RolePermission).filter_by(roleId=role_id).\
+        query_result = session.query(RolePermission.id).filter_by(roleId=role_id).\
             join(Permission).filter(Permission.name == permission).first()
 
         session.close()
@@ -73,7 +73,7 @@ def check_role_permission(role_id, permission, Session):
             else:
                 session = Session()
 
-                query_result = session.query(RolePermission).filter_by(roleId=role_id).\
+                query_result = session.query(RolePermission.id).filter_by(roleId=role_id).\
                     join(Permission).filter(Permission.name == permission_item).first()
 
                 session.close()
@@ -90,11 +90,11 @@ def get_role_permissions(role_id, Session):
     session = Session()
 
     if config['Authentication']['Enabled'] != 'False' and config['Authorization']['Enabled'] != 'False':
-        query_result = session.query(Permission).join(RolePermission).\
+        query_result = session.query(Permission.id, Permission.name).join(RolePermission).\
             filter(RolePermission.roleId == role_id).all()
     else:
         # all permission in case when authentication or authorization is disabled
-        query_result = session.query(Permission).all()
+        query_result = session.query(Permission.id, Permission.name).all()
 
     session.close()
 

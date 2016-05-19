@@ -6,7 +6,7 @@ from sql_classes import Role
 def select_roles(Session):
     session = Session()
 
-    query_result = session.query(Role).all()
+    query_result = session.query(Role.id, Role.name).all()
 
     session.close()
 
@@ -85,8 +85,8 @@ def insert_role(Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -127,8 +127,8 @@ def update_role(role_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -137,7 +137,7 @@ def delete_role(role_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(Role).filter_by(id=role_id).first())
+        session.delete(session.query(Role).get(role_id))
         session.commit()
 
         response = {
@@ -147,7 +147,7 @@ def delete_role(role_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

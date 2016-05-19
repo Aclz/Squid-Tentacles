@@ -55,6 +55,22 @@ class AclContents(Base):
     # Index('ix_urlListId', 'urlListId')
 
 
+class EventLog(Base):
+    __tablename__ = 'eventLog'
+    id = Column(Integer, primary_key=True)
+    authorId = Column(Integer, ForeignKey('users.id'), nullable=False)
+    time_since_epoch = Column(Numeric(15, 3))
+    action = Column(String(45))
+    tablename = Column(String(45))
+    objectId = Column(Integer)
+    fieldname = Column(String(45))
+    oldVal = Column(String(45))
+    newVal = Column(String(45))
+    Index('ix_author', 'authorId')
+    Index('ix_time', 'time_since_epoch')
+    Index('ix_tablename_fieldname', 'tablename', 'fieldname')
+
+
 class Permission(Base):
     __tablename__ = 'permissions'
     id = Column(Integer, primary_key=True)
@@ -130,19 +146,3 @@ class UserGroup(Base):
     id = Column(Integer, primary_key=True)
     distinguishedName = Column(String(255), nullable=False, unique=True)
     Index('ux_distinguishedName', 'distinguishedName', unique=True)
-
-
-class EventLog(Base):
-    __tablename__ = 'eventLog'
-    id = Column(Integer, primary_key=True)
-    authorId = Column(Integer, ForeignKey('users.id'), nullable=False)
-    time_since_epoch = Column(Numeric(15, 3))
-    action = Column(String(45))
-    tablename = Column(String(45))
-    row_id = Column(Integer)
-    fieldname = Column(String(45))
-    old_val = Column(String(45))
-    new_val = Column(String(45))
-    Index('ix_author', 'authorId')
-    Index('ix_time', 'time_since_epoch')
-    Index('ix_tablename_fieldname', 'tablename', 'fieldname')

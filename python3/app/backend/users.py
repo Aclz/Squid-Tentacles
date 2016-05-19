@@ -1,6 +1,7 @@
 from flask import request, jsonify
 
 from sql_classes import User
+import eventlog
 
 
 def select_user(current_user_properties, requested_user_id, Session):
@@ -104,7 +105,7 @@ def update_user(user_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

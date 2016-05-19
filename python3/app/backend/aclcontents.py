@@ -6,7 +6,8 @@ from sql_classes import AclContents
 def select_acl_contents(acl_id, Session):
     session = Session()
 
-    query_result = session.query(AclContents).filter_by(aclId=acl_id).all()
+    query_result = session.query(AclContents.id, AclContents.urlListId, AclContents.orderNumber).\
+        filter_by(aclId=acl_id).all()
 
     session.close()
 
@@ -63,8 +64,8 @@ def insert_acl_contents(acl_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -105,8 +106,8 @@ def update_acl_contents(acl_id, aclcontent_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -115,8 +116,7 @@ def delete_acl_contents(acl_id, aclcontent_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(AclContents).filter_by(
-            aclId=acl_id, id=aclcontent_id).first())
+        session.delete(session.query(AclContents).filter_by(aclId=acl_id, id=aclcontent_id).first())
 
         session.commit()
 
@@ -127,7 +127,7 @@ def delete_acl_contents(acl_id, aclcontent_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

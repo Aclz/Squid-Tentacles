@@ -6,7 +6,7 @@ from sql_classes import Permission
 def select_permissions(Session):
     session = Session()
 
-    query_result = session.query(Permission).all()
+    query_result = session.query(Permission.id, Permission.name).all()
 
     session.close()
 

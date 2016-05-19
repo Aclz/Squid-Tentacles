@@ -7,7 +7,7 @@ Ext.define('tentacles.view.UserGroupFormView', {
         'tentacles.view.UserGroupFormViewMembersTab',
         'tentacles.view.UserFormViewReportTrafficByHostsTab',
         'tentacles.view.UserFormViewReportTrafficByDatesTab',
-        'tentacles.view.UserFormViewReportDayTrafficTab',
+        'tentacles.view.UserGroupFormViewReportDayTrafficTab',
         'tentacles.view.UserGroupFormViewReportTrafficByUsersTab',
         'tentacles.view.UserGroupFormViewController'
         ],
@@ -36,7 +36,7 @@ Ext.define('tentacles.view.UserGroupFormView', {
         hidden: true
         },
         {
-        xtype: 'userformviewreportdaytraffictab',
+        xtype: 'usergroupformviewreportdaytraffictab',
         hidden: true
         },
         {

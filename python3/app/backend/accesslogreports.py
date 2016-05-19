@@ -257,15 +257,16 @@ def report_user_day_traffic(Session):
 
     session = Session()
 
-    query_result = session.query(AccessLog).filter(
-        AccessLog.userId == request.args.get('userId'),
-        AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
-            request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
-        AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
-            request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
-        AccessLog.http_reply_size > 0.05*1024,
-        AccessLog.http_status_code.like('2%')).order_by(
-        AccessLog.time_since_epoch)
+    query_result = session.query(AccessLog.time_since_epoch, AccessLog.http_url, AccessLog.http_reply_size).\
+        filter(
+            AccessLog.userId == request.args.get('userId'),
+            AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
+                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
+            AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
+                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
+            AccessLog.http_reply_size > 0.05*1024,
+            AccessLog.http_status_code.like('2%')).\
+        order_by(AccessLog.time_since_epoch)
 
     row_count = query_result.count()
 
@@ -318,25 +319,30 @@ def report_group_day_traffic(Session):
             join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
             filter(requested_group.id == request.args.get('groupId')).subquery()
 
-        query_result = session.query(AccessLog).filter(
-            AccessLog.userId.in_(users_sq),
-            AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
-                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
-            AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
-                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
-            AccessLog.http_reply_size > 0.05*1024,
-            AccessLog.http_status_code.like('2%')).order_by(
-            AccessLog.time_since_epoch)
+        query_result = session.query(
+            AccessLog.time_since_epoch, AccessLog.http_url, AccessLog.http_reply_size, User.cn.label('userCn')).\
+            filter(
+                AccessLog.userId.in_(users_sq),
+                AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
+                    request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
+                AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
+                    request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
+                AccessLog.http_reply_size > 0.05*1024,
+                AccessLog.http_status_code.like('2%')).\
+            join(User).order_by(AccessLog.time_since_epoch)
     # all users
     else:
-        query_result = session.query(AccessLog).filter(
-            AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
-                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
-            AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
-                request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
-            AccessLog.http_reply_size > 0.05*1024,
-            AccessLog.http_status_code.like('2%')).order_by(
-            AccessLog.time_since_epoch)
+        query_result = session.query(
+            AccessLog.time_since_epoch, AccessLog.http_url, AccessLog.http_reply_size, User.cn.label('userCn')).\
+            filter(
+                User.id == AccessLog.userId,
+                AccessLog.time_since_epoch >= time.mktime(datetime.datetime.strptime(
+                    request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()),
+                AccessLog.time_since_epoch <= time.mktime(datetime.datetime.strptime(
+                    request.args.get('date'), "%Y-%m-%dT%H:%M:%S").date().timetuple()) + 60*60*24,
+                AccessLog.http_reply_size > 0.05*1024,
+                AccessLog.http_status_code.like('2%')).\
+            join(User).order_by(AccessLog.time_since_epoch)
 
     row_count = query_result.count()
 
@@ -353,6 +359,7 @@ def report_group_day_traffic(Session):
         row_object = {
             'id': len(result_list) + 1 + int(request.args.get('start')),
             'time': datetime.datetime.fromtimestamp(result_row.time_since_epoch).isoformat(),
+            'userCn': result_row.userCn,
             'url': result_row.http_url,
             'traffic': float(round(result_row.http_reply_size/1024/1024, 4))
             }

@@ -6,7 +6,7 @@ from sql_classes import UrlMask
 def select_urlmasks(urllist_id, Session):
     session = Session()
 
-    query_result = session.query(UrlMask).filter_by(urlListId=urllist_id).all()
+    query_result = session.query(UrlMask.id, UrlMask.name).filter_by(urlListId=urllist_id).all()
 
     session.close()
 
@@ -59,8 +59,8 @@ def insert_urlmask(urllist_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -101,8 +101,8 @@ def update_urlmask(urllist_id, urlmask_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -121,7 +121,7 @@ def delete_urlmask(urllist_id, urlmask_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)

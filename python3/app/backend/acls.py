@@ -6,7 +6,7 @@ from sql_classes import Acl
 def select_acls(Session):
     session = Session()
 
-    query_result = session.query(Acl).all()
+    query_result = session.query(Acl.id, Acl.name).all()
 
     session.close()
 
@@ -85,8 +85,8 @@ def insert_acl(Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -127,8 +127,8 @@ def update_acl(acl_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
 
@@ -137,7 +137,7 @@ def delete_acl(acl_id, Session):
     session = Session()
 
     try:
-        session.delete(session.query(Acl).filter_by(id=acl_id).first())
+        session.delete(session.query(Acl).get(acl_id))
         session.commit()
 
         response = {
@@ -147,7 +147,7 @@ def delete_acl(acl_id, Session):
         response = {
             'success': False
             }
-
-    session.close()
+    finally:
+        session.close()
 
     return jsonify(response)
