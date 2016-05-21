@@ -6,14 +6,16 @@ from sql_classes import Settings
 def select_settings(current_user_properties, Session):
     session = Session()
 
-    query_result = session.query(Settings).get(1)
+    query_result = session.query(Settings).first()
 
     session.close()
 
     if query_result is None:
         return jsonify({
             'success': True,
-            'data': {'id': 1}
+            'data': {
+                'id': 1
+                }
             })
 
     settings_object = {
@@ -59,12 +61,12 @@ def update_settings(Session):
 
     session = Session()
 
-    query_result = session.query(Settings).get(1)
+    query_result = session.query(Settings).first()
 
     if query_result is None:
-        new_settings = Settings(id=1)
+        new_settings = Settings()
         session.add(new_settings)
-        query_result = session.query(Settings).get(1)
+        query_result = session.query(Settings).first()
 
     do_commit = False
 

@@ -3,6 +3,7 @@
 """
 DB users table update with those got from LDAP-server
 """
+from datetime import datetime
 from re import finditer
 
 from sqlalchemy import create_engine
@@ -29,7 +30,7 @@ def _manage_groups(session, ldap_users):
         db_user_ous.union(sum([[ou[i.start() + 1:] for i in finditer(',', ou)] for ou in db_user_ous], [])))
 
     # These are new OUs to add (including renamed OUs)
-    new_ous = set(filter(lambda x: x.casefold() not in map(lambda y: y.casefold(), db_user_ous), ldap_user_all_ous))   
+    new_ous = set(filter(lambda x: x.casefold() not in map(lambda y: y.casefold(), db_user_ous), ldap_user_all_ous))
     case_modified_ous = set(filter(lambda x: x not in db_user_ous, ldap_user_all_ous)) - new_ous
 
     # Add new and rename modified (letter case) groups
@@ -46,7 +47,7 @@ def _manage_groups(session, ldap_users):
 
 def _manage_users(session, ldap_users):
     # Get user default values
-    query_result = session.query(Settings).filter_by(id=1).first()
+    query_result = session.query(Settings).first()
 
     if query_result is None:
         default_acl_id = None
@@ -86,7 +87,7 @@ def _manage_users(session, ldap_users):
         ldap_users[user_principal_name]['groupId'] = db_usergroups_dict[ldap_users[user_principal_name]['dn']]['id']
 
     # Make sets of db and ldap user principal names
-    db_user_principal_names = set(user_principal_name for user_principal_name in db_users_dict)    
+    db_user_principal_names = set(user_principal_name for user_principal_name in db_users_dict)
     ldap_user_principal_names = set(user_principal_name for user_principal_name in ldap_users)
 
     # Make sets of new, preserved and deleted users
@@ -105,17 +106,17 @@ def _manage_users(session, ldap_users):
         if query_result is None:
             continue
 
-        if query_result.hidden == False or query_result.ip is not None:
+        if query_result.hidden is False or query_result.ip is not None:
             setattr(query_result, 'hidden', True)
             setattr(query_result, 'ip', None)
             session.commit()
-            
+
     # Update changed users
     for user_principal_name in preserved_user_principal_names:
         do_commit = False
-        
+
         query_result = session.query(User).get(db_users_dict[user_principal_name]['id'])
-            
+
         if db_users_dict[user_principal_name]['cn'] != ldap_users[user_principal_name]['cn']:
             setattr(query_result, 'cn', ldap_users[user_principal_name]['cn'])
             do_commit = True
@@ -148,8 +149,47 @@ def _manage_users(session, ldap_users):
             roleId=default_role_id
             )
 
-        session.add(new_user)       
+        session.add(new_user)
         session.commit()
+
+
+def _open_new_traffic_period(session):
+    current_traffic_period = datetime(datetime.today().year, datetime.today().month, 1)
+
+    # Get DB current traffic period
+    query_result = session.query(Settings).first()
+
+    # Create initial settings if none found
+    if query_result is None:
+        db_traffic_period = current_traffic_period
+        new_settings = Settings(currentTrafficPeriod=current_traffic_period)
+        session.add(new_settings)
+        session.commit()
+    else:
+        db_traffic_period = query_result.currentTrafficPeriod
+
+    # If traffic period didn't just changed - exit
+    if db_traffic_period == current_traffic_period:
+        return
+
+    try:
+        # Update DB traffic period
+        setattr(query_result, 'currentTrafficPeriod', current_traffic_period)
+
+        query_result = session.query(User).filter_by(hidden=0).all()
+
+        # Reset user counters, enable locked
+        for user in query_result:
+            setattr(user, 'traffic', 0)
+            setattr(user, 'extraQuota', 0)
+
+            if user.status == 2:
+                setattr(user, 'status', 1)
+
+        session.commit()
+    except:
+        session.rollback()
+        raise
 
 
 def main():
@@ -172,11 +212,9 @@ def main():
 
     session = Session()
 
-    _manage_groups(session, ldap_users)   
+    _manage_groups(session, ldap_users)
     _manage_users(session, ldap_users)
-    
-    session.execute("CALL openNewTrafficPeriod();")
-    session.commit()
+    _open_new_traffic_period(session)
 
     session.close()
 

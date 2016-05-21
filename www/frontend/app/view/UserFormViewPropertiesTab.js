@@ -118,7 +118,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
     items: [
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'ФИО',
         
         bind: {
@@ -139,7 +139,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },      
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Логин',
         
         bind: {
@@ -160,7 +160,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Квота, Мб',
         hidden: true,
 
@@ -186,8 +186,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'numberfield',
-        width: 250,
-        labelWidth: 150,
+        width: 230,
+        labelWidth: 130,
         fieldLabel: 'Квота, Мб',
         minValue: 0,
         maxValue: 499999999999, //would be enough
@@ -213,7 +213,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Доп. квота, Мб',
         hidden: true,
 
@@ -239,8 +239,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'numberfield',
-        width: 250,
-        labelWidth: 150,
+        width: 230,
+        labelWidth: 130,
         fieldLabel: 'Доп. квота, Мб',
         minValue: 0,
         maxValue: 499999999999,
@@ -266,7 +266,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Расход, Мб',
         hidden: true,
         
@@ -291,7 +291,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Состояние',
         hidden: true,
 
@@ -318,8 +318,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         {
         xtype: 'combobox',
         reference: 'userstatuscombobox',
-        width: 415,
-        labelWidth: 150,
+        width: 400,
+        labelWidth: 130,
         fieldLabel: 'Состояние',
         editable: false,
         hidden: true,
@@ -349,7 +349,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Авторизация',
         hidden: true,
 
@@ -375,8 +375,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         {
         xtype: 'combobox',
         reference: 'userauthmethodcombobox',
-        width: 415,
-        labelWidth: 150,
+        width: 400,
+        labelWidth: 130,
         fieldLabel: 'Авторизация',
         editable: false,
         hidden: true,
@@ -405,7 +405,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'IP-адрес',
         hidden: true,
 
@@ -428,8 +428,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'textfield',
-        width: 280,
-        labelWidth: 150,
+        width: 260,
+        labelWidth: 130,
         fieldLabel: 'IP-адрес',
         maxLength: 15,
         enforceMaxLength: true,
@@ -456,7 +456,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Список доступа',
         hidden: true,
 
@@ -480,8 +480,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         {
         xtype: 'combobox',
         reference: 'useraclcombobox',
-        width: 415,
-        labelWidth: 150,
+        width: 400,
+        labelWidth: 130,
         fieldLabel: 'Список доступа',
         editable: false,
         hidden: true,
@@ -509,7 +509,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         },
         {
         xtype: 'displayfield',
-        labelWidth: 150,
+        labelWidth: 130,
         fieldLabel: 'Роль',
         hidden: true,
 
@@ -533,8 +533,8 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         {
         xtype: 'combobox',
         reference: 'userrolecombobox',
-        width: 415,
-        labelWidth: 150,
+        width: 400,
+        labelWidth: 130,
         fieldLabel: 'Роль',
         editable: false,
         hidden: true,

@@ -99,6 +99,7 @@ class Settings(Base):
     id = Column(Integer, primary_key=True)
     defaultAclId = Column(Integer, ForeignKey('acls.id'))
     defaultRoleId = Column(Integer, ForeignKey('roles.id'))
+    currentTrafficPeriod = Column(Date)
     # Index('ix_defaultAcl', 'defaultAclId')
     # Index('ix_defaultRoleId', 'defaultRoleId')
 
