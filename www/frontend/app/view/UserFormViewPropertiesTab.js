@@ -33,35 +33,35 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             
         formulas: {
             quotaDisplayFieldHidden: function(get) {
-                return get('selectedUser.quota') == undefined || !get('hideEditableControls');
+                return get('selectedUser.quota') === undefined || !get('hideEditableControls');
                 },
                 
             quotaNumberFieldHidden: function(get) {
-                return get('selectedUser.quota') == undefined || get('hideEditableControls');
+                return get('selectedUser.quota') === undefined || get('hideEditableControls');
                 },
                 
             extraQuotaDisplayFieldHidden: function(get) {
-                return get('selectedUser.extraQuota') == undefined || get('selectedUser.extraQuota') == 0;
+                return get('selectedUser.extraQuota') === undefined || get('selectedUser.extraQuota') == 0;
                 },
                 
             trafficDisplayFieldHidden: function(get) {
-                return get('selectedUser.traffic') == undefined;
+                return get('selectedUser.traffic') === undefined;
                 },
                 
             statusDisplayFieldHidden: function(get) {
-                return get('selectedUser.status') == undefined || !get('hideEditableControls');
+                return get('selectedUser.status') === undefined || !get('hideEditableControls');
                 },
 
             statusComboboxHidden: function(get) {
-                return get('selectedUser.status') == undefined || get('hideEditableControls');
+                return get('selectedUser.status') === undefined || get('hideEditableControls');
                 },
                 
             authMethodDisplayFieldHidden: function(get) {
-                return get('selectedUser.authMethod') == undefined || !get('hideEditableControls');
+                return get('selectedUser.authMethod') === undefined || !get('hideEditableControls');
                 },
 
             authMethodComboboxHidden: function(get) {
-                return get('selectedUser.authMethod') == undefined || get('hideEditableControls');
+                return get('selectedUser.authMethod') === undefined || get('hideEditableControls');
                 },
                 
             ipAddressTextFieldHidden: function(get) {
@@ -73,43 +73,25 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 },
                 
             aclDisplayFieldHidden: function(get) {
-                return get('selectedUser.aclId') == undefined || !get('hideEditableControls');
+                return get('selectedUser.aclId') === undefined || !get('hideEditableControls');
                 },
                 
             aclComboboxHidden: function(get) {
-                return get('selectedUser.aclId') == undefined || get('hideEditableControls');
+                return get('selectedUser.aclId') === undefined || get('hideEditableControls');
                 },
                 
             roleDisplayFieldHidden: function(get) {
-                return get('selectedUser.roleId') == undefined || (!get('hideEditableControls') &&
+                return get('selectedUser.roleId') === undefined || (!get('hideEditableControls') &&
                     this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') != -1);
                 },
                 
             roleComboboxHidden: function(get) {
-                return get('selectedUser.roleId') == undefined || get('hideEditableControls') ||
+                return get('selectedUser.roleId') === undefined || get('hideEditableControls') ||
                     this.get('myPermissionsStore').findExact('permissionName', 'EditPermissions') == -1;
                 },
                 
             hideEditableControls: function(get) {
                 return this.get('myPermissionsStore').findExact('permissionName', 'EditUsers') == -1;
-                },
-                
-            userRecordStatus: {
-                bind: {
-                    bindTo: '{selectedUser}',
-                    deep: true
-                    },
-
-                get: function(user) {
-                    var result = {
-                        dirty: user ? user.dirty : false,
-                        valid: user ? user.isValid() : false
-                        };
-
-                    result.dirtyAndValid = result.dirty && result.valid;
-
-                    return result;
-                    }
                 },
                 
             extraQuotaText: {

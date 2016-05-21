@@ -15,10 +15,8 @@ Ext.define('tentacles.view.UserFormViewController', {
         if (!args.selected) {
             return;
             }
-            
-        var selectedUser = this.getViewModel().data.selectedUser;
-            
-        if (selectedUser.dirty && selectedUser.isValid()) {
+                 
+        if (this.getViewModel().get('userRecordStatus').dirtyAndValid) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -87,12 +85,13 @@ Ext.define('tentacles.view.UserFormViewController', {
 
     onSaveUserClick: function() {
         var thisController = this;
+        var selectedUser = this.getViewModel().data.selectedUser;
         
-        this.getViewModel().data.selectedUser.save({
+        selectedUser.save({
             failure: function(record, operation) {
                 var messageText = 'Ошибка совершения операции.';
                 
-                thisController.getViewModel().data.selectedUser.reject();
+                selectedUser.reject();
                 
                 if (operation.error && operation.error.status == 403) {
                     messageText = 'Недостаточно прав доступа!';
@@ -108,6 +107,16 @@ Ext.define('tentacles.view.UserFormViewController', {
                     buttons: Ext.Msg.OK,
                     icon: Ext.MessageBox.ERROR
                     });
+                },
+
+            success: function() {
+                treeItem = thisController.getViewModel().get('mainTreeStore').getById("user_" + selectedUser.id);
+                
+                if (treeItem != undefined) {
+                    treeItem.set({
+                        'iconCls': selectedUser.get('status') == 1 ? 'x-fa fa-user' : 'x-fa fa-user-times'
+                        });
+                    }
                 }
             })
         },

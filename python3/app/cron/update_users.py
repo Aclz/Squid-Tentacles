@@ -67,15 +67,18 @@ def main():
         default_role_id = query_result.defaultRoleId
 
     # Fill users temporary table
-    for ldap_user in ldap_users:
+    for user_principal_name in ldap_users:
         temp_user = TempUser(
-            distinguishedName=ldap_user[0], cn=ldap_user[1], userPrincipalName=ldap_user[2],
-            aclId=default_acl_id, roleId=default_role_id)
+            distinguishedName=ldap_users[user_principal_name]['dn'],
+            cn=ldap_users[user_principal_name]['cn'],
+            userPrincipalName=user_principal_name,
+            aclId=default_acl_id,
+            roleId=default_role_id)
 
         session.add(temp_user)
 
     # Fill user groups temporary table
-    user_ous = set(ldap_user[0] for ldap_user in ldap_users)
+    user_ous = set(ldap_users[user_principal_name]['dn'] for user_principal_name in ldap_users)
     all_ous = user_ous.union(sum([[ou[i.start() + 1:] for i in finditer(',', ou)] for ou in user_ous], []))
 
     for ou in all_ous:

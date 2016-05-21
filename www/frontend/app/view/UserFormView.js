@@ -17,6 +17,26 @@ Ext.define('tentacles.view.UserFormView', {
                 reference: 'UserModel',
                 create: true
                 }
+            },
+                    
+        formulas: {
+            userRecordStatus: {
+                bind: {
+                    bindTo: '{selectedUser}',
+                    deep: true
+                    },
+
+                get: function(user) {
+                    var result = {
+                        dirty: user ? user.dirty : false,
+                        valid: user ? user.isValid() : false
+                        };
+
+                    result.dirtyAndValid = result.dirty && result.valid;
+
+                    return result;
+                    }
+                }
             }
         },
         

@@ -17,7 +17,7 @@ Ext.define('tentacles.view.AclContentsFormViewController', {
             return;
             }
 
-        if (this.getViewModel().get('aclRecordAndStoreStatus').dirty) {
+        if (this.getViewModel().get('aclRecordAndStoreStatus').dirtyAndValid) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -100,13 +100,12 @@ Ext.define('tentacles.view.AclContentsFormViewController', {
 
     onSaveAclContentsClick: function() {
         var thisController = this;
+        var selectedAcl = this.getViewModel().data.selectedAcl;
         
-        if (this.getViewModel().data.selectedAcl.dirty) {
-            var isNameModified = this.getViewModel().data.selectedAcl.isModified('name');
-            
-            this.getViewModel().data.selectedAcl.save({
+        if (selectedAcl.dirty) {
+            selectedAcl.save({
                 failure: function(record, operation) {                    
-                    thisController.getViewModel().data.selectedAcl.reject();
+                    selectedAcl.reject();
                         
                     Ext.MessageBox.show({
                         title: 'Ошибка',
@@ -117,9 +116,13 @@ Ext.define('tentacles.view.AclContentsFormViewController', {
                         });
                     },
                     
-                callback: function() {
-                    if (isNameModified) {
-                        thisController.fireEvent('onAclReloadRequest');
+                success: function() {
+                    treeItem = thisController.getViewModel().get('mainTreeStore').getById("acl_" + selectedAcl.id);
+                    
+                    if (treeItem != undefined) {
+                        treeItem.set({
+                            'text': selectedAcl.get('name')
+                            });
                         }
                     }
                 })

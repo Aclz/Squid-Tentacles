@@ -16,7 +16,7 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
             return;
             }
 
-        if (this.getViewModel().get('urlListRecordAndStoreStatus').dirty) {
+        if (this.getViewModel().get('urlListRecordAndStoreStatus').dirtyAndValid) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -102,14 +102,13 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
         },
 
     onSaveUrlMaskClick: function() {
-        var thisController = this;
+        var thisController = this;        
+        var selectedUrlList = this.getViewModel().data.selectedUrlList;
         
-        if (this.getViewModel().data.selectedUrlList.dirty) {
-            var isModified = this.getViewModel().data.selectedUrlList.dirty;
-            
-            this.getViewModel().data.selectedUrlList.save({
+        if (selectedUrlList.dirty) {
+            selectedUrlList.save({
                 failure: function(record, operation) {
-                    thisController.getViewModel().data.selectedUrlList.reject();
+                    selectedUrlList.reject();
                         
                     Ext.MessageBox.show({
                         title: 'Ошибка',
@@ -120,9 +119,14 @@ Ext.define('tentacles.view.UrlMasksFormViewController', {
                         });
                     },
 
-                callback: function() {
-                    if (isModified) {
-                        thisController.fireEvent('onUrlListReloadRequest');
+                success: function() {
+                    treeItem = thisController.getViewModel().get('mainTreeStore').getById("urllist_" + selectedUrlList.id);
+                    
+                    if (treeItem != undefined) {
+                        treeItem.set({
+                            'text': selectedUrlList.get('name'),
+                            'iconCls': selectedUrlList.get('whitelist') ? 'x-fa fa-unlock' : 'x-fa fa-lock'
+                            });
                         }
                     }
                 })

@@ -1,5 +1,5 @@
 """
-Getting AD users from LDAP with Kerberos auth
+Get AD users from LDAP with Kerberos auth
 """
 
 import os
@@ -30,13 +30,9 @@ def get_ldap_users(keytab_file_path, ldap_url, base_dn, ldap_query):
 
     # fill the users dict
     for element in ad_search:
-        if not element['dn']:
-            continue
-
-        if not element['dn'] in users_dict:
-            users_dict[element['dn']] = (element['attributes']['cn'], element['attributes']['userPrincipalName'])
-
-    # make a list of tuples for further convenience
-    return [
-        (dn[dn.upper().find(',OU=') + 1:dn.upper().find(',' + base_dn.upper())], users_dict[dn][0], users_dict[dn][1])
-        for dn in users_dict]
+        users_dict[element['attributes']['userPrincipalName'][0].lower()] = {
+            'cn': element['attributes']['cn'][0],
+            'dn': element['dn'][element['dn'].upper().find(',OU=') + 1:element['dn'].upper().find(',' + base_dn.upper())]
+            }
+    
+    return users_dict

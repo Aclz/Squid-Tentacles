@@ -5,8 +5,20 @@ Ext.define('tentacles.model.UserModel', {
         {name: 'id', type: 'int'},		
         {name: 'cn', type: 'string'},		
         {name: 'userPrincipalName', type: 'string'},		
-        {name: 'quota'},
-        {name: 'extraQuota'},		
+        {
+        name: 'quota',
+        
+        validators: [
+            {type: 'presence'}
+            ]
+        },  
+        {
+            name: 'extraQuota',
+        
+        validators: [
+            {type: 'presence'}
+            ]
+        },           
         {name: 'traffic'},
         {name: 'status'},
         {name: 'authMethod'},      

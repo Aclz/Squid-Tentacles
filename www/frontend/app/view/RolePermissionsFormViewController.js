@@ -17,7 +17,7 @@ Ext.define('tentacles.view.RolePermissionsFormViewController', {
             return;
             }
 
-        if (this.getViewModel().get('storeIsDirty')) {
+        if (this.getViewModel().get('roleRecordAndStoreStatus').dirtyAndValid) {
             Ext.MessageBox.show({
                 title: 'Есть несохраненные данные',
                 message: 'Несохраненные данные будут потеряны! Сохранить?',
@@ -147,13 +147,12 @@ Ext.define('tentacles.view.RolePermissionsFormViewController', {
 
     onSaveRolePermissionsClick: function() {
         var thisController = this;
+        var selectedRole = this.getViewModel().data.selectedRole;
         
-        if (this.getViewModel().data.selectedRole.dirty) {
-            var isNameModified = this.getViewModel().data.selectedRole.isModified('name');
-
-            this.getViewModel().data.selectedRole.save({
+        if (selectedRole.dirty) {
+            selectedRole.save({
                 failure: function(record, operation) {
-                    thisController.getViewModel().data.selectedRole.reject();
+                    selectedRole.reject();
 
                     Ext.MessageBox.show({
                         title: 'Ошибка',
@@ -164,9 +163,13 @@ Ext.define('tentacles.view.RolePermissionsFormViewController', {
                         });
                     },
 
-                callback: function() {
-                    if (isNameModified) {
-                        thisController.fireEvent('onRoleReloadRequest');
+                success: function() {
+                    treeItem = thisController.getViewModel().get('mainTreeStore').getById("role_" + selectedRole.id);
+                    
+                    if (treeItem != undefined) {
+                        treeItem.set({
+                            'text': selectedRole.get('name')
+                            });
                         }
                     }
                 })
