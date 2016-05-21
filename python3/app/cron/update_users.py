@@ -2,18 +2,154 @@
 
 """
 DB users table update with those got from LDAP-server
-Open new traffic period: counters reset, unblocking users who have exceeded quota in previous period
 """
 from re import finditer
 
-from sqlalchemy import Column, Integer, String, SmallInteger, Boolean, BigInteger, Numeric, Date, Text
 from sqlalchemy import create_engine
-from sqlalchemy.schema import ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from config import config
-from sql_classes import Settings
+from sql_classes import Settings, User, UserGroup
+
+
+def _manage_groups(session, ldap_users):
+    # Get user OUs with all upper level OUs
+    ldap_user_ous = set(ldap_users[user_principal_name]['dn'] for user_principal_name in ldap_users)
+
+    ldap_user_all_ous = set(
+        ldap_user_ous.union(sum([[ou[i.start() + 1:] for i in finditer(',', ou)] for ou in ldap_user_ous], [])))
+
+    # Get all user groups from DB
+    query_result = session.query(UserGroup).all()
+    result_list = [row.__dict__ for row in query_result]
+    db_user_ous = set(item['distinguishedName'] for item in result_list)
+
+    # Get user OUs with all upper level OUs
+    db_user_all_ous = set(
+        db_user_ous.union(sum([[ou[i.start() + 1:] for i in finditer(',', ou)] for ou in db_user_ous], [])))
+
+    # These are new OUs to add (including renamed OUs)
+    new_ous = set(filter(lambda x: x.casefold() not in map(lambda y: y.casefold(), db_user_ous), ldap_user_all_ous))   
+    case_modified_ous = set(filter(lambda x: x not in db_user_ous, ldap_user_all_ous)) - new_ous
+
+    # Add new and rename modified (letter case) groups
+    for ou in new_ous:
+        session.add(UserGroup(distinguishedName=ou))
+
+    for ou in case_modified_ous:
+        query_result = session.query(UserGroup).filter(UserGroup.distinguishedName == ou).first()
+        setattr(query_result, 'distinguishedName', ou)
+
+    if new_ous.union(case_modified_ous) != set():
+        session.commit()
+
+
+def _manage_users(session, ldap_users):
+    # Get user default values
+    query_result = session.query(Settings).filter_by(id=1).first()
+
+    if query_result is None:
+        default_acl_id = None
+        default_role_id = None
+    else:
+        default_acl_id = query_result.defaultAclId
+        default_role_id = query_result.defaultRoleId
+
+    # Get all users from DB
+    query_result = session.query(User).all()
+    result_list = [row.__dict__ for row in query_result]
+
+    db_users_dict = {}
+
+    for element in result_list:
+        db_users_dict[element['userPrincipalName']] = {
+            'id': element['id'],
+            'cn': element['cn'],
+            'hidden': element['hidden'],
+            'ip': element['ip'],
+            'groupId': element['groupId']
+            }
+
+    # Get all user groups from DB
+    query_result = session.query(UserGroup).all()
+    result_list = [row.__dict__ for row in query_result]
+
+    db_usergroups_dict = {}
+
+    for element in result_list:
+        db_usergroups_dict[element['distinguishedName']] = {
+            'id': element['id']
+            }
+
+    # fill the ldap users groupId
+    for user_principal_name in ldap_users:
+        ldap_users[user_principal_name]['groupId'] = db_usergroups_dict[ldap_users[user_principal_name]['dn']]['id']
+
+    # Make sets of db and ldap user principal names
+    db_user_principal_names = set(user_principal_name for user_principal_name in db_users_dict)    
+    ldap_user_principal_names = set(user_principal_name for user_principal_name in ldap_users)
+
+    # Make sets of new, preserved and deleted users
+    new_user_principal_names = \
+        set(filter(lambda x: x not in db_user_principal_names, ldap_user_principal_names))
+
+    preserved_user_principal_names = \
+        set(filter(lambda x: x in db_user_principal_names, ldap_user_principal_names))
+
+    deleted_user_principal_names = db_user_principal_names - ldap_user_principal_names
+
+    # Hide deleted users
+    for user in deleted_user_principal_names:
+        query_result = session.query(User).get(db_users_dict[user]['id'])
+
+        if query_result is None:
+            continue
+
+        if query_result.hidden == False or query_result.ip is not None:
+            setattr(query_result, 'hidden', True)
+            setattr(query_result, 'ip', None)
+            session.commit()
+            
+    # Update changed users
+    for user_principal_name in preserved_user_principal_names:
+        do_commit = False
+        
+        query_result = session.query(User).get(db_users_dict[user_principal_name]['id'])
+            
+        if db_users_dict[user_principal_name]['cn'] != ldap_users[user_principal_name]['cn']:
+            setattr(query_result, 'cn', ldap_users[user_principal_name]['cn'])
+            do_commit = True
+
+        if db_users_dict[user_principal_name]['groupId'] != ldap_users[user_principal_name]['groupId']:
+            setattr(query_result, 'groupId', ldap_users[user_principal_name]['groupId'])
+            do_commit = True
+
+        # Set default values for users being unhidden
+        if db_users_dict[user_principal_name]['hidden']:
+            setattr(query_result, 'hidden', False)
+            setattr(query_result, 'aclId', default_acl_id)
+            setattr(query_result, 'roleId', default_role_id)
+            setattr(query_result, 'status', 0)
+            setattr(query_result, 'authMethod', 0)
+            setattr(query_result, 'quota', 0)
+            setattr(query_result, 'extraQuota', 0)
+            do_commit = True
+
+        if do_commit:
+            session.commit()
+
+    # Insert new users
+    for user_principal_name in new_user_principal_names:
+        new_user = User(
+            userPrincipalName=user_principal_name,
+            cn=ldap_users[user_principal_name]['cn'],
+            groupId=ldap_users[user_principal_name]['groupId'],
+            aclId=default_acl_id,
+            roleId=default_role_id
+            )
+
+        session.add(new_user)       
+        session.commit()
 
 
 def main():
@@ -27,25 +163,7 @@ def main():
     # Get LDAP users from server
     ldap_users = get_ldap_users(keytab_file_path, ldap_url, base_dn, ldap_query)
 
-    # Create all needed temporary tables
-    Temp = declarative_base()
-
-    class TempUser(Temp):
-        __tablename__ = 'tempUsers'
-        __table_args__ = {'prefixes': ['TEMPORARY']}
-        id = Column(Integer, primary_key=True)
-        distinguishedName = Column(String(250), nullable=False)
-        cn = Column(String(250), nullable=False)
-        userPrincipalName = Column(String(250), nullable=False, unique=True)
-        aclId = Column(Integer)
-        roleId = Column(Integer)
-
-    class TempGroup(Temp):
-        __tablename__ = 'tempGroups'
-        __table_args__ = {'prefixes': ['TEMPORARY']}
-        id = Column(Integer, primary_key=True)
-        distinguishedName = Column(String(250), nullable=False)
-
+    # Set up DB connection
     engine = create_engine(
         config['SQLAlchemy']['DBConnectionString'],
         pool_recycle=int(config['SQLAlchemy']['DBConnectionPoolRecycleTimeout']))
@@ -54,44 +172,9 @@ def main():
 
     session = Session()
 
-    Temp.metadata.create_all(bind=engine)
-
-    # Get user default values
-    query_result = session.query(Settings).filter_by(id=1).first()
-
-    if query_result is None:
-        default_acl_id = sqlalchemy.sql.null()
-        default_role_id = sqlalchemy.sql.null()
-    else:
-        default_acl_id = query_result.defaultAclId
-        default_role_id = query_result.defaultRoleId
-
-    # Fill users temporary table
-    for user_principal_name in ldap_users:
-        temp_user = TempUser(
-            distinguishedName=ldap_users[user_principal_name]['dn'],
-            cn=ldap_users[user_principal_name]['cn'],
-            userPrincipalName=user_principal_name,
-            aclId=default_acl_id,
-            roleId=default_role_id)
-
-        session.add(temp_user)
-
-    # Fill user groups temporary table
-    user_ous = set(ldap_users[user_principal_name]['dn'] for user_principal_name in ldap_users)
-    all_ous = user_ous.union(sum([[ou[i.start() + 1:] for i in finditer(',', ou)] for ou in user_ous], []))
-
-    for ou in all_ous:
-        temp_group = TempGroup(distinguishedName=ou)
-
-        session.add(temp_group)
-
-    session.commit()
-
-    # Call SQL server sprocs
-    session.execute("CALL updateUsers();")
-    session.commit()
-
+    _manage_groups(session, ldap_users)   
+    _manage_users(session, ldap_users)
+    
     session.execute("CALL openNewTrafficPeriod();")
     session.commit()
 
