@@ -19,7 +19,7 @@ def get_ldap_users(keytab_file_path, ldap_url, base_dn, ldap_query):
     # get users
     connection.search(
         search_base=base_dn, search_filter=ldap_query, search_scope=ldap3.SUBTREE,
-        attributes=['cn', 'userPrincipalName'])
+        attributes=['cn', 'userPrincipalName', 'userAccountControl'])
 
     ad_search = connection.response
 
@@ -32,7 +32,8 @@ def get_ldap_users(keytab_file_path, ldap_url, base_dn, ldap_query):
     for element in ad_search:
         users_dict[element['attributes']['userPrincipalName'][0].lower()] = {
             'cn': element['attributes']['cn'][0],
-            'dn': element['dn'][element['dn'].upper().find(',OU=') + 1:element['dn'].upper().find(',' + base_dn.upper())]
+            'dn': element['dn'][element['dn'].upper().find(',OU=') + 1:element['dn'].upper().find(',' + base_dn.upper())],
+            'disabled': int(element['attributes']['userAccountControl'][0]) & 2 == 2
             }
     
     return users_dict

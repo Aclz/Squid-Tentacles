@@ -66,6 +66,7 @@ def _manage_users(session, ldap_users):
         db_users_dict[element['userPrincipalName']] = {
             'id': element['id'],
             'cn': element['cn'],
+            'disabled': element['status'] == 0,
             'hidden': element['hidden'],
             'ip': element['ip'],
             'groupId': element['groupId']
@@ -124,13 +125,17 @@ def _manage_users(session, ldap_users):
         if db_users_dict[user_principal_name]['groupId'] != ldap_users[user_principal_name]['groupId']:
             setattr(query_result, 'groupId', ldap_users[user_principal_name]['groupId'])
             do_commit = True
+            
+        if db_users_dict[user_principal_name]['disabled'] != ldap_users[user_principal_name]['disabled']:
+            setattr(query_result, 'status', 0 if ldap_users[user_principal_name]['disabled'] else 1)
+            do_commit = True
 
         # Set default values for users being unhidden
         if db_users_dict[user_principal_name]['hidden']:
             setattr(query_result, 'hidden', False)
             setattr(query_result, 'aclId', default_acl_id)
             setattr(query_result, 'roleId', default_role_id)
-            setattr(query_result, 'status', 0)
+            setattr(query_result, 'status', 0 if ldap_users[user_principal_name]['disabled'] else 1)
             setattr(query_result, 'authMethod', 0)
             setattr(query_result, 'quota', 0)
             setattr(query_result, 'extraQuota', 0)
