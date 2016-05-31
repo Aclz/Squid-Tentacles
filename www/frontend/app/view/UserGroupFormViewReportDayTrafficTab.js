@@ -9,7 +9,7 @@ Ext.define('tentacles.view.UserGroupFormViewReportDayTrafficTab', {
         stores: {
             userGroupReportDayTrafficGridStore: {
                 fields: [
-                    {name: 'time', type: 'date'},
+                    {name: 'time', type: 'date', dateFormat: 'c'},
                     {name: 'userCn', type: 'string'},
                     {name: 'url'},
                     {name: 'traffic', type: 'float'}
@@ -107,8 +107,8 @@ Ext.define('tentacles.view.UserGroupFormViewReportDayTrafficTab', {
             xtype: 'datecolumn',
             text: 'Время',
             dataIndex: 'time',
-            format: 'd.m.Y H:i:s',
-            width: 150
+            format: 'H:i:s',
+            width: 90
             },
             {
             text: 'Пользователь',

@@ -123,18 +123,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         
         bind: {
             value: '{selectedUser.cn}'
-            },
-
-        listeners: {
-            afterrender: function(me) {           
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Имя пользователя в Active Directory.'
-                    });
-                }
             }
         },      
         {
@@ -144,18 +132,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         
         bind: {
             value: '{selectedUser.userPrincipalName}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Логин пользователя в Active Directory.'
-                    });
-                }
             }
         },
         {
@@ -167,19 +143,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{selectedUser.quota}',
             hidden: '{quotaDisplayFieldHidden}'
-            },
-            
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: 'Квота',
-                    html: 'Месячный объем трафика, после расхода которого<br>' +
-                        'пользователь будет заблокирован.'
-                    });
-                }
             },
 
         renderer: Ext.util.Format.numberRenderer('0.00')
@@ -203,6 +166,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: 'Квота',
                     html: 'Месячный объем трафика, после расхода которого<br>' +
@@ -220,19 +184,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{selectedUser.extraQuota}',
             hidden: '{quotaDisplayFieldHidden}'
-            },
-            
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: 'Дополнительная квота',
-                    html: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
-                        'По наступлении следующего месяца данный параметр обнуляется.'
-                    });
-                }
             },
             
         renderer: Ext.util.Format.numberRenderer('0.00')
@@ -256,6 +207,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: 'Дополнительная квота',
                     html: 'Объем трафика, на который увеличивается квота в текущем месяце.<br>' +
@@ -274,18 +226,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
             value: '{selectedUser.traffic}',
             hidden: '{trafficDisplayFieldHidden}'
             },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: 'Расход трафика',
-                    html: 'Объем трафика, скачанного пользователем в текущем месяце.'
-                    });
-                }
-            },
             
         renderer: Ext.util.Format.numberRenderer('0.00')
         },
@@ -298,21 +238,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{userstatuscombobox.selection.name}',
             hidden: '{statusDisplayFieldHidden}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Принимает следующие значения:<br>' +
-                        '<ul><li><b>Активен</b> - пользователь включен;</li>' +
-                        '<li><b>Отключен за превышение квоты</b> - пользователь отключен до начала следующего месяца;</li>' +
-                        '<li><b>Заблокирован</b> - пользователь отключен до разблокировки администратором вручную.</li></ul>'
-                    });
-                }
             }
         }, 
         {
@@ -337,6 +262,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
                     html: 'Принимает следующие значения:<br>' +
@@ -356,20 +282,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{userauthmethodcombobox.selection.name}',
             hidden: '{authMethodDisplayFieldHidden}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Принимает следующие значения:<br>' +
-                        '<ul><li><b>Пользователь</b> - авторизация в Squid и URL-редиректоре осуществляется по имени пользователя;</li>' +
-                        '<li><b>IP-адрес</b> - авторизация в Squid и URL-редиректоре осуществляется по IP-адресу пользователя.</li></ul>'
-                    });
-                }
             }
         },
         {
@@ -394,6 +306,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
                     html: 'Принимает следующие значения:<br>' +
@@ -412,18 +325,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{selectedUser.ip}',
             hidden: '{ipAddressDisplayFieldHidden}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'IP-адрес пользователя в случае IP-авторизации.'
-                    });
-                }
             }
         },
         {
@@ -445,6 +346,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
                     html: 'IP-адрес пользователя в случае IP-авторизации.'
@@ -463,18 +365,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{useraclcombobox.selection.name}',
             hidden: '{aclDisplayFieldHidden}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Определяет множество URL, доступных или недоступных пользователю.'
-                    });
-                }
             }
         },
         {
@@ -500,6 +390,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
                     html: 'Определяет множество URL, доступных или недоступных пользователю.'
@@ -516,18 +407,6 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
         bind: {
             value: '{userrolecombobox.selection.name}',
             hidden: '{roleDisplayFieldHidden}'
-            },
-
-        listeners: {
-            afterrender: function(me) {
-                Ext.create('Ext.tip.ToolTip', {
-                    target: me.getId(),
-                    showDelay: 750,
-                    dismissDelay: 10000,
-                    title: me.fieldLabel,
-                    html: 'Определяет набор прав пользователя в данном приложении.'
-                    });
-                }
             }
         },
         {
@@ -553,6 +432,7 @@ Ext.define('tentacles.view.UserFormViewPropertiesTab', {
                 Ext.create('Ext.tip.ToolTip', {
                     target: me.getId(),
                     showDelay: 750,
+                    hideDelay: 0,
                     dismissDelay: 10000,
                     title: me.fieldLabel,
                     html: 'Определяет набор прав пользователя в данном приложении.'

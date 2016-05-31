@@ -104,6 +104,7 @@ Ext.define('tentacles.view.RolesFormView', {
                     Ext.create('Ext.tip.ToolTip', {
                         target: me.getId(),
                         showDelay: 750,
+                        hideDelay: 0,
                         dismissDelay: 10000,
                         title: me.fieldLabel,
                         html: 'Роль, автоматически присваеваемая новым пользователям.'
