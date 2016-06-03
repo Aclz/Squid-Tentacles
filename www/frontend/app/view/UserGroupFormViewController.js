@@ -61,7 +61,7 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         this.lookupReference('userGroupReportDayTrafficDateRef').setValue(today);
 
         this.lookupReference('userGroupReportDayTrafficGridRef').getStore().removeAll();
-        this.lookupReference('userGroupReportDayTrafficGridRef').getStore().selectedPage = 1;
+        this.lookupReference('userGroupReportDayTrafficGridRef').getStore().currentPage = 1;
 
         this.lookupReference('userGroupReportDayTrafficGridTbarRef').onLoad(); //Reset paging toolbar
         
@@ -184,7 +184,7 @@ Ext.define('tentacles.view.UserGroupFormViewController', {
         var grid = this.lookupReference('userGroupReportDayTrafficGridRef');
         var gridStore = grid.getStore();
 
-        gridStore.selectedPage = 1;
+        gridStore.currentPage = 1;
 
         gridStore.load({
             callback: function(records, operation, success) {

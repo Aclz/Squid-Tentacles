@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, CHAR, SmallInteger, Boolean, Big
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 
+
 Base = declarative_base()
 
 

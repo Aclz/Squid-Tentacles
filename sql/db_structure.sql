@@ -43,52 +43,8 @@ CREATE TABLE `accessLog` (
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8712065 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13665306 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `accessLog_BINS`
-BEFORE INSERT ON `accessLog` 
-
-FOR EACH ROW
-	BEGIN	
-	declare logUserId int;
-
-	-- declare user_identifier varchar(250);
-
-	-- searching for the correspondent user record id in users table
-	-- and store it in user_id variable
-	select 
-		id
-	into 
-		logUserId
-	from
-		users 
-	where 
-		(ip = NEW.ip_client and authMethod = 1)
-		or (userPrincipalName = NEW.http_username and authMethod = 0)
-	limit
-		1;
-
-	-- if found...
-	if not logUserId is null then
-		begin
-		set NEW.userId = logUserId;
-		end;
-	end if;
-	END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `accessLogArchive`
@@ -107,7 +63,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=245800 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=400296 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +82,7 @@ CREATE TABLE `aclContents` (
   UNIQUE KEY `ux_accessTemplateId_urlListId` (`aclId`,`urlListId`),
   KEY `ix_urlListId` (`urlListId`),
   CONSTRAINT `fk_aclContents_aclId` FOREIGN KEY (`aclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +97,7 @@ CREATE TABLE `acls` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -251,7 +207,7 @@ CREATE TABLE `urlLists` (
   `whitelist` smallint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,7 +224,7 @@ CREATE TABLE `urlMasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_urlListId_name` (`urlListId`,`name`),
   CONSTRAINT `fk_urlMasks_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +272,7 @@ CREATE TABLE `users` (
   CONSTRAINT `fk_users_accessTemplateId` FOREIGN KEY (`aclId`) REFERENCES `acls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_groupId` FOREIGN KEY (`groupId`) REFERENCES `userGroups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=229 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,14 +298,17 @@ declare result varchar(2048);
 
 set result = url;
 
+-- strip protocol prefix
 if instr(result, '://') <> 0 then
 	set result = substring(result, instr(result, '://') + length('://'));
 end if;
 
+-- strip port and the rest
 if instr(result, ':') <> 0 then
 	set result = left(result, instr(result, ':') - length(':'));
 end if;
 
+-- strip everything after the first slash
 if instr(result, '/') <> 0 then
 	set result = left(result, instr(result, '/') - length('/'));
 end if;
@@ -398,13 +357,25 @@ START TRANSACTION;
 			al.http_mime_type,
 			al.squid_hier_status,
 			al.squid_request_status,
-			al.userId,
+			0 as userId,
 			al.archived
 		FROM 
 			accessLog as al
 		where 
 			al.archived is null
 		);
+        
+	update
+		accessLog al,
+		accessLogToArchive alta,
+        users u
+	set
+		al.userId = u.id,
+		alta.userId = u.id
+    where
+		al.id = alta.id
+		and ((u.ip = alta.ip_client and u.authMethod = 1)
+		or (u.userPrincipalName = alta.http_username and u.authMethod = 0));
 
 	-- update access log archive traffic
 	update 
@@ -522,4 +493,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-22  2:38:10
+-- Dump completed on 2016-06-03 19:44:53
