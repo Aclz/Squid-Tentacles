@@ -43,7 +43,7 @@ CREATE TABLE `accessLog` (
   KEY `ix_time` (`time_since_epoch`),
   KEY `ix_archived` (`archived`),
   CONSTRAINT `fk_accessLog_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=13694032 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14051850 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +63,7 @@ CREATE TABLE `accessLogArchive` (
   KEY `ix_date_userId` (`date`,`userId`),
   KEY `ix_userId` (`userId`),
   CONSTRAINT `fk_accessLogArchive_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=400320 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=402067 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -224,7 +224,7 @@ CREATE TABLE `urlMasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_urlListId_name` (`urlListId`,`name`),
   CONSTRAINT `fk_urlMasks_urlListId` FOREIGN KEY (`urlListId`) REFERENCES `urlLists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,7 +259,6 @@ CREATE TABLE `users` (
   `quota` int(11) NOT NULL DEFAULT '0',
   `authMethod` smallint(6) NOT NULL DEFAULT '0',
   `ip` varchar(15) DEFAULT NULL,
-  `traffic` bigint(20) NOT NULL DEFAULT '0',
   `aclId` int(11) DEFAULT NULL,
   `roleId` int(11) DEFAULT NULL,
   `extraQuota` int(11) NOT NULL DEFAULT '0',
@@ -292,4 +291,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-03 23:52:07
+-- Dump completed on 2016-06-06  2:08:34

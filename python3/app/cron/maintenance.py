@@ -6,11 +6,12 @@ Lock users for quota exceeding
 import datetime
 
 import sqlalchemy
-from sqlalchemy import create_engine, insert, update, case, func, and_, or_
+from sqlalchemy import create_engine, insert, update, case, between, func, and_, or_
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, Text, CHAR
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.operators import is_, isnot
+from calendar import mdays
 
 from config import config
 from sql_classes import AccessLog, AccessLogArchive, User
@@ -34,7 +35,7 @@ def _archive_access_log(engine, session, default_domain_name):
             archived = Column(Boolean)
 
         Temp.metadata.create_all(bind=engine)
-        
+
         # Fill temporary table with unarchived chunk of data
         access_log_subquery = session.query(
             AccessLog.id,
@@ -49,25 +50,25 @@ def _archive_access_log(engine, session, default_domain_name):
                     AccessLog.http_username.contains('\\'),
                     AccessLog.http_username == '-'),
                 AccessLog.http_username)],
-                else_ = AccessLog.http_username + '@' + default_domain_name).label('http_username'),
-            AccessLog.archived).filter(is_(AccessLog.archived, None)).limit(1000000) # limit to prevent overload on a huge amount of data
-        
-        ins = insert(AccessLogToArchive).from_select(
-            ['id', 'time_since_epoch', 'ip_client', 'http_status_code', 'http_reply_size',
+                else_=AccessLog.http_username + '@' + default_domain_name).label('http_username'),
+            AccessLog.archived).filter(is_(AccessLog.archived, None)).limit(1000000)  # limit to prevent overload on a huge amount of data
+
+        ins = insert(AccessLogToArchive).from_select([
+            'id', 'time_since_epoch', 'ip_client', 'http_status_code', 'http_reply_size',
             'http_url', 'http_username', 'archived'], access_log_subquery)
-        
+
         session.execute(ins)
-        
+
         query_result = session.query(AccessLogToArchive.http_username, User.cn).filter(
             and_(User.authMethod == 0, User.userPrincipalName == AccessLogToArchive.http_username)).all()
-          
+
         # Set user ID
         session.query(AccessLogToArchive).filter(
             or_(
                 and_(User.authMethod == 0, User.userPrincipalName == AccessLogToArchive.http_username),
                 and_(User.authMethod == 1, User.ip == AccessLogToArchive.ip_client))).update(
-            {AccessLogToArchive.userId: User.id}, synchronize_session=False)        
-            
+            {AccessLogToArchive.userId: User.id}, synchronize_session=False)
+
         session.query(AccessLog).filter(AccessLog.id == AccessLogToArchive.id).update(
             {AccessLog.userId: AccessLogToArchive.userId}, synchronize_session=False)
 
@@ -124,17 +125,6 @@ def _archive_access_log(engine, session, default_domain_name):
             AccessLog.id == AccessLogToArchive.id).\
             update({AccessLog.archived: 1}, synchronize_session=False)
 
-        # Update user counters
-        subquery = session.query(
-            AccessLogToArchive.userId,
-            func.sum(AccessLogToArchive.http_reply_size).label('traffic')).\
-            filter(AccessLogToArchive.http_status_code.like('2%')).\
-            group_by(AccessLogToArchive.userId).\
-            having(func.sum(AccessLogToArchive.http_reply_size) > 0).subquery()
-
-        session.query(User).filter(User.id == subquery.c.userId).\
-            update({User.traffic: User.traffic + subquery.c.traffic}, synchronize_session=False)
-
         session.commit()
 
         '''
@@ -148,11 +138,21 @@ def _archive_access_log(engine, session, default_domain_name):
 
 def _lock_users_for_quota_exceeding(session):
     # Get active users
-    query_result = session.query(User).filter_by(hidden=0, status=1).all()
+    date = datetime.date.today()
+    start_date = datetime.datetime(date.year, date.month, 1)
+    end_date = datetime.datetime(date.year, date.month, mdays[date.month])
+    
+    subquery = session.query(AccessLogArchive.userId, func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+        between(AccessLogArchive.date, start_date, end_date)).group_by(AccessLogArchive.userId).subquery()
+        
+    query_result = session.query(User).filter(
+        User.hidden == 0,
+        User.status == 1,
+        subquery.c.userId == User.id,
+        subquery.c.traffic > (User.quota + User.extraQuota)*1024*1024).all()
 
     for user in query_result:
-        if user.traffic > (user.quota + user.extraQuota)*1024*1024:
-            setattr(user, 'status', 2)
+        setattr(user, 'status', 2)
 
     session.commit()
 
@@ -170,6 +170,7 @@ def main():
     _lock_users_for_quota_exceeding(session)
 
     session.close()
+
 
 if __name__ == '__main__':
     main()

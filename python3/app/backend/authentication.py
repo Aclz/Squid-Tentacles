@@ -35,7 +35,6 @@ def get_user_by_principal_name(user_principal_name, Session):
         'extraQuota': query_result.extraQuota,
         'authMethod': query_result.authMethod,
         'ip': query_result.ip,
-        'traffic': round(query_result.traffic/1024/1024, 2),
         'aclId': query_result.aclId,
         'roleId': query_result.roleId
         }

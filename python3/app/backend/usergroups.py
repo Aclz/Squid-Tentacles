@@ -1,7 +1,10 @@
-from flask import request, jsonify
+import datetime
+from sqlalchemy import func, between
 from sqlalchemy.orm import aliased
+from calendar import mdays
+from flask import request, jsonify
 
-from sql_classes import User, UserGroup
+from sql_classes import User, UserGroup, AccessLogArchive
 
 
 def report_select_group_members(current_user_properties, Session):
@@ -17,23 +20,80 @@ def report_select_group_members(current_user_properties, Session):
     current_user_permissions = current_user_properties['user_permissions']
 
     session = Session()
+    
+    date = datetime.date.today()
+    start_date = datetime.datetime(date.year, date.month, 1)
+    end_date = datetime.datetime(date.year, date.month, mdays[date.month])
+    
+    subquery = session.query(AccessLogArchive.userId, func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+        between(AccessLogArchive.date, start_date, end_date)).group_by(AccessLogArchive.userId).subquery()
 
     if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) != None:
         if (request.args.get('userGroupId') == '0'):
-            query_result = session.query(User).filter_by(hidden=0).order_by(User.cn).all()
+            query_result = session.query(
+                User.id.label('id'),
+                User.cn.label('cn'),
+                User.userPrincipalName.label('userPrincipalName'),
+                User.status.label('status'),
+                User.quota.label('quota'),
+                User.extraQuota.label('extraQuota'),
+                User.authMethod.label('authMethod'),
+                User.ip.label('ip'),
+                User.aclId.label('aclId'),
+                User.roleId.label('roleId'),
+                subquery.c.traffic.label('traffic')).filter(User.hidden == 0).\
+                outerjoin(subquery, subquery.c.userId == User.id).order_by(User.cn).all()
         else:
             user_group = aliased(UserGroup)
             requested_group = aliased(UserGroup)
 
-            query_result = session.query(User).filter_by(hidden=0).\
-                join(user_group).join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
+            query_result = session.query(
+                User.id.label('id'),
+                User.cn.label('cn'),
+                User.userPrincipalName.label('userPrincipalName'),
+                User.status.label('status'),
+                User.quota.label('quota'),
+                User.extraQuota.label('extraQuota'),
+                User.authMethod.label('authMethod'),
+                User.ip.label('ip'),
+                User.aclId.label('aclId'),
+                User.roleId.label('roleId'),
+                subquery.c.traffic.label('traffic')).filter(User.hidden == 0).\
+                outerjoin(subquery, subquery.c.userId == User.id).join(user_group).\
+                join(requested_group, user_group.distinguishedName.like('%' + requested_group.distinguishedName)).\
                 filter(requested_group.id == request.args.get('userGroupId')).order_by(User.cn).all()
     else:
         if (request.args.get('userGroupId') == '0'):
-            query_result = session.query(User).filter_by(id=current_user_properties['user_object']['id'], hidden=0).\
+            query_result = session.query(
+                User.id.label('id'),
+                User.cn.label('cn'),
+                User.userPrincipalName.label('userPrincipalName'),
+                User.status.label('status'),
+                User.quota.label('quota'),
+                User.extraQuota.label('extraQuota'),
+                User.authMethod.label('authMethod'),
+                User.ip.label('ip'),
+                User.aclId.label('aclId'),
+                User.roleId.label('roleId'),
+                subquery.c.traffic.label('traffic')).\
+                outerjoin(subquery, subquery.c.userId == User.id).\
+                filter_by(id=current_user_properties['user_object']['id'], hidden=0).\
                 order_by(User.cn).all()
         else:
-            query_result = session.query(User).filter_by(id=current_user_properties['user_object']['id'], hidden=0).\
+            query_result = session.query(
+                User.id.label('id'),
+                User.cn.label('cn'),
+                User.userPrincipalName.label('userPrincipalName'),
+                User.status.label('status'),
+                User.quota.label('quota'),
+                User.extraQuota.label('extraQuota'),
+                User.authMethod.label('authMethod'),
+                User.ip.label('ip'),
+                User.aclId.label('aclId'),
+                User.roleId.label('roleId'),
+                subquery.c.traffic.label('traffic')).\
+                outerjoin(subquery, subquery.c.userId == User.id).\
+                filter_by(id=current_user_properties['user_object']['id'], hidden=0).\
                 join(UserGroup).filter(UserGroup.id == request.args.get('userGroupId')).order_by(User.cn).all()
 
     session.close()
@@ -49,7 +109,7 @@ def report_select_group_members(current_user_properties, Session):
             'aclId': result_row.aclId,
             'quota': result_row.quota,
             'extraQuota': result_row.extraQuota,
-            'traffic': round(result_row.traffic/1024/1024, 2),
+            'traffic': float(round(result_row.traffic/1024/1024, 2)) if result_row.traffic is not None else float(0),
             }
 
         if next((item for item in current_user_permissions if item['permissionName'] == 'ViewUsers'), None) == None:

@@ -132,7 +132,6 @@ class User(Base):
     quota = Column(Integer, nullable=False, default=0)
     authMethod = Column(SmallInteger, nullable=False, default=0)
     ip = Column(String(15))
-    traffic = Column(BigInteger, nullable=False, default=0)
     aclId = Column(Integer, ForeignKey('acls.id'))
     roleId = Column(Integer, ForeignKey('roles.id'))
     extraQuota = Column(Integer, nullable=False, default=0)

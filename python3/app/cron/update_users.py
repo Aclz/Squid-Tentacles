@@ -14,7 +14,10 @@ from sql_classes import Settings, User, UserGroup
 
 
 def _manage_groups(session, ldap_users):
-    # Get user OUs with all upper level OUs
+    '''
+    Add new LDAP OUs as new user groups
+    '''
+    # Get LDAP user OUs with all upper level OUs
     ldap_user_ous = set(ldap_users[user_principal_name]['dn'] for user_principal_name in ldap_users)
 
     ldap_user_all_ous = set(
@@ -46,6 +49,11 @@ def _manage_groups(session, ldap_users):
 
 
 def _manage_users(session, ldap_users):
+    '''
+    Add new users from LDAP.
+    Change existing users attributes.
+    Hide users not present in LDAP.
+    '''
     # Get user default values
     query_result = session.query(Settings).first()
 
@@ -83,7 +91,7 @@ def _manage_users(session, ldap_users):
             'id': element['id']
             }
 
-    # fill the ldap users groupId
+    # fill LDAP user's groupId
     for user_principal_name in ldap_users:
         ldap_users[user_principal_name]['groupId'] = db_usergroups_dict[ldap_users[user_principal_name]['dn']]['id']
 
@@ -144,7 +152,7 @@ def _manage_users(session, ldap_users):
         if do_commit:
             session.commit()
 
-    # Insert new users
+    # Create new users
     for user_principal_name in new_user_principal_names:
         new_user = User(
             userPrincipalName=user_principal_name,
@@ -159,6 +167,10 @@ def _manage_users(session, ldap_users):
 
 
 def _open_new_traffic_period(session):
+    '''
+    Reset user traffic counters.
+    Unlock users locked for quota exceeding.
+    '''
     current_traffic_period = datetime(datetime.today().year, datetime.today().month, 1)
 
     # Get DB current traffic period
@@ -173,7 +185,7 @@ def _open_new_traffic_period(session):
     else:
         db_traffic_period = query_result.currentTrafficPeriod
 
-    # If traffic period didn't just changed - exit
+    # If traffic period didn't just change - exit
     if db_traffic_period == current_traffic_period:
         return
 
@@ -185,7 +197,6 @@ def _open_new_traffic_period(session):
 
         # Reset user counters, enable locked
         for user in query_result:
-            setattr(user, 'traffic', 0)
             setattr(user, 'extraQuota', 0)
 
             if user.status == 2:

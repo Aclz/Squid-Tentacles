@@ -24,7 +24,7 @@ def report_user_traffic_by_hosts(Session):
 
     query_result = session.query(
         AccessLogArchive.host,
-        label('traffic', func.sum(AccessLogArchive.traffic))).filter(
+        func.sum(AccessLogArchive.traffic).label('traffic')).filter(
         AccessLogArchive.userId == request.args.get('userId'),
         AccessLogArchive.date >= request.args.get('dateBeg'),
         AccessLogArchive.date <= request.args.get('dateEnd')).group_by(AccessLogArchive.host).having(
@@ -82,10 +82,10 @@ def report_group_traffic_by_hosts(Session):
 
         query_result = session.query(
             AccessLogArchive.host,
-            label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.userId.in_(users_sq),
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            AccessLogArchive.userId.in_(users_sq),
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(AccessLogArchive.host).having(
             func.sum(AccessLogArchive.traffic) > 0.05*1024).order_by(
             func.sum(AccessLogArchive.traffic).desc())
@@ -98,9 +98,9 @@ def report_group_traffic_by_hosts(Session):
     else:
         query_result = session.query(
             AccessLogArchive.host,
-            label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(AccessLogArchive.host).having(
             func.sum(AccessLogArchive.traffic) > 0.05*1024).order_by(
             func.sum(AccessLogArchive.traffic).desc())
@@ -148,11 +148,10 @@ def report_user_traffic_by_dates(Session):
 
     query_result = session.query(
         AccessLogArchive.date,
-        label('traffic', func.sum(AccessLogArchive.traffic))).\
-        filter(
-            AccessLogArchive.userId == request.args.get('userId'),
-            AccessLogArchive.date >= request.args.get('dateBeg'),
-            AccessLogArchive.date <= request.args.get('dateEnd')).\
+        func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+        AccessLogArchive.userId == request.args.get('userId'),
+        AccessLogArchive.date >= request.args.get('dateBeg'),
+        AccessLogArchive.date <= request.args.get('dateEnd')).\
         group_by(AccessLogArchive.date).\
         order_by(AccessLogArchive.date).all()
 
@@ -203,10 +202,10 @@ def report_group_traffic_by_dates(Session):
 
         query_result = session.query(
             AccessLogArchive.date,
-            label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.userId.in_(users_sq),
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            AccessLogArchive.userId.in_(users_sq),
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(AccessLogArchive.date).having(
             func.sum(AccessLogArchive.traffic) > 0.05*1024).\
             order_by(AccessLogArchive.date).all()
@@ -214,9 +213,9 @@ def report_group_traffic_by_dates(Session):
     else:
         query_result = session.query(
             AccessLogArchive.date,
-            label('traffic', func.sum(AccessLogArchive.traffic))).filter(
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(AccessLogArchive.date).having(
             func.sum(AccessLogArchive.traffic) > 0.05*1024).\
             order_by(AccessLogArchive.date).all()
@@ -398,12 +397,11 @@ def report_group_traffic_by_users(Session):
 
         query_result = session.query(
             User.cn, User.userPrincipalName,
-            label('traffic', func.sum(AccessLogArchive.traffic))).\
-            filter(
-                User.id == AccessLogArchive.userId,
-                AccessLogArchive.userId.in_(users_sq),
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            User.id == AccessLogArchive.userId,
+            AccessLogArchive.userId.in_(users_sq),
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(User.id, User.cn, User.userPrincipalName).\
             having(func.sum(AccessLogArchive.traffic) > 0.05*1024).\
             order_by(func.sum(AccessLogArchive.traffic).desc())
@@ -416,11 +414,10 @@ def report_group_traffic_by_users(Session):
     else:
         query_result = session.query(
             User.cn, User.userPrincipalName,
-            label('traffic', func.sum(AccessLogArchive.traffic))).\
-            filter(
-                User.id == AccessLogArchive.userId,
-                AccessLogArchive.date >= request.args.get('dateBeg'),
-                AccessLogArchive.date <= request.args.get('dateEnd')).\
+            func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+            User.id == AccessLogArchive.userId,
+            AccessLogArchive.date >= request.args.get('dateBeg'),
+            AccessLogArchive.date <= request.args.get('dateEnd')).\
             group_by(User.id, User.cn, User.userPrincipalName).\
             having(func.sum(AccessLogArchive.traffic) > 0.05*1024).\
             order_by(func.sum(AccessLogArchive.traffic).desc())

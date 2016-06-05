@@ -1,13 +1,36 @@
-from flask import request, jsonify
-
-from sql_classes import User
+import datetime
 import eventlog
+from flask import request, jsonify
+from sqlalchemy import func, between
+from calendar import mdays
+
+from sql_classes import User, AccessLogArchive
 
 
 def select_user(current_user_properties, requested_user_id, Session):
     session = Session()
+    
+    date = datetime.date.today()
+    start_date = datetime.datetime(date.year, date.month, 1)
+    end_date = datetime.datetime(date.year, date.month, mdays[date.month])
+    
+    subquery = session.query(AccessLogArchive.userId, func.sum(AccessLogArchive.traffic).label('traffic')).filter(
+        between(AccessLogArchive.date, start_date, end_date),
+        AccessLogArchive.userId == requested_user_id).group_by(AccessLogArchive.userId).subquery()
 
-    query_result = session.query(User).filter_by(id=requested_user_id, hidden=0).first()
+    query_result = session.query(
+        User.id.label('id'),
+        User.cn.label('cn'),
+        User.userPrincipalName.label('userPrincipalName'),
+        User.status.label('status'),
+        User.quota.label('quota'),
+        User.extraQuota.label('extraQuota'),
+        User.authMethod.label('authMethod'),
+        User.ip.label('ip'),
+        User.aclId.label('aclId'),
+        User.roleId.label('roleId'),
+        subquery.c.traffic.label('traffic')).filter(User.id == requested_user_id, User.hidden == 0).\
+        outerjoin(subquery, subquery.c.userId == User.id).first()
 
     session.close()
 
@@ -23,7 +46,7 @@ def select_user(current_user_properties, requested_user_id, Session):
         'extraQuota': query_result.extraQuota,
         'authMethod': query_result.authMethod,
         'ip': query_result.ip if query_result.ip is not None else '0.0.0.0',
-        'traffic': round(query_result.traffic/1024/1024, 2),
+        'traffic': float(round(query_result.traffic/1024/1024, 2)) if query_result.traffic is not None else float(0),
         'aclId': query_result.aclId,
         'roleId': query_result.roleId
         }
@@ -66,6 +89,7 @@ def update_user(user_id, Session):
 
     session = Session()
 
+    # Check IP uniqueness
     ip_to_set = json_data.get('ip')
 
     if ip_to_set is not None and ip_to_set != '0.0.0.0':
@@ -77,6 +101,7 @@ def update_user(user_id, Session):
                 'message': 'IP_NOT_UNIQUE:' + query_result.cn + ' (' + query_result.userPrincipalName + ')'
                 })
 
+    # Update user attributes
     query_result = session.query(User).get(user_id)
 
     if query_result is None:
@@ -84,7 +109,7 @@ def update_user(user_id, Session):
 
     do_commit = False
 
-    allowed_to_update_fields = ['status', 'quota', 'extraQuota', 'authMethod', 'ip', 'traffic', 'aclId', 'roleId']
+    allowed_to_update_fields = ['status', 'quota', 'extraQuota', 'authMethod', 'ip', 'aclId', 'roleId']
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
