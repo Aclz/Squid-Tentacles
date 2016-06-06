@@ -42,14 +42,19 @@ def url_ok(url, acl):
     query_result = session.query(UrlList.whitelist).\
         join(AclContents, AclContents.urlListId == UrlList.id).\
         join(UrlMask, UrlMask.urlListId == UrlList.id).\
-        filter(AclContents.aclId == acl).\
-        filter(literal(url).like('%' + UrlMask.name + '%')).\
-        order_by(AclContents.aclId, AclContents.orderNumber).first()
-
-    session.close()
+        filter(AclContents.aclId == acl, literal(url).like('%' + UrlMask.name + '%')).\
+        order_by(AclContents.orderNumber).first()
 
     if query_result is None:
-        return True
+        query_result = session.query(UrlList.whitelist).\
+            join(AclContents, AclContents.urlListId == UrlList.id).\
+            filter(AclContents.aclId == acl, UrlList.whitelist == 1).first()
+            
+        session.close()
+        
+        return True if query_result is None else False
+    else:
+        session.close()
 
     for whitelist in query_result:
         return whitelist
