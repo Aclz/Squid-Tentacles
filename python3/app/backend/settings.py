@@ -8,7 +8,7 @@ def select_settings(current_user_properties, Session):
 
     query_result = session.query(Settings).first()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -24,7 +24,7 @@ def select_settings(current_user_properties, Session):
         'defaultRoleId': query_result.defaultRoleId
         }
 
-    session.close()
+    Session.remove()
 
     current_user_permissions = current_user_properties['user_permissions']
 
@@ -89,6 +89,6 @@ def update_settings(Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

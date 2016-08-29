@@ -9,7 +9,7 @@ def get_user_object(user_id, Session):
 
     query_result = session.query(User).filter_by(id=user_id, hidden=0).first()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return None
@@ -35,7 +35,7 @@ def get_role_object(role_id, Session):
 
     query_result = session.query(Role).get(role_id)
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return None
@@ -60,7 +60,7 @@ def check_role_permission(role_id, permission, Session):
         query_result = session.query(RolePermission.id).filter_by(roleId=role_id).\
             join(Permission).filter(Permission.name == permission).first()
 
-        session.close()
+        Session.remove()
 
         return False if query_result is None else True
     elif type(permission) is list:  # here a list means that each of a list permissions is required
@@ -75,7 +75,7 @@ def check_role_permission(role_id, permission, Session):
                 query_result = session.query(RolePermission.id).filter_by(roleId=role_id).\
                     join(Permission).filter(Permission.name == permission_item).first()
 
-                session.close()
+                Session.remove()
 
                 if query_result is None:
                     return False
@@ -95,7 +95,7 @@ def get_role_permissions(role_id, Session):
         # all permission in case when authentication or authorization is disabled
         query_result = session.query(Permission.id, Permission.name).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return []

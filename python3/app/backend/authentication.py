@@ -21,7 +21,7 @@ def get_user_by_principal_name(user_principal_name, Session):
 
     query_result = session.query(User).filter_by(userPrincipalName=user_principal_name, hidden=0).first()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return None

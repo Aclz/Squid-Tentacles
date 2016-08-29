@@ -8,7 +8,7 @@ def select_role_permissions(role_id, Session):
 
     query_result = session.query(RolePermission.id, RolePermission.permissionId).filter_by(roleId=role_id).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -60,7 +60,7 @@ def insert_role_permissions(role_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -81,6 +81,6 @@ def delete_role_permission(role_id, permission_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

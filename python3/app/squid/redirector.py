@@ -9,11 +9,13 @@ from sqlalchemy.sql.expression import literal
 from config import config
 from sql_classes import User, AclContents, UrlList, UrlMask, Settings
 
-
+'''
+First - search user by username, then - by IP-address
+'''
 def get_user_status(givenUsername, givenIp):
     session = Session()
     query_result = session.query(User).filter_by(userPrincipalName=givenUsername, status=1, hidden=0, authMethod=0).first()
-    session.close()
+    Session.remove()
 
     if query_result is not None:
         return {
@@ -23,7 +25,7 @@ def get_user_status(givenUsername, givenIp):
 
     session = Session()
     query_result = session.query(User).filter_by(ip=givenIp, status=1, hidden=0, authMethod=1).first()
-    session.close()
+    Session.remove()
 
     if query_result is not None:
         return {
@@ -50,11 +52,11 @@ def url_ok(url, acl):
             join(AclContents, AclContents.urlListId == UrlList.id).\
             filter(AclContents.aclId == acl, UrlList.whitelist == 1).first()
             
-        session.close()
+        Session.remove()
         
         return True if query_result is None else False
     else:
-        session.close()
+        Session.remove()
 
     for whitelist in query_result:
         return whitelist

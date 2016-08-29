@@ -38,7 +38,7 @@ def report_user_traffic_by_hosts(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -113,7 +113,7 @@ def report_group_traffic_by_hosts(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -158,7 +158,7 @@ def report_user_traffic_by_dates(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -223,7 +223,7 @@ def report_group_traffic_by_dates(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -274,7 +274,7 @@ def report_user_day_traffic(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -350,7 +350,7 @@ def report_group_day_traffic(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 
@@ -430,7 +430,7 @@ def report_group_traffic_by_users(Session):
     if query_result is None:
         return jsonify(success=False)
 
-    session.close()
+    Session.remove()
 
     result_list = []
 

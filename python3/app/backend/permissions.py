@@ -8,7 +8,7 @@ def select_permissions(Session):
 
     query_result = session.query(Permission.id, Permission.name).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({

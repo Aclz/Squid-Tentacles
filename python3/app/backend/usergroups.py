@@ -96,7 +96,7 @@ def report_select_group_members(current_user_properties, Session):
                 filter_by(id=current_user_properties['user_object']['id'], hidden=0).\
                 join(UserGroup).filter(UserGroup.id == request.args.get('userGroupId')).order_by(User.cn).all()
 
-    session.close()
+    Session.remove()
 
     result_list = []
 

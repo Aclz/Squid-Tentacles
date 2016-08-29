@@ -8,7 +8,7 @@ def select_acls(Session):
 
     query_result = session.query(Acl.id, Acl.name).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -39,7 +39,7 @@ def select_acl(acl_id, Session):
 
     query_result = session.query(Acl).get(acl_id)
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -86,7 +86,7 @@ def insert_acl(Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -128,7 +128,7 @@ def update_acl(acl_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -148,6 +148,6 @@ def delete_acl(acl_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

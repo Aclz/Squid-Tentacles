@@ -8,7 +8,7 @@ def select_roles(Session):
 
     query_result = session.query(Role.id, Role.name).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -39,7 +39,7 @@ def select_role(role_id, Session):
 
     query_result = session.query(Role).get(role_id)
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -86,7 +86,7 @@ def insert_role(Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -128,7 +128,7 @@ def update_role(role_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -148,6 +148,6 @@ def delete_role(role_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

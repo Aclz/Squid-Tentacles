@@ -8,7 +8,7 @@ def select_urlmasks(urllist_id, Session):
 
     query_result = session.query(UrlMask.id, UrlMask.name).filter_by(urlListId=urllist_id).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -60,7 +60,7 @@ def insert_urlmask(urllist_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -102,7 +102,7 @@ def update_urlmask(urllist_id, urlmask_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -122,6 +122,6 @@ def delete_urlmask(urllist_id, urlmask_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

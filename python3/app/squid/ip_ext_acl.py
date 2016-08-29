@@ -11,7 +11,7 @@ from config import config
 def check_ip(ipaddr):
     session = Session()
     queryResult = session.query(User).filter_by(ip=ipaddr, status=1, hidden=0, authMethod=1).first()
-    session.close()
+    Session.remove()
 
     if queryResult is not None:
         return 'OK'

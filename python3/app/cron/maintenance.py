@@ -169,7 +169,7 @@ def main():
     _archive_access_log(engine, session, config['Authentication']['DefaultDomainName'])
     _lock_users_for_quota_exceeding(session)
 
-    session.close()
+    Session.remove()
 
 
 if __name__ == '__main__':

@@ -137,7 +137,7 @@ def _get_user_tree(current_user_properties, Session):
             UserGroup.distinguishedName).join(UserGroup).\
             filter(User.id == current_user_properties['user_object']['id'], User.hidden == 0).all()
 
-    session.close()
+    Session.remove()
 
     # Future tree
     user_tree = []
@@ -181,7 +181,7 @@ def _get_url_lists(Session):
     # Get all urllists from DB
     query_result = session.query(UrlList.id, UrlList.name, UrlList.whitelist).all()
 
-    session.close()
+    Session.remove()
 
     urllist_list = []
 
@@ -220,7 +220,7 @@ def _get_acls(Session):
     # Get all access control lists from DB
     query_result = session.query(Acl.id, Acl.name).all()
 
-    session.close()
+    Session.remove()
 
     acl_list = []
 
@@ -259,7 +259,7 @@ def _get_roles(Session):
     # Get all roles from DB
     query_result = session.query(Role.id, Role.name).all()
 
-    session.close()
+    Session.remove()
 
     roles_list = []
 

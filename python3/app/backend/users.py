@@ -32,7 +32,7 @@ def select_user(current_user_properties, requested_user_id, Session):
         subquery.c.traffic.label('traffic')).filter(User.id == requested_user_id, User.hidden == 0).\
         outerjoin(subquery, subquery.c.userId == User.id).first()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify(success=False)
@@ -131,6 +131,6 @@ def update_user(user_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

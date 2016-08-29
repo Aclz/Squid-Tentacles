@@ -9,7 +9,7 @@ def select_acl_contents(acl_id, Session):
     query_result = session.query(AclContents.id, AclContents.urlListId, AclContents.orderNumber).\
         filter_by(aclId=acl_id).all()
 
-    session.close()
+    Session.remove()
 
     if query_result is None:
         return jsonify({
@@ -65,7 +65,7 @@ def insert_acl_contents(acl_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -107,7 +107,7 @@ def update_acl_contents(acl_id, aclcontent_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)
 
@@ -128,6 +128,6 @@ def delete_acl_contents(acl_id, aclcontent_id, Session):
             'success': False
             }
     finally:
-        session.close()
+        Session.remove()
 
     return jsonify(response)

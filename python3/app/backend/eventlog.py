@@ -16,4 +16,4 @@ def log_event(Session, author_id, action, tablename, object_id, fieldname, old_v
     except Exception as e:
         return False
     finally:
-        session.close()
+        Session.remove()

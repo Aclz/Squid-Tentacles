@@ -228,11 +228,13 @@ def main():
 
     session = Session()
 
-    _manage_groups(session, ldap_users)
-    _manage_users(session, ldap_users)
+    if type(ldap_users) == dict and ldap_users != {}: #Let's check the dict consistency in case of LDAP read errors
+        _manage_groups(session, ldap_users)
+        _manage_users(session, ldap_users)
+
     _open_new_traffic_period(session)
 
-    session.close()
+    Session.remove()
 
 
 if __name__ == '__main__':
