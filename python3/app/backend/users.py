@@ -90,9 +90,10 @@ def update_user(user_id, Session):
     session = Session()
 
     # Check IP uniqueness
+    auth_method_to_set = json_data.get('authMethod')
     ip_to_set = json_data.get('ip')
 
-    if ip_to_set is not None and ip_to_set != '0.0.0.0':
+    if auth_method_to_set != 0 and ip_to_set is not None and ip_to_set != '0.0.0.0':
         query_result = session.query(User).filter(User.ip == ip_to_set, User.id != user_id).first()
 
         if query_result is not None:
@@ -113,11 +114,17 @@ def update_user(user_id, Session):
 
     for field_name in allowed_to_update_fields:
         if json_data.get(field_name) != None:
-            if field_name == 'ip' and json_data.get(field_name) == '0.0.0.0':
-                continue
+            if field_name == 'ip' and auth_method_to_set == 2:
+                if json_data.get(field_name) == '0.0.0.0':
+                    continue
 
             setattr(query_result, field_name, json_data.get(field_name))
             do_commit = True
+
+    # Reset IP in case of user-based auth
+    if auth_method_to_set == 0:
+        setattr(query_result, 'ip', None)
+        do_commit = True
 
     try:
         if do_commit:
