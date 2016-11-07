@@ -62,7 +62,7 @@ def _archive_access_log(engine, session, default_domain_name):
         query_result = session.query(AccessLogToArchive.http_username, User.cn).filter(
             and_(User.authMethod == 0, User.userPrincipalName == AccessLogToArchive.http_username)).all()
 
-        # Set user ID
+        # Set user ID field
         session.query(AccessLogToArchive).filter(
             or_(
                 and_(User.authMethod == 0, User.userPrincipalName == AccessLogToArchive.http_username),
@@ -103,12 +103,14 @@ def _archive_access_log(engine, session, default_domain_name):
                 AccessLogToArchive.http_url).\
             having(func.sum(AccessLogToArchive.http_reply_size) > 0).subquery()
 
+        # Update existing rows
         session.query(AccessLogArchive).filter(
             AccessLogArchive.date == subquery.c.date,
             AccessLogArchive.userId == subquery.c.userId,
             AccessLogArchive.host == subquery.c.host).\
             update({AccessLogArchive.traffic: AccessLogArchive.traffic + subquery.c.traffic}, synchronize_session=False)
 
+        # Insert new rows
         access_log_subquery = session.query(subquery).outerjoin(
             AccessLogArchive, and_(
                 AccessLogArchive.date == subquery.c.date,
